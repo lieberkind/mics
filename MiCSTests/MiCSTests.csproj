@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>6adbd0f5-de4a-4ea7-9b8c-00787ed97b68</ProjectGuid>
+    <ProjectGuid>{F344DCA7-36E8-4059-AF82-1726290434B8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MiCSTests</RootNamespace>
