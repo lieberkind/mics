@@ -8,58 +8,37 @@ using ScriptSharp.ScriptModel;
 using Roslyn.Compilers.CSharp;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using MiCSTests.TestUtils;
 namespace MiCSTests
 {
     [TestClass]
     public class RoslynTests
     {
-        private CompilationUnitSyntax ParseCompilationUnit(string source)
-        {
-            var syntaxTree = SyntaxTree.ParseText(source);
-            if (!Syntax.IsCompleteSubmission(syntaxTree))
-                throw new Exception("Source submission failed!");
-            return syntaxTree.GetRoot();
-        }
 
         [TestMethod]
         public void RoslynNamespaceTest()
         {
-            var cUnit = ParseCompilationUnit(@"namespace TestNameSpace{ }");
-            var namespaces = cUnit.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration);
+            var namespaces = Parse.Namespaces(@"namespace TestNameSpace{ }");
             Assert.IsTrue(namespaces.Count() == 1);
 
             var ns = (NamespaceDeclarationSyntax)namespaces.First();
             Assert.IsTrue(((IdentifierNameSyntax)ns.Name).Identifier.Value.Equals("TestNameSpace"));
         }
 
-        private IEnumerable<SyntaxNode> ParseClasses(string classSource)
-        {
-            var cUnit = ParseCompilationUnit(@"namespace TestNameSpace{ " + classSource + @" }");
-            var namespaces = cUnit.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration);
-            return namespaces.First().DescendantNodes().Where(m => m.Kind == SyntaxKind.ClassDeclaration);
-        }
-
         [TestMethod]
         public void RoslynClassTest()
         {
-            var classes = ParseClasses(@"class TestClass{ }");
+            var classes = Parse.Classes(@"class TestClass{ }");
             Assert.IsTrue(classes.Count() == 1);
 
             var cl = (ClassDeclarationSyntax)classes.First();
             Assert.IsTrue(cl.Identifier.Value.Equals("TestClass"));
         }
 
-        private IEnumerable<SyntaxNode> ParseMethods(string methodsSource)
-        {
-            var classes = ParseClasses(@"class TestClass{ " + methodsSource + @" }");
-            var methods = classes.First().DescendantNodes().Where(m => m.Kind == SyntaxKind.MethodDeclaration);
-            return methods;
-        }
-
         [TestMethod]
         public void RoslynMethodTest()
        { 
-            var methods = ParseMethods(@"void TestMethod() { }");
+            var methods = Parse.Methods(@"void TestMethod() { }");
             Assert.IsTrue(methods.Count() == 1);
 
             var method = (MethodDeclarationSyntax)methods.First();
@@ -70,7 +49,7 @@ namespace MiCSTests
 
         private IEnumerable<SyntaxNode> ParseStatements(string statements)
         {
-            var methods = ParseMethods(@"void TestMethod() { " + statements + " }");
+            var methods = Parse.Methods(@"void TestMethod() { " + statements + " }");
             var method = (MethodDeclarationSyntax)methods.First();
             return method.Body.DescendantNodes();
         }
@@ -101,6 +80,8 @@ namespace MiCSTests
             return node.Value;
         }
 
+        #region Region: Literal Expressions
+
         [TestMethod]
         public void RoslynIntLiteralExpressionTest()
         {
@@ -130,6 +111,10 @@ namespace MiCSTests
         {
             Assert.IsTrue(ParseExpression(@"null").Kind == SyntaxKind.NullLiteralExpression);
         }
+
+        #endregion
+
+
 
 
         #endregion

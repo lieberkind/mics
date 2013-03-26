@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MiCS
 {
-    static class MiCSExtensions
+    public static class MiCSExtensions
     {
         static internal Statement Map(this StatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)
         {
@@ -315,6 +315,7 @@ namespace MiCS
 
         static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax ns)
         {
+            // Todo: Implement so that members are mapped as well!
             return new ScriptSharp.ScriptModel.NamespaceSymbol(((IdentifierNameSyntax)ns.Name).Identifier.ValueText, null);
         }
 
