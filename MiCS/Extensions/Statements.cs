@@ -62,22 +62,25 @@ namespace MiCS.Extensions
 
         static internal VariableDeclarationStatement Map(this LocalDeclarationStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent)
         {
-            var v = stmt.Declaration.Variables[0];
-            var identifier = v.Identifier;
+            var variable = stmt.Declaration.Variables[0];
+            var identifier = variable.Identifier;
             if (identifier.Kind != SyntaxKind.IdentifierToken)
                 throw new NotSupportedException(); // Maybe not a necesary check...
 
 
             var vS = new VariableSymbol(identifier.ValueText, null, null);
 
-            if (v.Initializer != null)
+            if (variable.Initializer != null)
             {
-                if (v.Initializer.Value is LiteralExpressionSyntax)
-                    vS.SetValue(v.Initializer.Value.Map());
-                else if (v.Initializer.Value is InvocationExpressionSyntax)
-                    vS.SetValue(v.Initializer.Value.Map(parent));
+                var initValue = variable.Initializer.Value;
+                if (initValue is LiteralExpressionSyntax)
+                    vS.SetValue(initValue.Map());
+                else if (initValue is BinaryExpressionSyntax)
+                    vS.SetValue(initValue.Map());
+                else if (initValue is InvocationExpressionSyntax)
+                    vS.SetValue(initValue.Map(parent));
                 else
-                    throw new NotSupportedException();
+                    throw new NotSupportedException("Declaration initializer value is not currently supported.");
             }
 
             var vDS = new VariableDeclarationStatement();

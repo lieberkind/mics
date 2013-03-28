@@ -94,6 +94,8 @@ namespace MiCSTests
             Assert.IsTrue(SSStmt is VariableDeclarationStatement);
         }
 
+
+
         #region Region: Statement Test
 
 
@@ -146,6 +148,14 @@ namespace MiCSTests
 
             Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
         }
+
+        [TestMethod]
+        public void StatementAritmethicAssignmentTest()
+        {
+            var RosStmt = Parse.Statement(@"string i = 1 + 1;");
+            var SSStmt = RosStmt.Map();
+        }
+
         // Todo: Add more statements tests...
 
         #endregion
@@ -313,6 +323,15 @@ namespace MiCSTests
             Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
             Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
             Assert.IsTrue(SSBinaryExpr.Operator == Operator.Mod);
+        }
+
+
+
+        [TestMethod]
+        public void ExpressionNestedBinaryTest()
+        {
+            var RosExpr = Parse.Expression("1 + 1 + 1");
+            var SSExpr = RosExpr.Map();
         }
 
         #endregion
