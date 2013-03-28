@@ -25,6 +25,8 @@ namespace MiCS.Extensions
                 return ((InvocationExpressionSyntax)expr).Map(parent);
             else if (expr is ObjectCreationExpressionSyntax)
                 return ((ObjectCreationExpressionSyntax)expr).Map(parent);
+            else if (expr is ConditionalExpressionSyntax)
+                return ((ConditionalExpressionSyntax)expr).Map();
             else
                 throw new NotSupportedException("This type of expression is currently not supported!");
         }
@@ -182,5 +184,9 @@ namespace MiCS.Extensions
             }
         }
 
+        static internal ConditionalExpression Map(this ConditionalExpressionSyntax expr)
+        {
+            return new ConditionalExpression(expr.Condition.Map(), expr.WhenTrue.Map(), expr.WhenFalse.Map());
+        }
     }
 }

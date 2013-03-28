@@ -150,11 +150,91 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        public void StatementVariableAssignmentTest()
+        {
+            var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(SSStmt is ExpressionStatement);
+
+            var SSExpr = ((ExpressionStatement)SSStmt).Expression;
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+        }
+
+        [TestMethod]
         public void StatementAritmethicAssignmentTest()
         {
             var RosStmt = Parse.Statement(@"string i = 1 + 1;");
             var SSStmt = RosStmt.Map();
         }
+
+        [TestMethod]
+        public void IfElseStatementTest()
+        {
+            var RosStmt = Parse.Statement(@"if (true) { int i; } else { int i; }");
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(SSStmt is IfElseStatement);
+
+            var SSIfElseStmt = (IfElseStatement)SSStmt;
+
+            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is BlockStatement);
+            Assert.IsTrue(SSIfElseStmt.ElseStatement is BlockStatement);
+        }
+
+        [TestMethod]
+        public void IfStatementTest()
+        {
+            var RosStmt = Parse.Statement(@"if (true) { int i; } ");
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(SSStmt is IfElseStatement);
+
+            var SSIfElseStmt = (IfElseStatement)SSStmt;
+
+            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is BlockStatement);
+            Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
+        }
+
+        [TestMethod]
+        public void IfElseStatementNoBlockTest()
+        {
+            var RosStmt = Parse.Statement(@"
+                if (true)
+                    int i;
+                else
+                    int i;
+                ");
+
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(SSStmt is IfElseStatement);
+
+            var SSIfElseStmt = (IfElseStatement)SSStmt;
+
+            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement);
+            Assert.IsTrue(SSIfElseStmt.ElseStatement is VariableDeclarationStatement);
+        }
+
+        [TestMethod]
+        public void IfStatementNoBlockTest()
+        {
+            var RosStmt = Parse.Statement(@"if (true) int i;");
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(SSStmt is IfElseStatement);
+
+            var SSIfElseStmt = (IfElseStatement)SSStmt;
+
+            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement);
+            Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
+        }
+
 
         // Todo: Add more statements tests...
 
@@ -162,7 +242,20 @@ namespace MiCSTests
 
         #region Region: Expression Tests
 
+        [TestMethod]
+        public void ConditionalExpressionTest()
+        {
+            var RosExpr = Parse.Expression("2 > 1 ? 10 : 0");
+            var SSExpr = RosExpr.Map();
 
+            Assert.IsTrue(SSExpr is ConditionalExpression);
+
+            var cExpr = (ConditionalExpression)SSExpr;
+
+            Assert.IsTrue(cExpr.Condition is BinaryExpression);
+            Assert.IsTrue(cExpr.TrueValue is LiteralExpression);
+            Assert.IsTrue(cExpr.FalseValue is LiteralExpression);
+        }
 
         [TestMethod]
         public void ObjectCreationExpressionSyntaxTest()
@@ -304,6 +397,23 @@ namespace MiCSTests
         #endregion
 
         #region Region: Binary Expression Tests
+
+        [TestMethod]
+        public void ExpressionAssignmentTest()
+        {
+            var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(SSStmt is ExpressionStatement);
+
+            var SSExpr = (BinaryExpression)((ExpressionStatement)SSStmt).Expression;
+
+            Assert.IsTrue(SSExpr.Operator == Operator.Equals);
+            Assert.IsTrue(SSExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSExpr.LeftOperand is LocalExpression);
+            Assert.IsTrue(((LocalExpression)SSExpr.LeftOperand).Symbol is VariableSymbol);
+        }
+
 
         [TestMethod]
         public void ExpressionPlusBinaryTest()
@@ -519,6 +629,8 @@ namespace MiCSTests
         // Todo: Add more expression tests...
 
         #endregion
+
+
 
     }
 }

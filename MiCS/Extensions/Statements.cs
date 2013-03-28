@@ -28,7 +28,8 @@ namespace MiCS.Extensions
 
         static internal IfElseStatement Map(this IfStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent)
         {
-            return new IfElseStatement(stmt.Condition.Map(parent), stmt.Statement.Map(parent), stmt.Else.Statement.Map(parent));
+            var elseStmt = stmt.Else == null ? null : stmt.Else.Statement.Map(parent);
+            return new IfElseStatement(stmt.Condition.Map(parent), stmt.Statement.Map(parent), elseStmt);
         }
 
         static internal BlockStatement Map(this BlockSyntax block, ScriptSharp.ScriptModel.TypeSymbol parent)
