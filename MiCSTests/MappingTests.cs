@@ -181,6 +181,29 @@ namespace MiCSTests
             Assert.AreEqual(SSLiteral.Value, "foo");
         }
 
+//        [TestMethod]
+//        public void ObjectCreationExpressionSyntaxTest()
+//        {
+//            var source = @"
+//                public class Person
+//                {
+//
+//                    public Person()
+//                    {
+//                    }
+//
+//                    [MixedSide]
+//                    public void TestFunction(string name, string name2, string name3)
+//                    {
+//                        Person p = new Person(""Tomas"");
+//                    }
+//                }";
+
+//            var RosExpr = 
+         
+
+//        }
+
         [TestMethod]
         public void ExpressionIntLiteralTest()
         {

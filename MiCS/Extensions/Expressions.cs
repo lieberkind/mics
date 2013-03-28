@@ -21,8 +21,18 @@ namespace MiCS.Extensions
                 return ((BinaryExpressionSyntax)expr).Map();
             else if (expr is InvocationExpressionSyntax)
                 return ((InvocationExpressionSyntax)expr).Map(parent);
+            else if (expr is ObjectCreationExpressionSyntax)
+                return ((ObjectCreationExpressionSyntax)expr).Map(parent);
             else
                 throw new NotSupportedException("This type of expression is currently not supported!");
+        }
+
+        static internal NewExpression Map(this ObjectCreationExpressionSyntax expr, ClassSymbol associatedType)
+        {
+            if (associatedType == null)
+                throw new Exception("AssociatedType cannot be null");
+
+            return new NewExpression(associatedType);
         }
 
         static internal BinaryExpression Map(this BinaryExpressionSyntax expr)
