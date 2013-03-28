@@ -19,13 +19,16 @@ namespace MiCSTests
 
 
         [TestMethod]
-        public void NamespaceNameTest()
+        public void NamespaceEmptyTest()
         {
             var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(@"namespace TestNamespace{ }").First();
             var SSNamespace = RosNamespace.Map();
 
             Assert.AreEqual(RosNamespace.Name.ToString(), SSNamespace.Name);
         }
+
+
+
 
         [TestMethod]
         public void NamespaceMemberTest()
@@ -42,7 +45,31 @@ namespace MiCSTests
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
             var SSMember = (ClassSymbol)SSNamespace.Types.First();
+            Assert.AreEqual(RosNamespace.Members.Count, SSNamespace.Types.Count);
             Assert.AreEqual(RosMember.Identifier.ValueText, SSMember.Name);
         }
+
+        [TestMethod]
+        public void ClassMemberEmptyTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() { }
+                } 
+            }";
+            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var SSNamespace = RosNamespace.Map();
+
+            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
+            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+
+            var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
+            var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
+            Assert.AreEqual(RosMethod.Identifier.ValueText, SSMethod.Name);
+            Assert.AreEqual(RosMethod.Body.Statements.Count, SSMethod.Implementation.Statements.Count);
+        }
+
     }
 }

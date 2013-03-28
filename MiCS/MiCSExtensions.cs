@@ -282,9 +282,21 @@ namespace MiCS
 
         }
 
-        static internal ScriptSharp.ScriptModel.ClassSymbol Map(this ClassDeclarationSyntax cD)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cD"></param>
+        /// <param name="parentNamespace">
+        /// Parent namespace should be provided so its
+        /// not required to map the parent namespace in
+        /// in the ClassDeclarationSyntax.Map(...)
+        /// function as this creates cyclic mapping in
+        /// n infinte loop.
+        /// </param>
+        /// <returns></returns>
+        static internal ScriptSharp.ScriptModel.ClassSymbol Map(this ClassDeclarationSyntax cD, ScriptSharp.ScriptModel.NamespaceSymbol parentNamespace)
         {
-            var parentNamespace = cD.ParentNamespace().Map();
+            if (parentNamespace == null) throw new Exception("Parent namespace must be defined!");
             var cl = new ClassSymbol(cD.Identifier.ValueText, parentNamespace);
 
             foreach (var methodMember in cD.DescendantNodes().Where(m => m.Kind == SyntaxKind.MethodDeclaration))
@@ -313,10 +325,21 @@ namespace MiCS
             return cl;
         }
 
-        static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax ns)
+        static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax ns, bool empty = false)
         {
             // Todo: Implement so that members are mapped as well!
-            return new ScriptSharp.ScriptModel.NamespaceSymbol(((IdentifierNameSyntax)ns.Name).Identifier.ValueText, null);
+            var SSNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(((IdentifierNameSyntax)ns.Name).Identifier.ValueText, null);
+            if (!empty)
+            {
+                foreach (var member in ns.Members)
+                {
+                    if (member.Kind == SyntaxKind.ClassDeclaration)
+                    {
+                        SSNamespace.Types.Add(((ClassDeclarationSyntax)member).Map(SSNamespace));
+                    }
+                }
+            }
+            return SSNamespace;
         }
 
     }
