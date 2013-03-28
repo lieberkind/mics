@@ -214,18 +214,22 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ExpressionIntLiteralTest()
+        public void ExpressionUnaryExpressionTest()
         {
-            var RosExpr = Parse.Expression(@"1");
+            var RosExpr = Parse.Expression(@"-1");
             var SSExpr = RosExpr.Map();
 
-            Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
+            Assert.IsTrue(RosExpr is PrefixUnaryExpressionSyntax);
+            Assert.IsTrue(SSExpr is UnaryExpression);
 
-            var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
+            var RosUnaryExpr = (PrefixUnaryExpressionSyntax)RosExpr;
+            var SSUnaryExpression = (UnaryExpression)SSExpr;
 
-            Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
+            Assert.IsTrue(RosUnaryExpr.OperatorToken.Kind == SyntaxKind.MinusToken);
+            Assert.IsTrue(SSUnaryExpression.Operator == Operator.Minus);
+            Assert.IsTrue(SSUnaryExpression.Operand is LiteralExpression);
+
+            var SSLiteral = (LiteralExpression)SSUnaryExpression.Operand;
             Assert.AreEqual(SSLiteral.Value, 1);
         }
 
@@ -356,6 +360,130 @@ namespace MiCSTests
             Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
             Assert.IsTrue(SSBinaryExpr.Operator == Operator.Mod);
         }
+
+
+        [TestMethod]
+        public void ExpressionRelationalEqualsTest()
+        {
+            var RosExpr = Parse.Expression("1 == 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.EqualEqual);
+        }
+
+        [TestMethod]
+        public void ExpressionRelationalNotEqualsTest()
+        {
+            var RosExpr = Parse.Expression("1 != 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.NotEqual);
+        }
+
+        [TestMethod]
+        public void ExpressionRelationalGreaterTest()
+        {
+            var RosExpr = Parse.Expression("1 > 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Greater);
+        }
+
+        [TestMethod]
+        public void ExpressionRelationalLessTest()
+        {
+            var RosExpr = Parse.Expression("1 < 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Less);
+        }
+
+        [TestMethod]
+        public void ExpressionRelationalGreaterEqualsTest()
+        {
+            var RosExpr = Parse.Expression("1 >= 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.GreaterEqual);
+        }
+
+        [TestMethod]
+        public void ExpressionRelationalLessEqualsTest()
+        {
+            var RosExpr = Parse.Expression("1 <= 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.LessEqual);
+        }
+
+        [TestMethod]
+        public void ExpressionLogicalAndTest()
+        {
+            var RosExpr = Parse.Expression("true && -1 > 6");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is BinaryExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.LogicalAnd);
+        }
+
+        [TestMethod]
+        public void ExpressionLogicalOrTest()
+        {
+            var RosExpr = Parse.Expression("true || 1 > -1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is BinaryExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.LogicalOr);
+        }
+
+
+
 
 
 
