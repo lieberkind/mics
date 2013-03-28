@@ -12,7 +12,7 @@ namespace MiCSTests
         [TestMethod]
         public void SyntaxTreeIsReturnedWhenFileExistsInSolution()
         {
-            var syntaxTree = MiCSUtilities.GetSyntaxTree("MiCSUtilitiesTests.cs");
+            var syntaxTree = MiCSUtilities.GetSyntaxTree(@"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCS.sln", "MiCSUtilitiesTests.cs");
             Assert.IsInstanceOfType(syntaxTree, typeof(SyntaxTree));
         }
 
@@ -20,7 +20,7 @@ namespace MiCSTests
         [ExpectedException(typeof(FileNotFoundException))]
         public void ExceptionIsThrownWhenFileDoesNotExistInSolution() 
         {
-            var syntaxTree = MiCSUtilities.GetSyntaxTree("AFileThatNeverExists.random");
+            var syntaxTree = MiCSUtilities.GetSyntaxTree(@"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCS.sln", "AFileThatNeverExists.random");
         }
     }
 }
