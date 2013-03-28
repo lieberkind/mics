@@ -58,13 +58,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="MapTests.cs" />
+    <Compile Include="MappingTests.cs" />
     <Compile Include="ScriptSharpTests.cs" />
     <Compile Include="RoslynTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils\Parse.cs" />
     <Compile Include="MiCSUtilitiesTests.cs" />
-    <Compile Include="CollectorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MiCS\MiCS.csproj">
