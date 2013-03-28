@@ -162,24 +162,7 @@ namespace MiCSTests
 
         #region Region: Expression Tests
 
-        #region Region: Literal Expression
 
-
-        [TestMethod]
-        public void ExpressionStringLiteralTest()
-        {
-            var RosExpr = Parse.Expression(@"""foo""");
-            var SSExpr = RosExpr.Map();
-
-            Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
-
-            var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
-
-            Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
-            Assert.AreEqual(SSLiteral.Value, "foo");
-        }
 
         [TestMethod]
         public void ObjectCreationExpressionSyntaxTest()
@@ -201,9 +184,9 @@ namespace MiCSTests
 
             var tree = SyntaxTree.ParseText(source);
             var root = tree.GetRoot();
-            
+
             Assert.IsTrue(Syntax.IsCompleteSubmission(tree));
-            
+
             var oces = root.DescendantNodes().Where(n => n.Kind == SyntaxKind.ObjectCreationExpression);
 
             Assert.IsTrue(oces.Count() == 1);
@@ -230,6 +213,42 @@ namespace MiCSTests
             Assert.IsTrue(SSUnaryExpression.Operand is LiteralExpression);
 
             var SSLiteral = (LiteralExpression)SSUnaryExpression.Operand;
+            Assert.AreEqual(SSLiteral.Value, 1);
+        }
+
+
+        #region Region: Literal Expression
+
+
+        [TestMethod]
+        public void ExpressionStringLiteralTest()
+        {
+            var RosExpr = Parse.Expression(@"""foo""");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
+            Assert.IsTrue(SSExpr is LiteralExpression);
+
+            var RosLiteral = (LiteralExpressionSyntax)RosExpr;
+            var SSLiteral = (LiteralExpression)SSExpr;
+
+            Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
+            Assert.AreEqual(SSLiteral.Value, "foo");
+        }
+
+        [TestMethod]
+        public void ExpressionIntLiteralTest()
+        {
+            var RosExpr = Parse.Expression(@"1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
+            Assert.IsTrue(SSExpr is LiteralExpression);
+
+            var RosLiteral = (LiteralExpressionSyntax)RosExpr;
+            var SSLiteral = (LiteralExpression)SSExpr;
+
+            Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
             Assert.AreEqual(SSLiteral.Value, 1);
         }
 
