@@ -109,6 +109,10 @@ namespace MiCS
         static internal BinaryExpression Map(this BinaryExpressionSyntax expr)
         {
             var op = expr.OperatorToken.Kind;
+            /*
+             * C# operators
+             * http://msdn.microsoft.com/en-us/library/6a71f45d(v=vs.80).aspx
+             */
             switch (op)
             {
                 case SyntaxKind.EqualsToken:
@@ -123,7 +127,16 @@ namespace MiCS
                     }
                     else
                         throw new NotSupportedException("Left operator of binary expression is not supported!");
-
+                case SyntaxKind.PlusToken:
+                    return new BinaryExpression(Operator.Plus, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.MinusToken:
+                    return new BinaryExpression(Operator.Minus, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.AsteriskToken:
+                    return new BinaryExpression(Operator.Multiply, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.SlashToken:
+                    return new BinaryExpression(Operator.Divide, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.PercentToken:
+                    return new BinaryExpression(Operator.Mod, expr.Left.Map(), expr.Right.Map());
                 default:
                     throw new NotSupportedException("Binary expression operator not supported!");
             }

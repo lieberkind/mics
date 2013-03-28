@@ -151,6 +151,9 @@ namespace MiCSTests
 
         #region Region: Expression Tests
 
+        #region Region: Literal Expression
+
+
         [TestMethod]
         public void ExpressionStringLiteralTest()
         {
@@ -164,6 +167,7 @@ namespace MiCSTests
             var SSLiteral = (LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
+            Assert.AreEqual(SSLiteral.Value, "foo");
         }
 
         [TestMethod]
@@ -179,6 +183,7 @@ namespace MiCSTests
             var SSLiteral = (LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
+            Assert.AreEqual(SSLiteral.Value, 1);
         }
 
         [TestMethod]
@@ -194,6 +199,7 @@ namespace MiCSTests
             var SSLiteral = (LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
+            Assert.AreEqual(SSLiteral.Value, true);
         }
 
         [TestMethod]
@@ -209,6 +215,7 @@ namespace MiCSTests
             var SSLiteral = (LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
+            Assert.AreEqual(SSLiteral.Value, false);
         }
 
         [TestMethod]
@@ -224,13 +231,95 @@ namespace MiCSTests
             var SSLiteral = (LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
+            Assert.AreEqual(SSLiteral.Value, null);
         }
+
+
+        #endregion
+
+        #region Region: Binary Expression Tests
+
+        [TestMethod]
+        public void ExpressionPlusBinaryTest()
+        {
+            var RosExpr = Parse.Expression("1 + 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Plus);
+        }
+
+        [TestMethod]
+        public void ExpressionMinusBinaryTest()
+        {
+            var RosExpr = Parse.Expression("1 - 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Minus);
+        }
+
+        [TestMethod]
+        public void ExpressionMultiplyBinaryTest()
+        {
+            var RosExpr = Parse.Expression("1 * 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Multiply);
+        }
+
+        [TestMethod]
+        public void ExpressionDivideBinaryTest()
+        {
+            var RosExpr = Parse.Expression("1 / 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Divide);
+        }
+
+        [TestMethod]
+        public void ExpressionModulusBinaryTest()
+        {
+            var RosExpr = Parse.Expression("1 % 1");
+            var SSExpr = RosExpr.Map();
+
+            Assert.IsTrue(SSExpr is BinaryExpression);
+
+            var SSBinaryExpr = (BinaryExpression)SSExpr;
+
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Mod);
+        }
+
+        #endregion
 
 
         // Todo: Add more expression tests...
 
         #endregion
-
 
     }
 }
