@@ -65,7 +65,7 @@ namespace MiCS.Extensions
             var variable = stmt.Declaration.Variables[0];
             var identifier = variable.Identifier;
             if (identifier.Kind != SyntaxKind.IdentifierToken)
-                throw new NotSupportedException(); // Maybe not a necesary check...
+                throw new NotSupportedException(); // Todo: Maybe not a necesary check...
 
 
             var vS = new VariableSymbol(identifier.ValueText, null, null);
