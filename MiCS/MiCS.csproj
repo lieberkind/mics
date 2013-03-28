@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="MiCSCollectors.cs" />
     <Compile Include="MiCSAttributes.cs" />
-    <Compile Include="MiCSExtensions_temp.cs" />
     <Compile Include="Extensions\Expressions.cs" />
     <Compile Include="Extensions\Statements.cs" />
     <Compile Include="Extensions\Symbols.cs" />
