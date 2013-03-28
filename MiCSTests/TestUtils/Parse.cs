@@ -38,5 +38,33 @@ namespace MiCSTests.TestUtils
             var methods = classes.First().DescendantNodes().Where(m => m.Kind == SyntaxKind.MethodDeclaration);
             return methods;
         }
+
+        public static IEnumerable<StatementSyntax> Statements(string source)
+        {
+            var method = (MethodDeclarationSyntax)Parse.Methods("void f() { " + source + " };").First();
+            return method.Body.Statements;
+        }
+
+        public static StatementSyntax Statement(string source)
+        {
+            var stmts = Parse.Statements(source);
+            if (stmts.Count() != 1) throw new Exception("The provided source is not exactly one statement.");
+            return stmts.First();
+        }
+
+        public static ExpressionSyntax Expression(string source)
+        {
+            var RosStmt = Parse.Statement(@"var expr = " + source + ";");
+            var RosExpr = ((LocalDeclarationStatementSyntax)RosStmt).Declaration.Variables.First().Initializer.Value;
+            return RosExpr;
+        }
+
+        //private ExpressionSyntax ParseExpression(string expr)
+        //{
+        //    var nodes = statements.Where(n => n.Kind == SyntaxKind.EqualsValueClause);
+        //    if (nodes.Count() != 1) throw new Exception();
+        //    var node = (EqualsValueClauseSyntax)nodes.First();
+        //    return node.Value;
+        //}
     }
 }

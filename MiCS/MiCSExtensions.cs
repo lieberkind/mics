@@ -50,6 +50,17 @@ namespace MiCS
             throw new NotSupportedException("Expression type is not supported!");
         }
 
+        static internal ExpressionStatement Map(this ExpressionStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)
+        {
+            var expr = stmt.Expression;
+            if (expr is BinaryExpressionSyntax)
+                return new ExpressionStatement(((BinaryExpressionSyntax)expr).Map());
+            else if (expr is InvocationExpressionSyntax)
+                return new ExpressionStatement(((InvocationExpressionSyntax)expr).Map(parent));
+            else
+                throw new NotSupportedException();
+        }
+
         static internal VariableDeclarationStatement Map(this LocalDeclarationStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent)
         {
             var v = stmt.Declaration.Variables[0];
@@ -74,16 +85,6 @@ namespace MiCS
             return vDS;
         }
 
-        static internal ExpressionStatement Map(this ExpressionStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)
-        {
-            var expr = stmt.Expression;
-            if (expr is BinaryExpressionSyntax)
-                return new ExpressionStatement(((BinaryExpressionSyntax)expr).Map());
-            else if (expr is InvocationExpressionSyntax)
-                return new ExpressionStatement(((InvocationExpressionSyntax)expr).Map(parent));
-            else
-                throw new NotSupportedException();
-        }
 
 
         //static internal Expression Map(this ExpressionSyntax expr)

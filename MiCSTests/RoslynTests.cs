@@ -71,45 +71,36 @@ namespace MiCSTests
 
         #region Region: Expression Tests
 
-        private ExpressionSyntax ParseExpression(string expr)
-        {
-            var statements = ParseStatements("var expr = " + expr + ";");
-            var nodes = statements.Where(n => n.Kind == SyntaxKind.EqualsValueClause);
-            if (nodes.Count() != 1) throw new Exception();
-            var node = (EqualsValueClauseSyntax)nodes.First();
-            return node.Value;
-        }
-
         #region Region: Literal Expressions
 
         [TestMethod]
         public void RoslynIntLiteralExpressionTest()
         {
-            Assert.IsTrue(ParseExpression(@"1").Kind == SyntaxKind.NumericLiteralExpression);
+            Assert.IsTrue(Parse.Expression(@"1").Kind == SyntaxKind.NumericLiteralExpression);
         }
 
         [TestMethod]
         public void RoslynDoubleLiteralExpressionTest()
         {
-            Assert.IsTrue(ParseExpression(@"1.1").Kind == SyntaxKind.NumericLiteralExpression);
+            Assert.IsTrue(Parse.Expression(@"1.1").Kind == SyntaxKind.NumericLiteralExpression);
         }
 
         [TestMethod]
         public void RoslynStringLiteralExpressionTest()
         {
-            Assert.IsTrue(ParseExpression(@"""hello""").Kind == SyntaxKind.StringLiteralExpression);
+            Assert.IsTrue(Parse.Expression(@"""hello""").Kind == SyntaxKind.StringLiteralExpression);
         }
 
         [TestMethod]
         public void RoslynTrueLiteralExpressionTest()
         {
-            Assert.IsTrue(ParseExpression(@"true").Kind == SyntaxKind.TrueLiteralExpression);
+            Assert.IsTrue(Parse.Expression(@"true").Kind == SyntaxKind.TrueLiteralExpression);
         }
 
         [TestMethod]
         public void RoslynNullLiteralExpressionTest()
         {
-            Assert.IsTrue(ParseExpression(@"null").Kind == SyntaxKind.NullLiteralExpression);
+            Assert.IsTrue(Parse.Expression(@"null").Kind == SyntaxKind.NullLiteralExpression);
         }
 
         #endregion
