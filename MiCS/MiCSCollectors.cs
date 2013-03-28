@@ -26,7 +26,7 @@ namespace MiCS
     }
 
 
-    class MethodCollector : SyntaxWalker
+    public class MethodCollector : SyntaxWalker
     {
         public readonly List<MethodDeclarationSyntax> Methods = new List<MethodDeclarationSyntax>();
 
@@ -45,7 +45,7 @@ namespace MiCS
 
     }
 
-    class AttributeCollector : SyntaxWalker
+    public class AttributeCollector : SyntaxWalker
     {
         public readonly List<AttributeSyntax> Attributes = new List<AttributeSyntax>();
 
