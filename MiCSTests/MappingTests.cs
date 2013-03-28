@@ -221,18 +221,22 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ExpressionSignedIntLiteralTest()
+        public void ExpressionUnaryExpressionTest()
         {
             var RosExpr = Parse.Expression(@"-1");
             var SSExpr = RosExpr.Map();
 
-            Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
+            Assert.IsTrue(RosExpr is PrefixUnaryExpressionSyntax);
+            Assert.IsTrue(SSExpr is UnaryExpression);
 
-            var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
+            var RosUnaryExpr = (PrefixUnaryExpressionSyntax)RosExpr;
+            var SSUnaryExpression = (UnaryExpression)SSExpr;
 
-            Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
+            Assert.IsTrue(RosUnaryExpr.OperatorToken.Kind == SyntaxKind.MinusToken);
+            Assert.IsTrue(SSUnaryExpression.Operator == Operator.Minus);
+            Assert.IsTrue(SSUnaryExpression.Operand is LiteralExpression);
+
+            var SSLiteral = (LiteralExpression)SSUnaryExpression.Operand;
             Assert.AreEqual(SSLiteral.Value, 1);
         }
 
@@ -458,7 +462,7 @@ namespace MiCSTests
         [TestMethod]
         public void ExpressionLogicalAndTest()
         {
-            var RosExpr = Parse.Expression("true && 1 > 1");
+            var RosExpr = Parse.Expression("true && -1 > 6");
             var SSExpr = RosExpr.Map();
 
             Assert.IsTrue(SSExpr is BinaryExpression);
@@ -473,7 +477,7 @@ namespace MiCSTests
         [TestMethod]
         public void ExpressionLogicalOrTest()
         {
-            var RosExpr = Parse.Expression("true || false");
+            var RosExpr = Parse.Expression("true || 1 > -1");
             var SSExpr = RosExpr.Map();
 
             Assert.IsTrue(SSExpr is BinaryExpression);
@@ -481,7 +485,7 @@ namespace MiCSTests
             var SSBinaryExpr = (BinaryExpression)SSExpr;
 
             Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is BinaryExpression);
             Assert.IsTrue(SSBinaryExpr.Operator == Operator.LogicalOr);
         }
 

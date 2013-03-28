@@ -17,6 +17,8 @@ namespace MiCS.Extensions
                 return ((IdentifierNameSyntax)expr).Map();
             else if (expr is LiteralExpressionSyntax)
                 return ((LiteralExpressionSyntax)expr).Map();
+            else if (expr is PrefixUnaryExpressionSyntax)
+                return ((PrefixUnaryExpressionSyntax)expr).Map();
             else if (expr is BinaryExpressionSyntax)
                 return ((BinaryExpressionSyntax)expr).Map();
             else if (expr is InvocationExpressionSyntax)
@@ -25,6 +27,14 @@ namespace MiCS.Extensions
                 return ((ObjectCreationExpressionSyntax)expr).Map(parent);
             else
                 throw new NotSupportedException("This type of expression is currently not supported!");
+        }
+
+        static internal UnaryExpression Map(this PrefixUnaryExpressionSyntax expr)
+        {
+            if (expr.OperatorToken.Kind == SyntaxKind.MinusToken)
+                return new UnaryExpression(Operator.Minus, expr.Operand.Map());
+            else
+                throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
         static internal NewExpression Map(this ObjectCreationExpressionSyntax expr, ClassSymbol associatedType)
