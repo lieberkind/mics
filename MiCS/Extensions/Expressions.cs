@@ -66,6 +66,29 @@ namespace MiCS.Extensions
                     return new BinaryExpression(Operator.Divide, expr.Left.Map(), expr.Right.Map());
                 case SyntaxKind.PercentToken:
                     return new BinaryExpression(Operator.Mod, expr.Left.Map(), expr.Right.Map());
+
+                    // Todo: consider use of strict operators such as "===".
+                    // Relational expressions (C# "is" and "as" operators are not currently supported).
+                case SyntaxKind.EqualsEqualsToken:
+                    return new BinaryExpression(Operator.EqualEqual, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.ExclamationEqualsToken:
+                    return new BinaryExpression(Operator.NotEqual, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.GreaterThanToken:
+                    return new BinaryExpression(Operator.Greater, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.LessThanToken:
+                    return new BinaryExpression(Operator.Less, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.GreaterThanEqualsToken:
+                    return new BinaryExpression(Operator.GreaterEqual, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.LessThanEqualsToken:
+                    return new BinaryExpression(Operator.LessEqual, expr.Left.Map(), expr.Right.Map());
+
+                    // Logical expressions
+                    // C# "conditional and" and "conditional or" 
+                case SyntaxKind.AmpersandAmpersandToken:
+                    return new BinaryExpression(Operator.LogicalAnd, expr.Left.Map(), expr.Right.Map());
+                case SyntaxKind.BarBarToken:
+                    return new BinaryExpression(Operator.LogicalOr, expr.Left.Map(), expr.Right.Map());
+
                 default:
                     throw new NotSupportedException("Binary expression operator not supported!");
             }
