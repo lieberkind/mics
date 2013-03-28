@@ -51,6 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MiCSCollectors.cs" />
+    <Compile Include="MiCSAttributes.cs" />
     <Compile Include="MiCSExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptSharp\CodeModel\Names\AtomicNameNode.cs" />
