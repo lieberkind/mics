@@ -17,6 +17,7 @@ namespace MiCSTests
     [TestClass]
     public class MappingTests
     {
+
         [TestMethod]
         public void NamespaceEmptyTest()
         {
@@ -233,6 +234,19 @@ namespace MiCSTests
             Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement);
             Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
+        }
+
+        [TestMethod]
+        public void ReturnStatementTest()
+        {
+            var RosStmt = Parse.Statement(@"return 12;");
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(SSStmt is ReturnStatement);
+
+            var returnStmt = (ReturnStatement)SSStmt;
+
+            Assert.IsTrue(returnStmt.Value is LiteralExpression);
         }
 
 
