@@ -124,7 +124,6 @@ namespace MiCSTests
             Assert.IsTrue(SSStmt is VariableDeclarationStatement);
         }
 
-
         [TestMethod]
         public void ClassMemberDeclarationCustomReturnTypeTest()
         {
