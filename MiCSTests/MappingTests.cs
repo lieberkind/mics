@@ -95,6 +95,64 @@ namespace MiCSTests
             Assert.IsTrue(SSStmt is VariableDeclarationStatement);
         }
 
+        [TestMethod]
+        public void ClassMemberDeclarationPredefinedReturnTypeTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() { int i; }
+                } 
+            }";
+            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var SSNamespace = RosNamespace.Map();
+
+            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
+            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+
+            var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
+            var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
+
+            var RosReturnTypeName = ((PredefinedTypeSyntax)RosMethod.ReturnType).Keyword.ValueText;
+            Assert.AreEqual(RosReturnTypeName, SSMethod.AssociatedType.Name);
+
+            var RosStmt = RosMethod.Body.Statements.First();
+            var SSStmt = SSMethod.Implementation.Statements.First();
+
+            Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(SSStmt is VariableDeclarationStatement);
+        }
+
+
+        [TestMethod]
+        public void ClassMemberDeclarationCustomReturnTypeTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    MyType f() { return new MyType(); }
+                } 
+
+                class MyType { 
+                    [MixedSide]
+                    void f() { int i; }
+                } 
+            }";
+            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var SSNamespace = RosNamespace.Map();
+
+            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
+            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+
+            var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
+            var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
+
+            var RosReturnTypeName = ((IdentifierNameSyntax)RosMethod.ReturnType).Identifier.ValueText;
+            Assert.AreEqual(RosReturnTypeName, SSMethod.AssociatedType.Name);
+
+        }
 
 
         #region Region: Statement Test
@@ -126,6 +184,34 @@ namespace MiCSTests
         public void StatementVariableDeclarationAssignmentTest()
         {
             var RosStmt = Parse.Statement(@"string i = ""foo"";");
+            var SSStmt = RosStmt.Map();
+
+            Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(SSStmt is VariableDeclarationStatement);
+
+            var RosDeclaration = ((LocalDeclarationStatementSyntax)RosStmt).Declaration;
+            var SSDeclaration = (VariableDeclarationStatement)SSStmt;
+
+            Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
+            Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
+            Assert.IsTrue(SSDeclaration.Variables.Count == 1);
+
+            var RosVal = RosDeclaration.Variables.First().Initializer.Value;
+            var SSVal = SSDeclaration.Variables.First().Value;
+
+            Assert.IsTrue(RosVal is LiteralExpressionSyntax);
+            Assert.IsTrue(SSVal is LiteralExpression);
+
+            var RosLiteral = (LiteralExpressionSyntax)RosVal;
+            var SSLiteral = (LiteralExpression)SSVal;
+
+            Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableVarDeclarationAssignmentTest()
+        {
+            var RosStmt = Parse.Statement(@"var i = ""foo"";");
             var SSStmt = RosStmt.Map();
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
@@ -249,6 +335,35 @@ namespace MiCSTests
             Assert.IsTrue(returnStmt.Value is LiteralExpression);
         }
 
+        [TestMethod]
+        public void StatementExpressionInvocationTest()
+        {
+            var RosNs = Parse.Namespaces(@"
+            namespace ns {
+                class Foo {
+                    [MixedSide]
+                    public void f()  { }
+
+                    [MixedSide]
+                    public void g()  { f(); }
+                }
+            }").First();
+            
+            Assert.IsTrue(RosNs is NamespaceDeclarationSyntax);
+            var ns = ((NamespaceDeclarationSyntax)RosNs).Map();
+            var foo = (ClassSymbol)ns.Types.First();
+            var g = (ScriptSharp.ScriptModel.MethodSymbol)foo.Members.ElementAt(1);
+            var stmt = (ExpressionStatement)g.Implementation.Statements.First();
+            var expr = ((MethodExpression)stmt.Expression);
+
+            Assert.IsTrue(expr.ObjectReference is ThisExpression);
+            Assert.IsTrue(expr.Parameters.Count == 0);
+            Assert.IsTrue(expr.Method.Name.Equals("f"));
+            Assert.IsTrue(expr.Method.Implementation.Statements.Count == 0);
+        
+
+        }
+        // Todo: Static member invocation and regular member invocation (none local/this invocation).
 
         // Todo: Add more statements tests...
 
@@ -285,7 +400,7 @@ namespace MiCSTests
                     [MixedSide]
                     public void TestFunction(string name, string name2, string name3)
                     {
-                        Person p = new Person(""Tomas"");
+                        Person p = new Person();
                     }
                 }";
 

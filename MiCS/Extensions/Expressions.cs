@@ -7,6 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// Todo: DOM representation!
+// Todo: Check how is C# built in complex types (e.g. String & DateTime) supported?
+// Todo: Consider the return type issue related to MethodSymbol nodes (see mapping method).
+
 namespace MiCS.Extensions
 {
     public static class Expressions
@@ -24,7 +28,7 @@ namespace MiCS.Extensions
             else if (expr is InvocationExpressionSyntax)
                 return ((InvocationExpressionSyntax)expr).Map(parent);
             else if (expr is ObjectCreationExpressionSyntax)
-                return ((ObjectCreationExpressionSyntax)expr).Map(parent);
+                return ((ObjectCreationExpressionSyntax)expr).Map(parent); 
             else if (expr is ConditionalExpressionSyntax)
                 return ((ConditionalExpressionSyntax)expr).Map();
             else
@@ -39,11 +43,16 @@ namespace MiCS.Extensions
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
-        static internal NewExpression Map(this ObjectCreationExpressionSyntax expr, ClassSymbol associatedType)
+        static internal NewExpression Map(this ObjectCreationExpressionSyntax expr, ScriptSharp.ScriptModel.TypeSymbol associatedType)
         {
             if (associatedType == null)
                 throw new Exception("AssociatedType cannot be null");
+            if (!(associatedType is ClassSymbol))
+                throw new Exception("Only ClassSymbols as associated type is currently supported.");
 
+            //Todo: Handle arguments/parameters...
+            if (expr.ArgumentList.Arguments.Count > 0)
+                throw new NotSupportedException("Arguments are currently not supported.");
             return new NewExpression(associatedType);
         }
 
@@ -155,32 +164,44 @@ namespace MiCS.Extensions
 
         static internal MethodExpression Map(this InvocationExpressionSyntax expr, ScriptSharp.ScriptModel.TypeSymbol parent)
         {
-            if (!(parent is ClassSymbol)) throw new NotSupportedException();
+            if (!(expr.Expression is IdentifierNameSyntax))
+                throw new NotSupportedException("Currently only this/local invocations is supported!");
+
+            if (!(expr.Parent is ExpressionStatementSyntax))
+                throw new NotSupportedException("Method invocation is being performed in a context that is not currently supported.");
+
+            if (!(parent is ClassSymbol)) 
+                throw new NotSupportedException("The parent class symbol (of the method that is the invocation target) is required.");
+
             var parentClass = (ClassSymbol)parent;
+            if (!(parentClass.Parent is ScriptSharp.ScriptModel.NamespaceSymbol)) 
+                throw new Exception("The parent class namespace is currently required.");
+
+            var parentNamespace = (ScriptSharp.ScriptModel.NamespaceSymbol)parentClass.Parent;
 
             if (expr.Expression is IdentifierNameSyntax)
             {
                 var iNS = (IdentifierNameSyntax)expr.Expression;
-                var parentNamespace = (ScriptSharp.ScriptModel.NamespaceSymbol)parentClass.Parent;
 
                 // Todo: Not sure if the return type is important at all?
-                var voidReturnType = new ClassSymbol("Void", parentNamespace);
+                //var voidReturnType = new ClassSymbol("void", parentNamespace);
+                //var methodSymbol = new ScriptSharp.ScriptModel.MethodSymbol(iNS.Identifier.ValueText, parentClass, voidReturnType);
 
-                var mS = new ScriptSharp.ScriptModel.MethodSymbol(iNS.Identifier.ValueText, parentClass, voidReturnType);
-                var ps = new Collection<Expression>();
+                var methodSymbols = parentClass.Members.Where(m => m.Type == SymbolType.Method && m.Name.Equals(iNS.Identifier.ValueText));
+                var methodSymbol = (ScriptSharp.ScriptModel.MethodSymbol)methodSymbols.First();
+                var parameters = new Collection<Expression>();
                 foreach (var arg in expr.ArgumentList.Arguments)
                 {
-                    ps.Add(arg.Expression.Map());
+                    parameters.Add(arg.Expression.Map());
                 }
-                var vS = new VariableSymbol("name", null, null);
-                var lE = new LocalExpression(vS);
-                var mE = new MethodExpression(ExpressionType.MethodInvoke, lE, mS, null);
 
-                return mE;
+                var thisExpr = new ThisExpression(parentClass, true);
+                return new MethodExpression(ExpressionType.MethodInvoke, thisExpr, methodSymbol, null);
             }
             else
             {
-                throw new NotSupportedException();
+                // Member access invocation is currently not supported.
+                throw new NotImplementedException();
             }
         }
 

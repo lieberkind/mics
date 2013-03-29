@@ -13,7 +13,7 @@ namespace MiCS.Extensions
         static internal Statement Map(this StatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)
         {
             if (stmt is ReturnStatementSyntax)
-                return ((ReturnStatementSyntax)stmt).Map();
+                return ((ReturnStatementSyntax)stmt).Map(parent);
             else if (stmt is BlockSyntax)
                 return ((BlockSyntax)stmt).Map(parent);
             else if (stmt is LocalDeclarationStatementSyntax)
@@ -42,12 +42,9 @@ namespace MiCS.Extensions
             return blockStmt;
         }
 
-        static internal ReturnStatement Map(this ReturnStatementSyntax stmt)
+        static internal ReturnStatement Map(this ReturnStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent)
         {
-            var expr = stmt.Expression;
-            if (expr is LiteralExpressionSyntax)
-                return new ReturnStatement(((LiteralExpressionSyntax)expr).Map());
-            throw new NotSupportedException("Expression type is not supported!");
+            return new ReturnStatement(stmt.Expression.Map(parent));
         }
 
         static internal ExpressionStatement Map(this ExpressionStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)

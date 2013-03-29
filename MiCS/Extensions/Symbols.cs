@@ -17,9 +17,20 @@ namespace MiCS.Extensions
 
         static internal ScriptSharp.ScriptModel.MethodSymbol Map(this MethodDeclarationSyntax mD, ScriptSharp.ScriptModel.TypeSymbol parent = null)
         {
-            //var parentNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(parent.Namespace, null);
-            //var returnType = new ResourcesSymbol("ResourcesSymbolName", parentNamespace);
-            var method = new ScriptSharp.ScriptModel.MethodSymbol(mD.Identifier.ValueText, parent, null);
+            // Todo: Should this random namespace symbol be used here or should the actual namespace be applied!
+            var parentNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol("ns", null);
+
+            var returnTypeStr = "";
+
+            if (mD.ReturnType is IdentifierNameSyntax)      // Custom complex types.
+                returnTypeStr = ((IdentifierNameSyntax)mD.ReturnType).Identifier.ValueText;
+            else if (mD.ReturnType is PredefinedTypeSyntax) // Predefined types like void and string
+                returnTypeStr = ((PredefinedTypeSyntax)mD.ReturnType).Keyword.ValueText;
+            else
+                throw new NotSupportedException();
+
+            var returnType = new ClassSymbol(returnTypeStr, parentNamespace);
+            var method = new ScriptSharp.ScriptModel.MethodSymbol(mD.Identifier.ValueText, parent, returnType);
 
             var i = new List<Statement>();
             foreach (var item in mD.Body.Statements)
