@@ -42,9 +42,9 @@ namespace MiCS.Extensions
             return blockStmt;
         }
 
-        static internal ReturnStatement Map(this ReturnStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent)
+        static internal ReturnStatement Map(this ReturnStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol associatedType)
         {
-            return new ReturnStatement(stmt.Expression.Map(parent));
+            return new ReturnStatement(stmt.Expression.Map(associatedType));
         }
 
         static internal ExpressionStatement Map(this ExpressionStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)

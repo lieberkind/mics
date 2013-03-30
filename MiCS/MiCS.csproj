@@ -53,6 +53,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mappers\ClassMapper.cs" />
+    <Compile Include="Mappers\ExpressionMapper.cs" />
+    <Compile Include="Mappers\MethodMapper.cs" />
+    <Compile Include="Mappers\StatementMapper.cs" />
     <Compile Include="MiCSCollectors.cs" />
     <Compile Include="MiCSAttributes.cs" />
     <Compile Include="Extensions\Expressions.cs" />
@@ -179,6 +183,8 @@
     <Compile Include="ScriptSharp\ScriptReference.cs" />
     <Compile Include="ScriptSharp\Utility.cs" />
     <Compile Include="MiCSUtilities.cs" />
+    <Compile Include="Mappers\CSharpWalker.cs" />
+    <Compile Include="Mappers\NamespaceMapper.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
