@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Roslyn.Compilers.CSharp;
 using ScriptSharp.ScriptModel;
 using MiCS;
-using MiCS.Extensions;
+using MiCS.Mappers;
 using MiCSTests.TestUtils;
 
 namespace MiCSTests

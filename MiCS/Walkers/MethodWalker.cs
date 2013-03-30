@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiCS.Mappers
+namespace MiCS.Walkers
 {
-    class MethodMapper : SyntaxWalker
+    class MethodWalker : SyntaxWalker
     {
         ScriptSharp.ScriptModel.ClassSymbol parentClass;
         public readonly List<ScriptSharp.ScriptModel.MethodSymbol> ssMethods = new List<ScriptSharp.ScriptModel.MethodSymbol>();
 
-        public MethodMapper(ScriptSharp.ScriptModel.ClassSymbol parentClass)
+        public MethodWalker(ScriptSharp.ScriptModel.ClassSymbol parentClass)
         {
             this.parentClass = parentClass;
         }
@@ -35,7 +35,7 @@ namespace MiCS.Mappers
 
         public void MapChildren(ScriptSharp.ScriptModel.MethodSymbol scriptSharpMethod, MethodDeclarationSyntax roslynMethod)
         {
-            var statementMapper = new StatementMapper();
+            var statementMapper = new StatementWalker();
             statementMapper.Visit(roslynMethod);
 
             var symbolImplementation = new SymbolImplementation(statementMapper.ssStatements, null, scriptSharpMethod.GeneratedName);

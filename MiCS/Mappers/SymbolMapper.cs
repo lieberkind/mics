@@ -1,4 +1,5 @@
-﻿using Roslyn.Compilers.CSharp;
+﻿using MiCS.Walkers;
+using Roslyn.Compilers.CSharp;
 using ScriptSharp.ScriptModel;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiCS.Extensions
+namespace MiCS.Mappers
 {
     public static class Symbols
     {
@@ -86,6 +87,8 @@ namespace MiCS.Extensions
             return cl;
         }
 
+
+        // Todo: Remove
         static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax ns, bool empty = false)
         {
             var SSNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(((IdentifierNameSyntax)ns.Name).Identifier.ValueText, null);
@@ -100,6 +103,21 @@ namespace MiCS.Extensions
                 }
             }
             return SSNamespace;
+        }
+
+        static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax roslynNamespace)
+        {
+            var scriptSharpNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(((IdentifierNameSyntax)roslynNamespace.Name).Identifier.ValueText, null);
+
+            var classMapper = new ClassWalker(scriptSharpNamespace);
+            classMapper.Visit(roslynNamespace);
+
+            foreach (var ssClass in classMapper.ssClasses)
+            {
+                scriptSharpNamespace.Types.Add(ssClass);
+            }
+
+            return scriptSharpNamespace;
         }
 
     }
