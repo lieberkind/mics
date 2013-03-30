@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace MiCS.Extensions
 {
+
     public static class Symbols
     {
         static internal ScriptSharp.ScriptModel.ParameterSymbol Map(this ParameterSyntax p)
@@ -86,18 +87,15 @@ namespace MiCS.Extensions
             return cl;
         }
 
-        static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax ns, bool empty = false)
+        static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax ns)
         {
             // Todo: Implement so that members are mapped as well!
             var SSNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(((IdentifierNameSyntax)ns.Name).Identifier.ValueText, null);
-            if (!empty)
+            foreach (var member in ns.Members)
             {
-                foreach (var member in ns.Members)
+                if (member.Kind == SyntaxKind.ClassDeclaration)
                 {
-                    if (member.Kind == SyntaxKind.ClassDeclaration)
-                    {
-                        SSNamespace.Types.Add(((ClassDeclarationSyntax)member).Map(SSNamespace));
-                    }
+                    SSNamespace.Types.Add(((ClassDeclarationSyntax)member).Map(SSNamespace));
                 }
             }
             return SSNamespace;
