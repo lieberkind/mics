@@ -88,7 +88,6 @@ namespace MiCS.Extensions
 
         static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax ns, bool empty = false)
         {
-            // Todo: Implement so that members are mapped as well!
             var SSNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(((IdentifierNameSyntax)ns.Name).Identifier.ValueText, null);
             if (!empty)
             {
