@@ -83,7 +83,7 @@ namespace MiCS.Mappers
         static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax roslynNamespace)
         {
             var scriptSharpNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(roslynNamespace.NameText(), null);
-            var scriptSharpClasses = ClassWalker.GetClassesIn(roslynNamespace, requiredNamespaceReference: scriptSharpNamespace);
+            var scriptSharpClasses = ClassWalker.Maps(roslynNamespace, requiredNamespaceReference: scriptSharpNamespace);
 
             scriptSharpNamespace.Types.AddRange(scriptSharpClasses);
 

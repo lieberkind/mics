@@ -10,20 +10,29 @@ namespace MiCS.Walkers
 {
     public class NamespaceWalker : SyntaxWalker
     {
-        public readonly List<ScriptSharp.ScriptModel.NamespaceSymbol> ssNamespaces = new List<ScriptSharp.ScriptModel.NamespaceSymbol>();
+        public readonly List<ScriptSharp.ScriptModel.NamespaceSymbol> scriptSharpNamespaces = new List<ScriptSharp.ScriptModel.NamespaceSymbol>();
 
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {          
-            ssNamespaces.Add(node.Map());
+            scriptSharpNamespaces.Add(node.Map());
 
             base.VisitNamespaceDeclaration(node);
         }
 
-        public static List<ScriptSharp.ScriptModel.NamespaceSymbol> Visit(NamespaceDeclarationSyntax node)
+        public static List<ScriptSharp.ScriptModel.NamespaceSymbol> Maps(SyntaxNode node)
         {
             var namespaceWalker = new NamespaceWalker();
-            namespaceWalker.VisitNamespaceDeclaration(node);
-            return namespaceWalker.ssNamespaces;
+            namespaceWalker.Visit(node);
+            return namespaceWalker.scriptSharpNamespaces;
+        }
+
+        public static ScriptSharp.ScriptModel.NamespaceSymbol Map(SyntaxNode node)
+        {
+            var namespaces = NamespaceWalker.Maps(node);
+            if (namespaces.Count != 1)
+                throw new Exception("There are not exactly one namespace!");
+
+            return namespaces.First();
         }
     }
 }

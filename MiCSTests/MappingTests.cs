@@ -141,7 +141,7 @@ namespace MiCSTests
                 } 
             }";
             var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = RosNamespace.Map();
+            var SSNamespace = NamespaceWalker.Map(RosNamespace);
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
             var SSMember = (ClassSymbol)SSNamespace.Types.First();

@@ -18,6 +18,22 @@ namespace MiCS.Walkers
             this.parentNamespace = parentNamespace;
         }
 
+        public static List<ScriptSharp.ScriptModel.ClassSymbol> Maps(SyntaxNode node, ScriptSharp.ScriptModel.NamespaceSymbol requiredNamespaceReference)
+        {
+            var classWalker = new ClassWalker(requiredNamespaceReference);
+            classWalker.Visit(node);
+            return classWalker.scriptSharpClasses;
+        }
+ 
+        public static ScriptSharp.ScriptModel.ClassSymbol Map(SyntaxNode node, ScriptSharp.ScriptModel.NamespaceSymbol requiredNamespaceReference)
+        {
+            var classes = ClassWalker.Maps(node, requiredNamespaceReference);
+            if (classes.Count != 1)
+                throw new Exception("There are not exactly one class!");
+
+            return classes.First();
+        }
+
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             scriptSharpClasses.Add(node.Map(parentNamespace));
@@ -25,12 +41,16 @@ namespace MiCS.Walkers
             base.VisitClassDeclaration(node);
         }
 
-        public static List<ScriptSharp.ScriptModel.ClassSymbol> GetClassesIn(NamespaceDeclarationSyntax roslynNamespace, ScriptSharp.ScriptModel.NamespaceSymbol requiredNamespaceReference)
+        public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
-            var classWalker = new ClassWalker(requiredNamespaceReference);
-            classWalker.Visit(roslynNamespace);
-            return classWalker.scriptSharpClasses;
+            foreach (var roslynClass in node.Members)
+            {
+                scriptSharpClasses.Add(ClassWalker.Map(roslynClass, parentNamespace));
+            }
+            
+            base.VisitNamespaceDeclaration(node);
         }
+
 
     }
 
