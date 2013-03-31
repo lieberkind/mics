@@ -8,35 +8,97 @@ using System.Threading.Tasks;
 
 namespace MiCS.Mappers
 {
-    class StatementMapper : SyntaxWalker
+    public static class Statements
     {
-        public readonly List<Statement> ssStatements = new List<Statement>();
-
-        public override void VisitReturnStatement(ReturnStatementSyntax node)
+        static internal Statement Map(this StatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)
         {
-            var ssReturnStatement = MapReturnStatement(node);
-            ssStatements.Add(ssReturnStatement);
-            base.VisitReturnStatement(node);
+            if (stmt is ReturnStatementSyntax)
+                return ((ReturnStatementSyntax)stmt).Map(parent);
+            else if (stmt is BlockSyntax)
+                return ((BlockSyntax)stmt).Map(parent);
+            else if (stmt is LocalDeclarationStatementSyntax)
+                return ((LocalDeclarationStatementSyntax)stmt).Map(parent);
+            else if (stmt is ExpressionStatementSyntax)
+                return ((ExpressionStatementSyntax)stmt).Map(parent);
+            else if (stmt is IfStatementSyntax)
+                return ((IfStatementSyntax)stmt).Map(parent);
+            else
+                throw new NotSupportedException("Statement type is not currently supported!");
         }
 
-        public override void VisitExpressionStatement(ExpressionStatementSyntax node)
+        static internal IfElseStatement Map(this IfStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent)
         {
-            base.VisitExpressionStatement(node);
+            var elseStmt = stmt.Else == null ? null : stmt.Else.Statement.Map(parent);
+            return new IfElseStatement(stmt.Condition.Map(parent), stmt.Statement.Map(parent), elseStmt);
         }
 
-        public override void VisitIdentifierName(IdentifierNameSyntax node)
+        static internal BlockStatement Map(this BlockSyntax block, ScriptSharp.ScriptModel.TypeSymbol parent)
         {
-            base.VisitIdentifierName(node);
+            var blockStmt = new BlockStatement();
+            foreach (var stmt in block.Statements)
+            {
+                blockStmt.AddStatement(stmt.Map(parent));
+            }
+            return blockStmt;
         }
 
-        public ScriptSharp.ScriptModel.ReturnStatement MapReturnStatement(ReturnStatementSyntax roslynReturnStatement)
+        static internal ReturnStatement Map(this ReturnStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol associatedType)
         {
-            var expressionMapper = new ExpressionMapper();
-            expressionMapper.Visit(roslynReturnStatement.Expression);
+            return new ReturnStatement(stmt.Expression.Map(associatedType));
+        }
 
-            var ssExpression = expressionMapper.ssExpressions.First();
+        static internal ExpressionStatement Map(this ExpressionStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent = null)
+        {
+            var expr = stmt.Expression;
+            if (expr is BinaryExpressionSyntax)
+                return new ExpressionStatement(((BinaryExpressionSyntax)expr).Map());
+            else if (expr is InvocationExpressionSyntax)
+                return new ExpressionStatement(((InvocationExpressionSyntax)expr).Map(parent));
+            else
+                throw new NotSupportedException();
+        }
+
+        static internal VariableDeclarationStatement Map(this LocalDeclarationStatementSyntax stmt, ScriptSharp.ScriptModel.TypeSymbol parent)
+        {
+            var variable = stmt.Declaration.Variables[0];
+
+            if (!(stmt.Declaration is VariableDeclarationSyntax))
+            {
+                throw new NotSupportedException("LocalDeclarationStatement has not supported declaration");
+            }
+
+            var identifier = variable.Identifier;
+            if (identifier.Kind != SyntaxKind.IdentifierToken)
+                throw new NotSupportedException(); // Todo: Maybe not a necesary check...
+
+
+            var vS = new VariableSymbol(identifier.ValueText, null, null);
             
-            return new ReturnStatement(ssExpression);
+            var initializer = variable.Initializer;
+            
+            if (initializer != null)
+            {
+                if (!(initializer is EqualsValueClauseSyntax))
+                    throw new NotSupportedException("Unsupported initializer");
+
+                var initValue = variable.Initializer.Value;
+
+                if (initValue is LiteralExpressionSyntax)
+                    vS.SetValue(initValue.Map());
+                else if (initValue is BinaryExpressionSyntax)
+                    vS.SetValue(initValue.Map());
+                else if (initValue is InvocationExpressionSyntax)
+                    vS.SetValue(initValue.Map(parent));
+                else if (initValue is ObjectCreationExpressionSyntax)
+                    vS.SetValue(initValue.Map(parent));
+                else
+                    throw new NotSupportedException("Declaration initializer value is not currently supported.");
+            }
+
+            var vDS = new VariableDeclarationStatement();
+            vDS.Variables.Add(vS);
+            return vDS;
         }
+
     }
 }
