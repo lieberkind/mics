@@ -17,5 +17,28 @@ namespace MiCS
         {
             return ((IdentifierNameSyntax)roslynNamespace.Name).Identifier.ValueText;
         }
+
+        public static string NameText(this AttributeSyntax attribute)
+        {
+            return ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText;
+        }
+
+        public static bool IsMixedSide(this MethodDeclarationSyntax methodDeclaration)
+        {
+            if (methodDeclaration.AttributeLists.Any())
+            {
+                foreach (var attList in methodDeclaration.AttributeLists)
+                {
+                    foreach (AttributeSyntax att in attList.Attributes)
+                    {
+                        if (att.NameText().Equals("MixedSide"))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

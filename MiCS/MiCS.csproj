@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MiCSGenerator.cs" />
+    <Compile Include="MiCSManager.cs" />
     <Compile Include="MiCSRoslynExtensions.cs" />
     <Compile Include="MiCSCSharpExtensions.cs" />
     <Compile Include="Walkers\ClassWalker.cs" />
