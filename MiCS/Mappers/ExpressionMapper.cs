@@ -242,12 +242,14 @@ namespace MiCS.Mappers
             {
                 var iNS = (IdentifierNameSyntax)expr.Expression;
 
-                // Todo: Not sure if the return type is important at all?
-                //var voidReturnType = new ClassSymbol("void", parentNamespace);
-                //var methodSymbol = new ScriptSharp.ScriptModel.MethodSymbol(iNS.Identifier.ValueText, parentClass, voidReturnType);
+                // Todo: Not sure if the return type is important at all? as the static return types doesn't really exist in JavaScript.
+                var voidReturnType = new ClassSymbol("void", parentNamespace);
+                var methodSymbol = new ScriptSharp.ScriptModel.MethodSymbol(iNS.Identifier.ValueText, parentClass, voidReturnType);
+                /*
+                 * MethodSymbol can not be referenced from parentClass.Members
+                 * as the needed member is the one currently being mapped!
+                 */
 
-                var methodSymbols = parentClass.Members.Where(m => m.Type == SymbolType.Method && m.Name.Equals(iNS.Identifier.ValueText));
-                var methodSymbol = (ScriptSharp.ScriptModel.MethodSymbol)methodSymbols.First();
                 var parameters = new Collection<Expression>();
                 foreach (var arg in expr.ArgumentList.Arguments)
                 {
@@ -256,11 +258,13 @@ namespace MiCS.Mappers
 
                 var thisExpr = new ThisExpression(parentClass, true);
                 return new MethodExpression(ExpressionType.MethodInvoke, thisExpr, methodSymbol, null);
+
+                // Todo: This constructor also seems to work. Not sure what the difference is.
+                //return new MethodExpression(thisExpr, methodSymbol);
             }
             else
             {
-                // Member access invocation is currently not supported.
-                throw new NotImplementedException();
+                throw new NotImplementedException("Member access invocation is currently not supported.");
             }
         }
 

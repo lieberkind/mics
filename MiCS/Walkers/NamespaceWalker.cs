@@ -16,7 +16,7 @@ namespace MiCS.Walkers
         {          
             scriptSharpNamespaces.Add(node.Map());
 
-            base.VisitNamespaceDeclaration(node);
+            //base.VisitNamespaceDeclaration(node);
         }
 
         public static List<ScriptSharp.ScriptModel.NamespaceSymbol> Maps(SyntaxNode node)

@@ -39,7 +39,7 @@ namespace MiCSTests
                 } 
             }";
             var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = RosNamespace.Map();
+            var SSNamespace = NamespaceWalker.Map(RosNamespace);
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
             var SSMember = (ClassSymbol)SSNamespace.Types.First();
@@ -267,21 +267,6 @@ namespace MiCSTests
             var SSIfElseStmt = (IfElseStatement)SSStmt;
 
             Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
-            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement); // Blocks are removed from single statements by ScriptSharp.
-            Assert.IsTrue(SSIfElseStmt.ElseStatement is VariableDeclarationStatement); // Blocks are removed from single statements by ScriptSharp.
-        }
-
-        [TestMethod]
-        public void IfElseStatementWithBlocksTest()
-        {
-            var RosStmt = Parse.Statement(@"if (true) { int i; int j; } else { int i; int j; }");
-            var SSStmt = StatementWalker.Map(RosStmt);
-
-            Assert.IsTrue(SSStmt is IfElseStatement);
-
-            var SSIfElseStmt = (IfElseStatement)SSStmt;
-
-            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is BlockStatement);
             Assert.IsTrue(SSIfElseStmt.ElseStatement is BlockStatement);
         }
@@ -290,22 +275,6 @@ namespace MiCSTests
         public void IfStatementTest()
         {
             var RosStmt = Parse.Statement(@"if (true) { int i; } ");
-            var SSStmt = StatementWalker.Map(RosStmt);
-
-            Assert.IsTrue(SSStmt is IfElseStatement);
-
-            var SSIfElseStmt = (IfElseStatement)SSStmt;
-
-            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
-            Assert.IsFalse(SSIfElseStmt.IfStatement is BlockStatement); // Blocks are removed from single statements by ScriptSharp.
-            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement);
-            Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
-        }
-
-        [TestMethod]
-        public void IfStatementWithBlockTest()
-        {
-            var RosStmt = Parse.Statement(@"if (true) { int i; int j; } ");
             var SSStmt = StatementWalker.Map(RosStmt);
 
             Assert.IsTrue(SSStmt is IfElseStatement);
@@ -369,29 +338,42 @@ namespace MiCSTests
         [TestMethod]
         public void StatementExpressionInvocationTest()
         {
-            var roslynNamespace = Parse.Namespaces(@"
+            var source = @"
             namespace ns {
                 class Foo {
                     [MixedSide]
-                    public void f()  { }
+                    public void f()
+                    {
+                        int i;
+                    }
 
                     [MixedSide]
-                    public void g()  { f(); }
+                    public void g()
+                    { 
+                        f(); 
+                    }
                 }
-            }").First();
-            
-            Assert.IsTrue(roslynNamespace is NamespaceDeclarationSyntax);
-            var scriptSharpNamespace = ((NamespaceDeclarationSyntax)roslynNamespace).Map();
+            }";
+            var roslynNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+
+            var scriptSharpNamespace = NamespaceWalker.Map(roslynNamespace);
             var foo = (ClassSymbol)scriptSharpNamespace.Types.First();
             var g = (ScriptSharp.ScriptModel.MethodSymbol)foo.Members.ElementAt(1);
-            var stmt = (ExpressionStatement)g.Implementation.Statements.First();
-            var expr = ((MethodExpression)stmt.Expression);
+            var expressionStatement = (ExpressionStatement)g.Implementation.Statements.First();
+            var expression = ((MethodExpression)expressionStatement.Expression);
+            var invocationTarget = expression.Method;
 
-            Assert.IsTrue(expr.ObjectReference is ThisExpression);
-            Assert.IsTrue(expr.Parameters.Count == 0);
-            Assert.IsTrue(expr.Method.Name.Equals("f"));
-            Assert.IsTrue(expr.Method.Implementation.Statements.Count == 0);
-        
+            Assert.IsTrue(expression.ObjectReference is ThisExpression);
+            Assert.IsTrue(expression.Parameters.Count == 0);
+            Assert.IsTrue(invocationTarget.Name.Equals("f"));          
+
+            /*
+             * The property InvocationTarget.Implementation has an 
+             * assertion that fails when _implementation is null.
+             * the invocation target implementation is null here as 
+             * this is not a method declaration but and invocation. 
+             * Not sure how to verify this with an Assert?
+             */
 
         }
         // Todo: Static member invocation and regular member invocation (none local/this invocation).

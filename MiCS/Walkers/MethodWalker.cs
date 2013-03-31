@@ -26,16 +26,37 @@ namespace MiCS.Walkers
         {
             scriptSharpMethods.Add(node.Map(parentClass, parentNamespace));
 
-            base.VisitMethodDeclaration(node);
+            //base.VisitMethodDeclaration(node);
         }
 
-        public static List<ScriptSharp.ScriptModel.MethodSymbol> GetMethodsIn(ClassDeclarationSyntax roslynClass, 
-            ScriptSharp.ScriptModel.ClassSymbol requiredClassReference, 
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            foreach (var roslynMethod in node.Members)
+            {
+                scriptSharpMethods.Add(MethodWalker.Map(roslynMethod, parentClass, parentNamespace));
+            }
+
+            //base.VisitClassDeclaration(node);
+        }
+
+        public static List<ScriptSharp.ScriptModel.MethodSymbol> Maps(SyntaxNode node,
+            ScriptSharp.ScriptModel.ClassSymbol requiredClassReference,
             ScriptSharp.ScriptModel.NamespaceSymbol requiredNamespaceReference)
         {
             var methodWalker = new MethodWalker(requiredClassReference, requiredNamespaceReference);
-            methodWalker.Visit(roslynClass);
+            methodWalker.Visit(node);
             return methodWalker.scriptSharpMethods;
+        }
+
+        public static ScriptSharp.ScriptModel.MethodSymbol Map(SyntaxNode node,
+            ScriptSharp.ScriptModel.ClassSymbol requiredClassReference,
+            ScriptSharp.ScriptModel.NamespaceSymbol requiredNamespaceReference)
+        {
+            var scriptSharpMethods = MethodWalker.Maps(node, requiredClassReference, requiredNamespaceReference);
+            if (scriptSharpMethods.Count != 1)
+                throw new Exception("There are not exactly one method.");
+
+            return scriptSharpMethods.First();
         }
     }
 }

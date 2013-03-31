@@ -38,7 +38,7 @@ namespace MiCS.Walkers
         {
             scriptSharpClasses.Add(node.Map(parentNamespace));
 
-            base.VisitClassDeclaration(node);
+            //base.VisitClassDeclaration(node);
         }
 
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
@@ -48,7 +48,7 @@ namespace MiCS.Walkers
                 scriptSharpClasses.Add(ClassWalker.Map(roslynClass, parentNamespace));
             }
             
-            base.VisitNamespaceDeclaration(node);
+            //base.VisitNamespaceDeclaration(node);
         }
 
 

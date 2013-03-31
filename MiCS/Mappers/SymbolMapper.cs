@@ -36,16 +36,15 @@ namespace MiCS.Mappers
 
             var returnType = new ClassSymbol(returnTypeStr, parentNamespaceReference);
             var name = methodDeclaration.Identifier.ValueText;
+
             var method = new ScriptSharp.ScriptModel.MethodSymbol(name, parentClassReference, returnType);
 
-
-
-            var i = new List<Statement>();
-            foreach (var statement in methodDeclaration.Body.Statements)
+            var implementationStatements = new List<Statement>();
+            foreach (var roslynStatement in methodDeclaration.Body.Statements)
             {
-                i.Add(StatementWalker.Map(statement, parentClassReference));
+                implementationStatements.Add(StatementWalker.Map(roslynStatement, parentClassReference));
             }
-            var sI = new SymbolImplementation(i, null, "symbolImplementationThisIdentifier_" + method.GeneratedName);
+            var sI = new SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + method.GeneratedName);
             method.AddImplementation(sI);
             return method;
 
@@ -69,7 +68,7 @@ namespace MiCS.Mappers
                 throw new Exception("Parent namespace reference is required by ScriptSharp infrastructure.");
             
             var scriptSharpClass = new ClassSymbol(roslynClass.Identifier.ValueText, parentNamespaceReference);
-            var scriptSharpMethods = MethodWalker.GetMethodsIn(roslynClass, scriptSharpClass, parentNamespaceReference);
+            var scriptSharpMethods = MethodWalker.Maps(roslynClass, scriptSharpClass, parentNamespaceReference);
             scriptSharpClass.Members.AddRange(scriptSharpMethods);
 
             return scriptSharpClass;
