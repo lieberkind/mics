@@ -267,6 +267,21 @@ namespace MiCSTests
             var SSIfElseStmt = (IfElseStatement)SSStmt;
 
             Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement); // Blocks are removed from single statements by ScriptSharp.
+            Assert.IsTrue(SSIfElseStmt.ElseStatement is VariableDeclarationStatement); // Blocks are removed from single statements by ScriptSharp.
+        }
+
+        [TestMethod]
+        public void IfElseStatementWithBlocksTest()
+        {
+            var RosStmt = Parse.Statement(@"if (true) { int i; int j; } else { int i; int j; }");
+            var SSStmt = StatementWalker.Map(RosStmt);
+
+            Assert.IsTrue(SSStmt is IfElseStatement);
+
+            var SSIfElseStmt = (IfElseStatement)SSStmt;
+
+            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is BlockStatement);
             Assert.IsTrue(SSIfElseStmt.ElseStatement is BlockStatement);
         }
@@ -282,12 +297,28 @@ namespace MiCSTests
             var SSIfElseStmt = (IfElseStatement)SSStmt;
 
             Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
+            Assert.IsFalse(SSIfElseStmt.IfStatement is BlockStatement); // Blocks are removed from single statements by ScriptSharp.
+            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement);
+            Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
+        }
+
+        [TestMethod]
+        public void IfStatementWithBlockTest()
+        {
+            var RosStmt = Parse.Statement(@"if (true) { int i; int j; } ");
+            var SSStmt = StatementWalker.Map(RosStmt);
+
+            Assert.IsTrue(SSStmt is IfElseStatement);
+
+            var SSIfElseStmt = (IfElseStatement)SSStmt;
+
+            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is BlockStatement);
             Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
         }
 
         [TestMethod]
-        public void IfElseStatementNoBlockTest()
+        public void IfElseStatementExplicitNoBlockTest()
         {
             var RosStmt = Parse.Statement(@"
                 if (true)

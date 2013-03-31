@@ -43,7 +43,10 @@ namespace MiCS.Mappers
         static internal BlockStatement Map(this BlockSyntax roslynBlock, ScriptSharp.ScriptModel.ClassSymbol typeReference)
         {
             var scriptSharpBlock = new BlockStatement();
-            scriptSharpBlock.Statements.AddRange(StatementWalker.Maps(roslynBlock, typeReference));
+            foreach (var roslynStatement in roslynBlock.Statements)
+            {
+                scriptSharpBlock.Statements.Add(StatementWalker.Map(roslynStatement, typeReference));
+            }
             return scriptSharpBlock;
         }
 

@@ -61,10 +61,7 @@ namespace MiCS.Walkers
 
         public override void VisitBlock(BlockSyntax node)
         {
-            foreach (var roslynStatement in node.Statements)
-            {
-                scriptSharpStatements.Add(StatementWalker.Map(roslynStatement, typeReference));
-            }
+            scriptSharpStatements.Add(node.Map(typeReference));
             
             base.VisitBlock(node);
         }
