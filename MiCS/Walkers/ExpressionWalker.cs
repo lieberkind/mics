@@ -56,49 +56,49 @@ namespace MiCS.Walkers
         {
             scriptSharpExpressions.Add(node.Map());
             
-            base.VisitIdentifierName(node);
+            //base.VisitIdentifierName(node);
         }
 
         public override void VisitLiteralExpression(LiteralExpressionSyntax node)
         {
             scriptSharpExpressions.Add(node.Map());
 
-            base.VisitLiteralExpression(node);
+            //base.VisitLiteralExpression(node);
         }
 
         public override void VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
         {
             scriptSharpExpressions.Add(node.Map());
             
-            base.VisitPrefixUnaryExpression(node);
+            //base.VisitPrefixUnaryExpression(node);
         }
 
         public override void VisitBinaryExpression(BinaryExpressionSyntax node)
         {
             scriptSharpExpressions.Add(node.Map());
 
-            base.VisitBinaryExpression(node);
+            //base.VisitBinaryExpression(node);
         }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             scriptSharpExpressions.Add(node.Map(associatedType));
             
-            base.VisitInvocationExpression(node);
+            //base.VisitInvocationExpression(node);
         }
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
             scriptSharpExpressions.Add(node.Map(associatedType));
             
-            base.VisitObjectCreationExpression(node);
+            //base.VisitObjectCreationExpression(node);
         }
 
         public override void VisitConditionalExpression(ConditionalExpressionSyntax node)
         {
             scriptSharpExpressions.Add(node.Map());
             
-            base.VisitConditionalExpression(node);
+            //base.VisitConditionalExpression(node);
         }
     }
 }

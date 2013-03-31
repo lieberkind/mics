@@ -46,6 +46,7 @@ namespace MiCS.Walkers
 
         public override void DefaultVisit(SyntaxNode node)
         {
+            // Todo: Consider how to throw exception on unsupported statement types!
             //throw new NotSupportedException("Statement type is not currently supported.");
 
             base.DefaultVisit(node);
