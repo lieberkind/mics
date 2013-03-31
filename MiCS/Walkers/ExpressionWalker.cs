@@ -5,58 +5,100 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MiCS.Mappers;
 
 namespace MiCS.Walkers
 {
     class ExpressionWalker : SyntaxWalker
     {
-        public readonly List<ScriptSharp.ScriptModel.Expression> ssExpressions = new List<Expression>();
+        ScriptSharp.ScriptModel.TypeSymbol associatedType;
+        public readonly List<ScriptSharp.ScriptModel.Expression> scriptSharpExpressions = new List<Expression>();
+
+        public ExpressionWalker()
+        {
+
+        }
+        public ExpressionWalker(ScriptSharp.ScriptModel.TypeSymbol associatedType)
+	    {
+            this.associatedType = associatedType;
+	    }
+
+        public static List<ScriptSharp.ScriptModel.Expression> Maps(SyntaxNode node, ScriptSharp.ScriptModel.TypeSymbol associatedType)
+        {
+            var expressionWalker = new ExpressionWalker(associatedType);
+            expressionWalker.Visit(node);
+            return expressionWalker.scriptSharpExpressions;
+        }
+        public static List<ScriptSharp.ScriptModel.Expression> Maps(SyntaxNode node)
+        {
+            var expressionWalker = new ExpressionWalker();
+            expressionWalker.Visit(node);
+            return expressionWalker.scriptSharpExpressions;
+        }
+        public static ScriptSharp.ScriptModel.Expression Map(SyntaxNode node, ScriptSharp.ScriptModel.TypeSymbol associatedType)
+        {
+            var expressions = ExpressionWalker.Maps(node, associatedType);
+            if (expressions.Count != 1)
+                throw new Exception("There are not exactly one expression!");
+
+            return expressions.First();
+        }
+        public static ScriptSharp.ScriptModel.Expression Map(SyntaxNode node)
+        {
+            var expressions = ExpressionWalker.Maps(node);
+            if (expressions.Count != 1)
+                throw new Exception("There are not exactly one expression!");
+
+            return expressions.First();
+        }
+
+        public override void VisitIdentifierName(IdentifierNameSyntax node)
+        {
+            scriptSharpExpressions.Add(node.Map());
+            
+            base.VisitIdentifierName(node);
+        }
 
         public override void VisitLiteralExpression(LiteralExpressionSyntax node)
         {
-            var ssLiteralExpression = MapLiteralExpression(node);
-            ssExpressions.Add(ssLiteralExpression);
+            scriptSharpExpressions.Add(node.Map());
+
             base.VisitLiteralExpression(node);
         }
 
-        public ScriptSharp.ScriptModel.LiteralExpression MapLiteralExpression(LiteralExpressionSyntax roslynLiteralExpression) 
+        public override void VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax node)
         {
-            var val = roslynLiteralExpression.Token.Value;
-            switch (roslynLiteralExpression.Kind)
-            {
-                case SyntaxKind.StringLiteralExpression:
-                    return new LiteralExpression(null, (string)val);
-                case SyntaxKind.NumericLiteralExpression:
-                    if (val is int)
-                        return new LiteralExpression(null, (int)val);
-                    if (val is double)
-                        return new LiteralExpression(null, (double)val);
-                    if (val is float)
-                        return new LiteralExpression(null, (float)val);
-                    if (val is decimal)
-                        return new LiteralExpression(null, (decimal)val);
-                    if (val is uint)
-                        return new LiteralExpression(null, (uint)val);
-                    if (val is long)
-                        return new LiteralExpression(null, (long)val);
-                    if (val is ulong)
-                        return new LiteralExpression(null, (ulong)val);
-                    if (val is short)
-                        return new LiteralExpression(null, (short)val);
-                    if (val is ushort)
-                        return new LiteralExpression(null, (ushort)val);
-                    throw new NotSupportedException("Literal type is not supported!");
-                case SyntaxKind.FalseLiteralExpression:
-                    return new LiteralExpression(null, (bool)val);
-                case SyntaxKind.TrueLiteralExpression:
-                    return new LiteralExpression(null, (bool)val);
-                case SyntaxKind.CharacterLiteralExpression:
-                    return new LiteralExpression(null, (char)val);
-                case SyntaxKind.NullLiteralExpression:
-                    return new LiteralExpression(null, null);
-                default:
-                    throw new NotSupportedException("Literal type is not supported!");
-            }
-        } 
+            scriptSharpExpressions.Add(node.Map());
+            
+            base.VisitPrefixUnaryExpression(node);
+        }
+
+        public override void VisitBinaryExpression(BinaryExpressionSyntax node)
+        {
+            scriptSharpExpressions.Add(node.Map());
+
+            base.VisitBinaryExpression(node);
+        }
+
+        public override void VisitInvocationExpression(InvocationExpressionSyntax node)
+        {
+            scriptSharpExpressions.Add(node.Map(associatedType));
+            
+            base.VisitInvocationExpression(node);
+        }
+
+        public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        {
+            scriptSharpExpressions.Add(node.Map(associatedType));
+            
+            base.VisitObjectCreationExpression(node);
+        }
+
+        public override void VisitConditionalExpression(ConditionalExpressionSyntax node)
+        {
+            scriptSharpExpressions.Add(node.Map());
+            
+            base.VisitConditionalExpression(node);
+        }
     }
 }

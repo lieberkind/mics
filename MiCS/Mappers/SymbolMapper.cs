@@ -41,9 +41,9 @@ namespace MiCS.Mappers
 
 
             var i = new List<Statement>();
-            foreach (var item in methodDeclaration.Body.Statements)
+            foreach (var statement in methodDeclaration.Body.Statements)
             {
-                i.Add(item.Map(parentClassReference));
+                i.Add(StatementWalker.Map(statement, parentClassReference));
             }
             var sI = new SymbolImplementation(i, null, "symbolImplementationThisIdentifier_" + method.GeneratedName);
             method.AddImplementation(sI);

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MiCS.Walkers;
 
 // Todo: DOM representation!
 // Todo: Check how is C# built in complex types (e.g. String & DateTime) supported?
@@ -15,30 +16,30 @@ namespace MiCS.Mappers
 {
     public static class Expressions
     {
-        static internal Expression Map(this ExpressionSyntax expr, ScriptSharp.ScriptModel.TypeSymbol parent = null)
-        {
-            if (expr is IdentifierNameSyntax)
-                return ((IdentifierNameSyntax)expr).Map();
-            else if (expr is LiteralExpressionSyntax)
-                return ((LiteralExpressionSyntax)expr).Map();
-            else if (expr is PrefixUnaryExpressionSyntax)
-                return ((PrefixUnaryExpressionSyntax)expr).Map();
-            else if (expr is BinaryExpressionSyntax)
-                return ((BinaryExpressionSyntax)expr).Map();
-            else if (expr is InvocationExpressionSyntax)
-                return ((InvocationExpressionSyntax)expr).Map(parent);
-            else if (expr is ObjectCreationExpressionSyntax)
-                return ((ObjectCreationExpressionSyntax)expr).Map(parent); 
-            else if (expr is ConditionalExpressionSyntax)
-                return ((ConditionalExpressionSyntax)expr).Map();
-            else
-                throw new NotSupportedException("This type of expression is currently not supported!");
-        }
+        //static internal Expression Map(this ExpressionSyntax expr, ScriptSharp.ScriptModel.TypeSymbol parent = null)
+        //{
+        //    if (expr is IdentifierNameSyntax)
+        //        return ((IdentifierNameSyntax)expr).Map();
+        //    else if (expr is LiteralExpressionSyntax)
+        //        return ((LiteralExpressionSyntax)expr).Map();
+        //    else if (expr is PrefixUnaryExpressionSyntax)
+        //        return ((PrefixUnaryExpressionSyntax)expr).Map();
+        //    else if (expr is BinaryExpressionSyntax)
+        //        return ((BinaryExpressionSyntax)expr).Map();
+        //    else if (expr is InvocationExpressionSyntax)
+        //        return ((InvocationExpressionSyntax)expr).Map(parent);
+        //    else if (expr is ObjectCreationExpressionSyntax)
+        //        return ((ObjectCreationExpressionSyntax)expr).Map(parent); 
+        //    else if (expr is ConditionalExpressionSyntax)
+        //        return ((ConditionalExpressionSyntax)expr).Map();
+        //    else
+        //        throw new NotSupportedException("This type of expression is currently not supported!");
+        //}
 
         static internal UnaryExpression Map(this PrefixUnaryExpressionSyntax expr)
         {
             if (expr.OperatorToken.Kind == SyntaxKind.MinusToken)
-                return new UnaryExpression(Operator.Minus, expr.Operand.Map());
+                return new UnaryExpression(Operator.Minus, ExpressionWalker.Map(expr.Operand));
             else
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
@@ -69,56 +70,114 @@ namespace MiCS.Mappers
                     if (expr.Left is IdentifierNameSyntax)
                     {
                         if (expr.Right is LiteralExpressionSyntax)
-                            return new BinaryExpression(Operator.Equals, expr.Left.Map(), expr.Right.Map());
+                            return new BinaryExpression(Operator.Equals, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                         else if (expr.Right is IdentifierNameSyntax)
-                            return new BinaryExpression(Operator.Equals, expr.Left.Map(), expr.Right.Map());
+                            return new BinaryExpression(Operator.Equals, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                         else
                             throw new NotSupportedException("The right side of this binary is not supported with a IdentifierNameSyntax right side.");
                     }
                     else
                         throw new NotSupportedException("Left operator of binary expression is not supported!");
                 case SyntaxKind.PlusToken:
-                    return new BinaryExpression(Operator.Plus, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.Plus, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.MinusToken:
-                    return new BinaryExpression(Operator.Minus, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.Minus, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.AsteriskToken:
-                    return new BinaryExpression(Operator.Multiply, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.Multiply, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.SlashToken:
-                    return new BinaryExpression(Operator.Divide, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.Divide, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.PercentToken:
-                    return new BinaryExpression(Operator.Mod, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.Mod, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
 
-                    // Todo: consider use of strict operators such as "===".
-                    // Relational expressions (C# "is" and "as" operators are not currently supported).
+                // Todo: consider use of strict operators such as "===".
+                // Relational expressions (C# "is" and "as" operators are not currently supported).
                 case SyntaxKind.EqualsEqualsToken:
-                    return new BinaryExpression(Operator.EqualEqual, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.EqualEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.ExclamationEqualsToken:
-                    return new BinaryExpression(Operator.NotEqual, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.NotEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.GreaterThanToken:
-                    return new BinaryExpression(Operator.Greater, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.Greater, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.LessThanToken:
-                    return new BinaryExpression(Operator.Less, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.Less, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.GreaterThanEqualsToken:
-                    return new BinaryExpression(Operator.GreaterEqual, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.GreaterEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.LessThanEqualsToken:
-                    return new BinaryExpression(Operator.LessEqual, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.LessEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
 
-                    // Logical expressions
-                    // C# "conditional and" and "conditional or" 
+                // Logical expressions
+                // C# "conditional and" and "conditional or" 
                 case SyntaxKind.AmpersandAmpersandToken:
-                    return new BinaryExpression(Operator.LogicalAnd, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.LogicalAnd, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
                 case SyntaxKind.BarBarToken:
-                    return new BinaryExpression(Operator.LogicalOr, expr.Left.Map(), expr.Right.Map());
+                    return new BinaryExpression(Operator.LogicalOr, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
 
                 default:
                     throw new NotSupportedException("Binary expression operator not supported!");
             }
+
+            // OLD VERSION WITHOUT WALKERS
+            //var op = expr.OperatorToken.Kind;
+            ///*
+            // * C# operators
+            // * http://msdn.microsoft.com/en-us/library/6a71f45d(v=vs.80).aspx
+            // */
+            //switch (op)
+            //{
+            //    case SyntaxKind.EqualsToken:
+            //        if (expr.Left is IdentifierNameSyntax)
+            //        {
+            //            if (expr.Right is LiteralExpressionSyntax)
+            //                return new BinaryExpression(Operator.Equals, expr.Left.Map(), expr.Right.Map());
+            //            else if (expr.Right is IdentifierNameSyntax)
+            //                return new BinaryExpression(Operator.Equals, expr.Left.Map(), expr.Right.Map());
+            //            else
+            //                throw new NotSupportedException("The right side of this binary is not supported with a IdentifierNameSyntax right side.");
+            //        }
+            //        else
+            //            throw new NotSupportedException("Left operator of binary expression is not supported!");
+            //    case SyntaxKind.PlusToken:
+            //        return new BinaryExpression(Operator.Plus, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.MinusToken:
+            //        return new BinaryExpression(Operator.Minus, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.AsteriskToken:
+            //        return new BinaryExpression(Operator.Multiply, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.SlashToken:
+            //        return new BinaryExpression(Operator.Divide, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.PercentToken:
+            //        return new BinaryExpression(Operator.Mod, expr.Left.Map(), expr.Right.Map());
+
+            //        // Todo: consider use of strict operators such as "===".
+            //        // Relational expressions (C# "is" and "as" operators are not currently supported).
+            //    case SyntaxKind.EqualsEqualsToken:
+            //        return new BinaryExpression(Operator.EqualEqual, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.ExclamationEqualsToken:
+            //        return new BinaryExpression(Operator.NotEqual, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.GreaterThanToken:
+            //        return new BinaryExpression(Operator.Greater, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.LessThanToken:
+            //        return new BinaryExpression(Operator.Less, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.GreaterThanEqualsToken:
+            //        return new BinaryExpression(Operator.GreaterEqual, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.LessThanEqualsToken:
+            //        return new BinaryExpression(Operator.LessEqual, expr.Left.Map(), expr.Right.Map());
+
+            //        // Logical expressions
+            //        // C# "conditional and" and "conditional or" 
+            //    case SyntaxKind.AmpersandAmpersandToken:
+            //        return new BinaryExpression(Operator.LogicalAnd, expr.Left.Map(), expr.Right.Map());
+            //    case SyntaxKind.BarBarToken:
+            //        return new BinaryExpression(Operator.LogicalOr, expr.Left.Map(), expr.Right.Map());
+
+            //    default:
+            //        throw new NotSupportedException("Binary expression operator not supported!");
+            //}
 
 
         }
 
         static internal LocalExpression Map(this IdentifierNameSyntax expr)
         {
+            // Todo: should a paren be provided here?
             return new LocalExpression(new VariableSymbol(expr.Identifier.ValueText, null, null));
         }
 
@@ -192,7 +251,7 @@ namespace MiCS.Mappers
                 var parameters = new Collection<Expression>();
                 foreach (var arg in expr.ArgumentList.Arguments)
                 {
-                    parameters.Add(arg.Expression.Map());
+                    parameters.Add(ExpressionWalker.Map(arg.Expression));
                 }
 
                 var thisExpr = new ThisExpression(parentClass, true);
@@ -205,9 +264,12 @@ namespace MiCS.Mappers
             }
         }
 
-        static internal ConditionalExpression Map(this ConditionalExpressionSyntax expr)
+        static internal ConditionalExpression Map(this ConditionalExpressionSyntax roslynConditional)
         {
-            return new ConditionalExpression(expr.Condition.Map(), expr.WhenTrue.Map(), expr.WhenFalse.Map());
+            var condition = ExpressionWalker.Map(roslynConditional.Condition);
+            var trueExpression = ExpressionWalker.Map(roslynConditional.WhenTrue);
+            var falseExpression = ExpressionWalker.Map(roslynConditional.WhenFalse);
+            return new ConditionalExpression(condition, trueExpression, falseExpression);
         }
     }
 }
