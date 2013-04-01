@@ -50,15 +50,15 @@ namespace MiCS
             // Todo: Not sure nested namespaces are supported currently!
 
             CompilationUnitSyntax mixedSideCompilationUnit = null;
-            var mappedNamespaces = new SyntaxList<MemberDeclarationSyntax>();
+            var mappedNamespaces = new List<MemberDeclarationSyntax>();
             foreach (NamespaceDeclarationSyntax rootMember in root.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration))
             {
                 var namespaceDeclaration = (NamespaceDeclarationSyntax)rootMember;
-                var mappedClasses = new SyntaxList<MemberDeclarationSyntax>();
+                var mappedClasses = new List<MemberDeclarationSyntax>();
                 foreach (var namespaceMember in namespaceDeclaration.DescendantNodes().Where(m => m.Kind == SyntaxKind.ClassDeclaration))
                 {
                     var classDeclaration = (ClassDeclarationSyntax)namespaceMember;
-                    var mappedMethods = new SyntaxList<MemberDeclarationSyntax>();
+                    var mappedMethods = new List<MemberDeclarationSyntax>();
                     foreach (var methodMember in classDeclaration.DescendantNodes().Where(m => m.Kind == SyntaxKind.MethodDeclaration))
                     {
                         var methodDeclaration = (MethodDeclarationSyntax)methodMember;
@@ -67,13 +67,13 @@ namespace MiCS
                     }
 
                     if (mappedMethods.Count > 0)
-                        mappedClasses.Add(classDeclaration.WithMembers(mappedMethods));
+                        mappedClasses.Add(classDeclaration.WithMembers(Syntax.List(mappedMethods.ToArray())));
                 }
                 if (mappedClasses.Count > 0)
-                    mappedNamespaces.Add(namespaceDeclaration.WithMembers(mappedClasses));
+                    mappedNamespaces.Add(namespaceDeclaration.WithMembers(Syntax.List(mappedClasses.ToArray())));
             }
             if (mappedNamespaces.Count > 0)
-                mixedSideCompilationUnit = root.WithMembers(mappedNamespaces);
+                mixedSideCompilationUnit = root.WithMembers(Syntax.List(mappedNamespaces.ToArray()));
 
             return mixedSideCompilationUnit;
         }

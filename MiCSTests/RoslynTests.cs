@@ -45,6 +45,22 @@ namespace MiCSTests
             Assert.IsTrue(method.Identifier.Value.Equals("TestMethod"));
         }
 
+        //[TestMethod]
+        //public void RoslynSyntaxListTest()
+        //{
+        //    Syntax.List(
+        //    var list = new SyntaxList<MethodDeclarationSyntax>();
+        //    var mD = Syntax.MethodDeclaration(Syntax.IdentifierName("typeIdenifierName"), "name");
+        //    //list.Add(mD);
+        //    var l = new List<MethodDeclarationSyntax>();
+        //    l.Add(mD);
+        //    var clist = list.Concat<MethodDeclarationSyntax>(mD);
+        //    Assert.IsTrue(list.Count == 0);
+
+        //}
+
+
+
         #region Region: Statement Tests
 
         private IEnumerable<SyntaxNode> ParseStatements(string statements)
