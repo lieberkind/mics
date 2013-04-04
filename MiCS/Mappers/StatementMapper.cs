@@ -28,7 +28,6 @@ namespace MiCS.Mappers
 
         static internal SS.ReturnStatement Map(this ReturnStatementSyntax returnStatement, SS.Expression ssExpression)
         {
-
             return new SS.ReturnStatement(ssExpression);
         }
 
