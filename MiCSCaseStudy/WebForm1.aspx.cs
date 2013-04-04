@@ -15,7 +15,7 @@ namespace MiCSCaseStudy
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
             var MiCSGen = new MiCSManager();
-            MiCSGen.BuildScript(@"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs", scriptManager, this);
+            MiCSGen.BuildScript(@"C:\Users\Tomas Lieberkind\documents\visual studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs", scriptManager, this);
         }
 
         protected void Page_Load(object sender, EventArgs e)

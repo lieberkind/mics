@@ -56,10 +56,10 @@
     <Compile Include="MiCSManager.cs" />
     <Compile Include="MiCSRoslynExtensions.cs" />
     <Compile Include="MiCSCSharpExtensions.cs" />
-    <Compile Include="Walkers\ClassWalker.cs" />
-    <Compile Include="Walkers\ExpressionWalker.cs" />
-    <Compile Include="Walkers\MethodWalker.cs" />
-    <Compile Include="Walkers\StatementWalker.cs" />
+    <Compile Include="Builders\ClassBuilder.cs" />
+    <Compile Include="Builders\ExpressionBuilder.cs" />
+    <Compile Include="Builders\MethodBuilder.cs" />
+    <Compile Include="Builders\StatementBuilder.cs" />
     <Compile Include="MiCSCollectors.cs" />
     <Compile Include="MiCSAttributes.cs" />
     <Compile Include="Mappers\ExpressionMapper.cs" />
@@ -185,7 +185,7 @@
     <Compile Include="ScriptSharp\ScriptReference.cs" />
     <Compile Include="ScriptSharp\Utility.cs" />
     <Compile Include="MiCSUtilities.cs" />
-    <Compile Include="Walkers\NamespaceWalker.cs" />
+    <Compile Include="Builders\NamespaceBuilder.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

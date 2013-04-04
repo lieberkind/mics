@@ -1,0 +1,118 @@
+﻿using Roslyn.Compilers.CSharp;
+using SS = ScriptSharp.ScriptModel;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using MiCS.Mappers;
+
+namespace MiCS.Builders
+{
+    class StatementBuilder : SyntaxWalker
+    {
+        SS.ClassSymbol typeReference;
+        public readonly List<SS.Statement> ssStatements = new List<SS.Statement>();
+
+        public StatementBuilder(ScriptSharp.ScriptModel.ClassSymbol typeReference = null)
+        {
+            this.typeReference = typeReference;
+        }
+
+        public override void VisitIfStatement(IfStatementSyntax ifStatement)
+        {
+            var ssCondition = ExpressionBuilder.Build(ifStatement.Condition);
+            var ssIfStatement = StatementBuilder.Build(ifStatement.Statement);
+            var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.Build(ifStatement.Else.Statement);
+
+            ssStatements.Add(ifStatement.Map(ssCondition, ssIfStatement, ssElseStatement));
+            
+            //base.VisitIfStatement(ifStatement);
+        }
+
+        public override void VisitBlock(BlockSyntax block)
+        {
+            var ssBlock = block.Map();
+
+            var ssChildStatements = new List<SS.Statement>();
+
+            foreach (var statement in block.Statements)
+            {
+                ssChildStatements.Add(StatementBuilder.Build(statement, typeReference));
+            }
+
+            ssBlock.Statements.AddRange(ssChildStatements);
+            
+            //base.VisitBlock(block);
+        }
+
+        public override void VisitReturnStatement(ReturnStatementSyntax returnStatement)
+        {
+
+            var ssExpression = ExpressionBuilder.Build(returnStatement.Expression, typeReference);
+
+            ssStatements.Add(returnStatement.Map(ssExpression));
+
+            // base.VisitReturnStatement(returnStatement);
+        }
+
+        public override void VisitExpressionStatement(ExpressionStatementSyntax expressionStatement)
+        {
+            var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression);
+            
+            ssStatements.Add(expressionStatement.Map(ssExpression));
+
+            // base.VisitExpressionStatement(expressionStatement);
+        }
+
+        public override void VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax localDeclarationStatement)
+        {
+
+            var roslynVariable = stmt.Declaration.Variables[0];
+
+            if (!(stmt.Declaration is VariableDeclarationSyntax))
+            {
+                throw new NotSupportedException("LocalDeclarationStatement has not supported declaration");
+            }
+
+            var identifier = roslynVariable.Identifier;
+            if (identifier.Kind != SyntaxKind.IdentifierToken)
+                throw new NotSupportedException(); // Todo: Maybe not a necesary check...
+
+            var scriptSharpVariable = new VariableSymbol(identifier.ValueText, null, null);
+
+            var initializer = roslynVariable.Initializer;
+            if (initializer != null)
+            {
+                if (!(initializer is EqualsValueClauseSyntax))
+                    throw new NotSupportedException("Unsupported initializer");
+
+                var val = roslynVariable.Initializer.Value;
+
+                scriptSharpVariable.SetValue(ExpressionBuilder.Map(val));
+
+            }
+
+            var vDS = new VariableDeclarationStatement();
+            vDS.Variables.Add(scriptSharpVariable);
+            return vDS;
+
+            ssStatements.Add(localDeclarationStatement.Map(typeReference));
+
+            base.VisitLocalDeclarationStatement(localDeclarationStatement);
+        }
+
+        public static SS.Statement Build(StatementSyntax statement, SS.ClassSymbol typeReference = null)
+        {
+            return StatementBuilder.BuildList(statement).First();
+        }
+
+        public static List<SS.Statement> BuildList(StatementSyntax statement, SS.ClassSymbol typeReference = null)
+        {
+            var statementBuilder = new StatementBuilder(typeReference);
+            statementBuilder.Visit(statement);
+
+            return statementBuilder.ssStatements;
+        }
+    }
+}

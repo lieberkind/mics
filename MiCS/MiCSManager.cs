@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Web.UI;
 using MiCS.Mappers;
 using ScriptSharp.Generator;
-using MiCS.Walkers;
+using MiCS.Builders;
 using ScriptSharp;
 using ScriptSharp.ScriptModel;
 
@@ -86,7 +86,7 @@ namespace MiCS
             var scriptSharpAST = new List<ScriptSharp.ScriptModel.NamespaceSymbol>();
             foreach (var roslynNamespace in root.Members)
             {
-                scriptSharpAST.Add(NamespaceWalker.Map(roslynNamespace));
+                scriptSharpAST.Add(NamespaceBuilder.Map(roslynNamespace));
             }
             return scriptSharpAST;
         }

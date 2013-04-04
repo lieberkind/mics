@@ -1,12 +1,12 @@
 ﻿using Roslyn.Compilers.CSharp;
-using ScriptSharp.ScriptModel;
+using SS = ScriptSharp.ScriptModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MiCS.Walkers;
+using MiCS.Builders;
 
 // Todo: DOM representation!
 // Todo: Check how is C# built in complex types (e.g. String & DateTime) supported?
@@ -36,28 +36,25 @@ namespace MiCS.Mappers
         //        throw new NotSupportedException("This type of expression is currently not supported!");
         //}
 
-        static internal UnaryExpression Map(this PrefixUnaryExpressionSyntax expr)
+        static internal SS.UnaryExpression Map(this PrefixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
         {
-            if (expr.OperatorToken.Kind == SyntaxKind.MinusToken)
-                return new UnaryExpression(Operator.Minus, ExpressionWalker.Map(expr.Operand));
+            if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
+                return new SS.UnaryExpression(SS.Operator.Minus, ssOperandExpression);
             else
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
-        static internal NewExpression Map(this ObjectCreationExpressionSyntax expr, ScriptSharp.ScriptModel.TypeSymbol associatedType)
+        static internal SS.NewExpression Map(this ObjectCreationExpressionSyntax objectCreationExpression, SS.TypeSymbol associatedType)
         {
             if (associatedType == null)
                 throw new Exception("AssociatedType cannot be null");
-            if (!(associatedType is ClassSymbol))
+            if (!(associatedType is SS.ClassSymbol))
                 throw new Exception("Only ClassSymbols as associated type is currently supported.");
 
-            //Todo: Handle arguments/parameters...
-            if (expr.ArgumentList.Arguments.Count > 0)
-                throw new NotSupportedException("Arguments are currently not supported.");
-            return new NewExpression(associatedType);
+            return new SS.NewExpression(associatedType);
         }
 
-        static internal BinaryExpression Map(this BinaryExpressionSyntax expr)
+        static internal SS.BinaryExpression Map(this BinaryExpressionSyntax expr, SS.Expression ssLeftExpression, SS.Expression ssRightExpression)
         {
             var op = expr.OperatorToken.Kind;
             /*
@@ -70,46 +67,46 @@ namespace MiCS.Mappers
                     if (expr.Left is IdentifierNameSyntax)
                     {
                         if (expr.Right is LiteralExpressionSyntax)
-                            return new BinaryExpression(Operator.Equals, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                            return new SS.BinaryExpression(SS.Operator.Equals, ssLeftExpression, ssRightExpression);
                         else if (expr.Right is IdentifierNameSyntax)
-                            return new BinaryExpression(Operator.Equals, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                            return new SS.BinaryExpression(SS.Operator.Equals, ssLeftExpression, ssRightExpression);
                         else
                             throw new NotSupportedException("The right side of this binary is not supported with a IdentifierNameSyntax right side.");
                     }
                     else
                         throw new NotSupportedException("Left operator of binary expression is not supported!");
                 case SyntaxKind.PlusToken:
-                    return new BinaryExpression(Operator.Plus, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.Plus, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.MinusToken:
-                    return new BinaryExpression(Operator.Minus, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.Minus, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.AsteriskToken:
-                    return new BinaryExpression(Operator.Multiply, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.Multiply, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.SlashToken:
-                    return new BinaryExpression(Operator.Divide, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.Divide, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.PercentToken:
-                    return new BinaryExpression(Operator.Mod, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.Mod, ssLeftExpression, ssRightExpression);
 
                 // Todo: consider use of strict operators such as "===".
                 // Relational expressions (C# "is" and "as" operators are not currently supported).
                 case SyntaxKind.EqualsEqualsToken:
-                    return new BinaryExpression(Operator.EqualEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.EqualEqual, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.ExclamationEqualsToken:
-                    return new BinaryExpression(Operator.NotEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.NotEqual, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.GreaterThanToken:
-                    return new BinaryExpression(Operator.Greater, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.Greater, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.LessThanToken:
-                    return new BinaryExpression(Operator.Less, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.Less, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.GreaterThanEqualsToken:
-                    return new BinaryExpression(Operator.GreaterEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.GreaterEqual, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.LessThanEqualsToken:
-                    return new BinaryExpression(Operator.LessEqual, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.LessEqual, ssLeftExpression, ssRightExpression);
 
                 // Logical expressions
                 // C# "conditional and" and "conditional or" 
                 case SyntaxKind.AmpersandAmpersandToken:
-                    return new BinaryExpression(Operator.LogicalAnd, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.LogicalAnd, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.BarBarToken:
-                    return new BinaryExpression(Operator.LogicalOr, ExpressionWalker.Map(expr.Left), ExpressionWalker.Map(expr.Right));
+                    return new SS.BinaryExpression(SS.Operator.LogicalOr, ssLeftExpression, ssRightExpression);
 
                 default:
                     throw new NotSupportedException("Binary expression operator not supported!");
@@ -175,53 +172,55 @@ namespace MiCS.Mappers
 
         }
 
-        static internal LocalExpression Map(this IdentifierNameSyntax expr)
+        static internal SS.LocalExpression Map(this IdentifierNameSyntax identifierName)
         {
-            // Todo: should a paren be provided here?
-            return new LocalExpression(new VariableSymbol(expr.Identifier.ValueText, null, null));
+            // Todo: Set parent and value type as done in ScriptSharp
+            return new SS.LocalExpression(new SS.VariableSymbol(identifierName.Identifier.ValueText, null, null));
         }
 
-        static internal LiteralExpression Map(this LiteralExpressionSyntax expr)
+        static internal SS.LiteralExpression Map(this LiteralExpressionSyntax literalExpression)
         {
-            var val = expr.Token.Value;
-            switch (expr.Kind)
+            var @value = literalExpression.Token.Value;
+
+            // Todo: Set valueType parameter as done in ScriptSharp
+            switch (literalExpression.Kind)
             {
                 case SyntaxKind.StringLiteralExpression:
-                    return new LiteralExpression(null, (string)val);
+                    return new SS.LiteralExpression(null, (string)@value);
                 case SyntaxKind.NumericLiteralExpression:
-                    if (val is int)
-                        return new LiteralExpression(null, (int)val);
-                    if (val is double)
-                        return new LiteralExpression(null, (double)val);
-                    if (val is float)
-                        return new LiteralExpression(null, (float)val);
-                    if (val is decimal)
-                        return new LiteralExpression(null, (decimal)val);
-                    if (val is uint)
-                        return new LiteralExpression(null, (uint)val);
-                    if (val is long)
-                        return new LiteralExpression(null, (long)val);
-                    if (val is ulong)
-                        return new LiteralExpression(null, (ulong)val);
-                    if (val is short)
-                        return new LiteralExpression(null, (short)val);
-                    if (val is ushort)
-                        return new LiteralExpression(null, (ushort)val);
+                    if (@value is int)
+                        return new SS.LiteralExpression(null, (int)@value);
+                    if (@value is double)
+                        return new SS.LiteralExpression(null, (double)@value);
+                    if (@value is float)
+                        return new SS.LiteralExpression(null, (float)@value);
+                    if (@value is decimal)
+                        return new SS.LiteralExpression(null, (decimal)@value);
+                    if (@value is uint)
+                        return new SS.LiteralExpression(null, (uint)@value);
+                    if (@value is long)
+                        return new SS.LiteralExpression(null, (long)@value);
+                    if (@value is ulong)
+                        return new SS.LiteralExpression(null, (ulong)@value);
+                    if (@value is short)
+                        return new SS.LiteralExpression(null, (short)@value);
+                    if (@value is ushort)
+                        return new SS.LiteralExpression(null, (ushort)@value);
                     throw new NotSupportedException("Literal type is not supported!");
                 case SyntaxKind.FalseLiteralExpression:
-                    return new LiteralExpression(null, (bool)val);
+                    return new SS.LiteralExpression(null, (bool)@value);
                 case SyntaxKind.TrueLiteralExpression:
-                    return new LiteralExpression(null, (bool)val);
+                    return new SS.LiteralExpression(null, (bool)@value);
                 case SyntaxKind.CharacterLiteralExpression:
-                    return new LiteralExpression(null, (char)val);
+                    return new SS.LiteralExpression(null, (char)@value);
                 case SyntaxKind.NullLiteralExpression:
-                    return new LiteralExpression(null, null);
+                    return new SS.LiteralExpression(null, null);
                 default:
                     throw new NotSupportedException("Literal type is not supported!");
             }
         }
 
-        static internal MethodExpression Map(this InvocationExpressionSyntax expr, ScriptSharp.ScriptModel.TypeSymbol parent)
+        static internal SS.MethodExpression Map(this InvocationExpressionSyntax expr, SS.TypeSymbol ssParent, Collection<SS.Expression> ssParameters)
         {
             if (!(expr.Expression is IdentifierNameSyntax))
                 throw new NotSupportedException("Currently only this/local invocations is supported!");
@@ -229,35 +228,27 @@ namespace MiCS.Mappers
             if (!(expr.Parent is ExpressionStatementSyntax))
                 throw new NotSupportedException("Method invocation is being performed in a context that is not currently supported.");
 
-            if (!(parent is ClassSymbol)) 
+            if (!(ssParent is SS.ClassSymbol)) 
                 throw new NotSupportedException("The parent class symbol (of the method that is the invocation target) is required.");
 
-            var parentClass = (ClassSymbol)parent;
-            if (!(parentClass.Parent is ScriptSharp.ScriptModel.NamespaceSymbol)) 
+            var parentClass = (SS.ClassSymbol)ssParent;
+            if (!(parentClass.Parent is SS.NamespaceSymbol)) 
                 throw new Exception("The parent class namespace is currently required.");
 
-            var parentNamespace = (ScriptSharp.ScriptModel.NamespaceSymbol)parentClass.Parent;
+            var parentNamespace = (SS.NamespaceSymbol)parentClass.Parent;
 
+            // Todo: This check is probably unneeded. It has already been checked.
             if (expr.Expression is IdentifierNameSyntax)
             {
                 var iNS = (IdentifierNameSyntax)expr.Expression;
 
                 // Todo: Not sure if the return type is important at all? as the static return types doesn't really exist in JavaScript.
-                var voidReturnType = new ClassSymbol("void", parentNamespace);
-                var methodSymbol = new ScriptSharp.ScriptModel.MethodSymbol(iNS.Identifier.ValueText, parentClass, voidReturnType);
-                /*
-                 * MethodSymbol can not be referenced from parentClass.Members
-                 * as the needed member is the one currently being mapped!
-                 */
+                var voidReturnType = new SS.ClassSymbol("void", parentNamespace);
+                var methodSymbol = new SS.MethodSymbol(iNS.Identifier.ValueText, parentClass, voidReturnType);
 
-                var parameters = new Collection<Expression>();
-                foreach (var arg in expr.ArgumentList.Arguments)
-                {
-                    parameters.Add(ExpressionWalker.Map(arg.Expression));
-                }
-
-                var thisExpr = new ThisExpression(parentClass, true);
-                return new MethodExpression(ExpressionType.MethodInvoke, thisExpr, methodSymbol, null);
+                // Todo: Add support for non-local invocations
+                var thisExpr = new SS.ThisExpression(parentClass, true);
+                return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, thisExpr, methodSymbol, ssParameters);
 
                 // Todo: This constructor also seems to work. Not sure what the difference is.
                 //return new MethodExpression(thisExpr, methodSymbol);
@@ -268,12 +259,13 @@ namespace MiCS.Mappers
             }
         }
 
-        static internal ConditionalExpression Map(this ConditionalExpressionSyntax roslynConditional)
+        static internal SS.ConditionalExpression Map(this ConditionalExpressionSyntax conditionalExpression, 
+            SS.Expression ssCondition, 
+            SS.Expression ssTrueExpression, 
+            SS.Expression ssFalseExpression
+        )
         {
-            var condition = ExpressionWalker.Map(roslynConditional.Condition);
-            var trueExpression = ExpressionWalker.Map(roslynConditional.WhenTrue);
-            var falseExpression = ExpressionWalker.Map(roslynConditional.WhenFalse);
-            return new ConditionalExpression(condition, trueExpression, falseExpression);
+            return new SS.ConditionalExpression(ssCondition, ssTrueExpression, ssFalseExpression);
         }
     }
 }

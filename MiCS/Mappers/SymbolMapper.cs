@@ -1,4 +1,4 @@
-﻿using MiCS.Walkers;
+﻿using MiCS.Builders;
 using Roslyn.Compilers.CSharp;
 using ScriptSharp.ScriptModel;
 using System;
@@ -6,20 +6,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SS = ScriptSharp.ScriptModel;
 
 namespace MiCS.Mappers
 {
 
     public static class Symbols
     {
-        static internal ScriptSharp.ScriptModel.ParameterSymbol Map(this ParameterSyntax p)
+        static internal SS.ParameterSymbol Map(this ParameterSyntax p)
         {
-            return new ScriptSharp.ScriptModel.ParameterSymbol(p.Identifier.ValueText, null, null, ParameterMode.InOut);
+            return new SS.ParameterSymbol(p.Identifier.ValueText, null, null, SS.ParameterMode.InOut);
         }
 
-        static internal ScriptSharp.ScriptModel.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, 
-            ScriptSharp.ScriptModel.ClassSymbol parentClassReference, 
-            ScriptSharp.ScriptModel.NamespaceSymbol parentNamespaceReference)
+        static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, 
+            SS.ClassSymbol parentClassReference, 
+            SS.NamespaceSymbol parentNamespaceReference)
         {
             // Todo: Should this random namespace symbol be used here or should the actual namespace be applied!
             // Namespace is apparently only required for return type! Should it then be the namespase of the return type?
@@ -37,12 +38,12 @@ namespace MiCS.Mappers
             var returnType = new ClassSymbol(returnTypeStr, parentNamespaceReference);
             var name = methodDeclaration.Identifier.ValueText;
 
-            var method = new ScriptSharp.ScriptModel.MethodSymbol(name, parentClassReference, returnType);
+            var method = new SS.MethodSymbol(name, parentClassReference, returnType);
 
             var implementationStatements = new List<Statement>();
             foreach (var roslynStatement in methodDeclaration.Body.Statements)
             {
-                implementationStatements.Add(StatementWalker.Map(roslynStatement, parentClassReference));
+                implementationStatements.Add(StatementBuilder.Map(roslynStatement, parentClassReference));
             }
             var sI = new SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + method.GeneratedName);
             method.AddImplementation(sI);
@@ -54,7 +55,7 @@ namespace MiCS.Mappers
         /// 
         /// </summary>
         /// <param name="roslynClass"></param>
-        /// <param name="parentNamespaceReference">
+        /// <param name="ssParentNamespace">
         /// Parent namespace should be provided so its
         /// not required to map the parent namespace in
         /// in the ClassDeclarationSyntax.Map(...)
@@ -62,31 +63,22 @@ namespace MiCS.Mappers
         /// n infinte loop.
         /// </param>
         /// <returns></returns>
-        static internal ScriptSharp.ScriptModel.ClassSymbol Map(this ClassDeclarationSyntax roslynClass, ScriptSharp.ScriptModel.NamespaceSymbol parentNamespaceReference)
+        static internal SS.ClassSymbol Map(this ClassDeclarationSyntax @class, SS.NamespaceSymbol ssParentNamespace)
         {
-            if (parentNamespaceReference == null) 
+            if (ssParentNamespace == null)
                 throw new Exception("Parent namespace reference is required by ScriptSharp infrastructure.");
             
-            var scriptSharpClass = new ClassSymbol(roslynClass.Identifier.ValueText, parentNamespaceReference);
-            var scriptSharpMethods = MethodWalker.Maps(roslynClass, scriptSharpClass, parentNamespaceReference);
-            scriptSharpClass.Members.AddRange(scriptSharpMethods);
-
-            return scriptSharpClass;
+            return new ClassSymbol(@class.Identifier.ValueText, ssParentNamespace);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="roslynNamespace"></param>
+        /// <param name="namespace"></param>
         /// <returns></returns>
-        static internal ScriptSharp.ScriptModel.NamespaceSymbol Map(this NamespaceDeclarationSyntax roslynNamespace)
+        static internal SS.NamespaceSymbol Map(this NamespaceDeclarationSyntax @namespace)
         {
-            var scriptSharpNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol(roslynNamespace.NameText(), null);
-            var scriptSharpClasses = ClassWalker.Maps(roslynNamespace, requiredNamespaceReference: scriptSharpNamespace);
-
-            scriptSharpNamespace.Types.AddRange(scriptSharpClasses);
-
-            return scriptSharpNamespace;
+            return new SS.NamespaceSymbol(@namespace.NameText(), null);
         }
 
     }
