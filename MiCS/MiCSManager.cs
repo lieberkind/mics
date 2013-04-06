@@ -22,7 +22,9 @@ namespace MiCS
         private SyntaxTree _tree;
         private SyntaxTree _mixedSideTree;
         private Compilation _mixedSideCompilation;
+        private CompilationUnitSyntax _mixedSideCompilationUnit;
         private SemanticModel _mixedSideSemanticModel;
+
         public static SemanticModel SemanticModel
         {
             get
@@ -30,13 +32,20 @@ namespace MiCS
                 return Instance._mixedSideSemanticModel;
             }
         }
+        public static CompilationUnitSyntax CompilationUnit
+        {
+            get
+            {
+                return Instance._mixedSideTree.GetRoot();
+            }
+        }
 
         public MiCSManager(string source)
         {
             _source = source;
             _tree = SyntaxTree.ParseText(source);
-            var mixedSideCompilationUnit = GetMixedSideCompilationUnit(_tree.GetRoot());
-            _mixedSideTree = _tree.WithChangedText(mixedSideCompilationUnit.GetText());
+            _mixedSideCompilationUnit = GetMixedSideCompilationUnit(_tree.GetRoot());
+            _mixedSideTree = _tree.WithChangedText(_mixedSideCompilationUnit.GetText());
 
             // Todo: Investigate maybe...
             /*
@@ -127,6 +136,10 @@ namespace MiCS
             }
             if (mappedNamespaces.Count > 0)
                 mixedSideCompilationUnit = root.WithMembers(Syntax.List(mappedNamespaces.ToArray()));
+
+
+            if (mixedSideCompilationUnit == null)
+                throw new Exception("No MixedSide or ClientSide attributed code was found!");
 
             return mixedSideCompilationUnit;
         }

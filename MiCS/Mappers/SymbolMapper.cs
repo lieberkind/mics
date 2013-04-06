@@ -84,6 +84,7 @@ namespace MiCS.Mappers
         static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable)
         {
             var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(variable.Initializer.Value);
+
             // Todo: Pass parent value and not null.
             return new SS.VariableSymbol(variable.Identifier.ValueText, null, typeInfo.Type.Map());
         }
@@ -91,7 +92,275 @@ namespace MiCS.Mappers
 
         static internal SS.TypeSymbol Map(this TypeSymbol typeSymbol)
         {
-            throw new NotImplementedException();
+            #region Region: Possibly relevant ScriptSharpCode
+                //            /// <summary>
+                ///// This maps C# intrinsic types (managed types that have an equivalent
+                ///// C# keyword)
+                ///// </summary>
+                //public TypeSymbol ResolveIntrinsicType(IntrinsicType type) {
+                //    string mappedTypeName = null;
+                //    string mappedNamespace = null;
+
+                //    switch (type) {
+                //        case IntrinsicType.Object:
+                //            mappedTypeName = "Object";
+                //            break;
+                //        case IntrinsicType.Boolean:
+                //            mappedTypeName = "Boolean";
+                //            break;
+                //        case IntrinsicType.String:
+                //            mappedTypeName = "String";
+                //            break;
+                //        case IntrinsicType.Integer:
+                //            mappedTypeName = "Int32";
+                //            break;
+                //        case IntrinsicType.UnsignedInteger:
+                //            mappedTypeName = "UInt32";
+                //            break;
+                //        case IntrinsicType.Long:
+                //            mappedTypeName = "Int64";
+                //            break;
+                //        case IntrinsicType.UnsignedLong:
+                //            mappedTypeName = "UInt64";
+                //            break;
+                //        case IntrinsicType.Short:
+                //            mappedTypeName = "Int16";
+                //            break;
+                //        case IntrinsicType.UnsignedShort:
+                //            mappedTypeName = "UInt16";
+                //            break;
+                //        case IntrinsicType.Byte:
+                //            mappedTypeName = "Byte";
+                //            break;
+                //        case IntrinsicType.SignedByte:
+                //            mappedTypeName = "SByte";
+                //            break;
+                //        case IntrinsicType.Single:
+                //            mappedTypeName = "Single";
+                //            break;
+                //        case IntrinsicType.Date:
+                //            mappedTypeName = "Date";
+                //            break;
+                //        case IntrinsicType.Decimal:
+                //            mappedTypeName = "Decimal";
+                //            break;
+                //        case IntrinsicType.Double:
+                //            mappedTypeName = "Double";
+                //            break;
+                //        case IntrinsicType.Delegate:
+                //            mappedTypeName = "Delegate";
+                //            break;
+                //        case IntrinsicType.Function:
+                //            mappedTypeName = "Function";
+                //            break;
+                //        case IntrinsicType.Void:
+                //            mappedTypeName = "Void";
+                //            break;
+                //        case IntrinsicType.Array:
+                //            mappedTypeName = "Array";
+                //            break;
+                //        case IntrinsicType.Dictionary:
+                //            mappedTypeName = "Dictionary";
+                //            mappedNamespace = "System.Collections";
+                //            break;
+                //        case IntrinsicType.GenericList:
+                //            mappedTypeName = "List`1";
+                //            mappedNamespace = "System.Collections.Generic";
+                //            break;
+                //        case IntrinsicType.GenericDictionary:
+                //            mappedTypeName = "Dictionary`2";
+                //            mappedNamespace = "System.Collections.Generic";
+                //            break;
+                //        case IntrinsicType.Type:
+                //            mappedTypeName = "Type";
+                //            break;
+                //        case IntrinsicType.IEnumerator:
+                //            mappedTypeName = "IEnumerator";
+                //            mappedNamespace = "System.Collections";
+                //            break;
+                //        case IntrinsicType.Enum:
+                //            mappedTypeName = "Enum";
+                //            break;
+                //        case IntrinsicType.Exception:
+                //            mappedTypeName = "Exception";
+                //            break;
+                //        case IntrinsicType.Script:
+                //            mappedTypeName = "Script";
+                //            break;
+                //        case IntrinsicType.Number:
+                //            mappedTypeName = "Number";
+                //            break;
+                //        case IntrinsicType.Arguments:
+                //            mappedTypeName = "Arguments";
+                //            break;
+                //        case IntrinsicType.Nullable:
+                //            mappedTypeName = "Nullable`1";
+                //            break;
+                //        default:
+                //            Debug.Fail("Unmapped intrinsic type " + type);
+                //            break;
+                //    }
+                //}
+
+
+
+            //        private Expression ProcessLiteralNode(LiteralNode node) {
+            //LiteralToken token = (LiteralToken)node.Token;
+
+            //string systemTypeName = null;
+
+            //switch (token.LiteralType) {
+            //    case LiteralTokenType.Null:
+            //        systemTypeName = "Object";
+            //        break;
+            //    case LiteralTokenType.Boolean:
+            //        systemTypeName = "Boolean";
+            //        break;
+            //    case LiteralTokenType.Char:
+            //        systemTypeName = "Char";
+            //        break;
+            //    case LiteralTokenType.String:
+            //        systemTypeName = "String";
+            //        break;
+            //    case LiteralTokenType.Int:
+            //        systemTypeName = "Int32";
+            //        break;
+            //    case LiteralTokenType.UInt:
+            //        systemTypeName = "UInt32";
+            //        break;
+            //    case LiteralTokenType.Long:
+            //        systemTypeName = "Int64";
+            //        break;
+            //    case LiteralTokenType.ULong:
+            //        systemTypeName = "UInt64";
+            //        break;
+            //    case LiteralTokenType.Float:
+            //        systemTypeName = "Single";
+            //        break;
+            //    case LiteralTokenType.Double:
+            //        systemTypeName = "Double";
+            //        break;
+            //    case LiteralTokenType.Decimal:
+            //        systemTypeName = "Decimal";
+            //        break;
+            //    default:
+            //        Debug.Fail("Unknown Literal Token Type: " + token.LiteralType);
+            //        break;
+            //}
+            //        }
+            #endregion
+
+            string mappedTypeName = null;
+            string mappedNamespace = null;
+
+
+            // Todo: Not sure the typeSymbol.Name property is the right one to use? Thinking that using the fullname (System.String and not just String) would be better.
+            switch (typeSymbol.Name)
+            {
+                case "String":
+                    mappedTypeName = "String";
+                    break;
+                //case IntrinsicType.Object:
+                //    mappedTypeName = "Object";
+                //    break;
+                //case IntrinsicType.Boolean:
+                //    mappedTypeName = "Boolean";
+                //    break;
+                //case IntrinsicType.String:
+                //    mappedTypeName = "String";
+                //    break;
+                //case IntrinsicType.Integer:
+                //    mappedTypeName = "Int32";
+                //    break;
+                //case IntrinsicType.UnsignedInteger:
+                //    mappedTypeName = "UInt32";
+                //    break;
+                //case IntrinsicType.Long:
+                //    mappedTypeName = "Int64";
+                //    break;
+                //case IntrinsicType.UnsignedLong:
+                //    mappedTypeName = "UInt64";
+                //    break;
+                //case IntrinsicType.Short:
+                //    mappedTypeName = "Int16";
+                //    break;
+                //case IntrinsicType.UnsignedShort:
+                //    mappedTypeName = "UInt16";
+                //    break;
+                //case IntrinsicType.Byte:
+                //    mappedTypeName = "Byte";
+                //    break;
+                //case IntrinsicType.SignedByte:
+                //    mappedTypeName = "SByte";
+                //    break;
+                //case IntrinsicType.Single:
+                //    mappedTypeName = "Single";
+                //    break;
+                //case IntrinsicType.Date:
+                //    mappedTypeName = "Date";
+                //    break;
+                //case IntrinsicType.Decimal:
+                //    mappedTypeName = "Decimal";
+                //    break;
+                //case IntrinsicType.Double:
+                //    mappedTypeName = "Double";
+                //    break;
+                //case IntrinsicType.Delegate:
+                //    mappedTypeName = "Delegate";
+                //    break;
+                //case IntrinsicType.Function:
+                //    mappedTypeName = "Function";
+                //    break;
+                //case IntrinsicType.Void:
+                //    mappedTypeName = "Void";
+                //    break;
+                //case IntrinsicType.Array:
+                //    mappedTypeName = "Array";
+                //    break;
+                //case IntrinsicType.Dictionary:
+                //    mappedTypeName = "Dictionary";
+                //    mappedNamespace = "System.Collections";
+                //    break;
+                //case IntrinsicType.GenericList:
+                //    mappedTypeName = "List`1";
+                //    mappedNamespace = "System.Collections.Generic";
+                //    break;
+                //case IntrinsicType.GenericDictionary:
+                //    mappedTypeName = "Dictionary`2";
+                //    mappedNamespace = "System.Collections.Generic";
+                //    break;
+                //case IntrinsicType.Type:
+                //    mappedTypeName = "Type";
+                //    break;
+                //case IntrinsicType.IEnumerator:
+                //    mappedTypeName = "IEnumerator";
+                //    mappedNamespace = "System.Collections";
+                //    break;
+                //case IntrinsicType.Enum:
+                //    mappedTypeName = "Enum";
+                //    break;
+                //case IntrinsicType.Exception:
+                //    mappedTypeName = "Exception";
+                //    break;
+                //case IntrinsicType.Script:
+                //    mappedTypeName = "Script";
+                //    break;
+                //case IntrinsicType.Number:
+                //    mappedTypeName = "Number";
+                //    break;
+                //case IntrinsicType.Arguments:
+                //    mappedTypeName = "Arguments";
+                //    break;
+                //case IntrinsicType.Nullable:
+                //    mappedTypeName = "Nullable`1";
+                //    break;
+                default:
+                    throw new NotSupportedException();
+                    break;
+            }
+
+            // Todo: Parent namespace should probably not be a dummy namspace.
+            return new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
         }
 
     }

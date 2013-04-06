@@ -11,6 +11,7 @@ namespace MiCS.Builders
 {
     class StatementBuilder : SyntaxWalker
     {
+
         SS.ClassSymbol typeReference;
         public readonly List<SS.Statement> ssStatements = new List<SS.Statement>();
 
@@ -106,7 +107,7 @@ namespace MiCS.Builders
 
         public static SS.Statement Build(StatementSyntax statement, SS.ClassSymbol typeReference = null)
         {
-            return StatementBuilder.BuildList(statement).First();
+            return StatementBuilder.BuildList(statement, typeReference).First();
         }
 
         public static List<SS.Statement> BuildList(StatementSyntax statement, SS.ClassSymbol typeReference = null)

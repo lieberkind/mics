@@ -1,4 +1,5 @@
-﻿using Roslyn.Compilers.CSharp;
+﻿using MiCS;
+using Roslyn.Compilers.CSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,9 @@ namespace MiCSTests.TestUtils
 
         public static IEnumerable<SyntaxNode> Classes(string classSource)
         {
-            var cUnit = CompilationUnit(@"namespace TestNameSpace{ " + classSource + @" }");
+            var mm = new MiCSManager(@"namespace TestNameSpace{ " + classSource + @" }");
+            //var cUnit = CompilationUnit(@"namespace TestNameSpace{ " + classSource + @" }");
+            var cUnit = MiCSManager.CompilationUnit;
             var namespaces = cUnit.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration);
             return namespaces.First().DescendantNodes().Where(m => m.Kind == SyntaxKind.ClassDeclaration);
         }
@@ -41,7 +44,9 @@ namespace MiCSTests.TestUtils
 
         public static IEnumerable<StatementSyntax> Statements(string source)
         {
-            var method = (MethodDeclarationSyntax)Parse.Methods("void f() { " + source + " };").First();
+            var method = (MethodDeclarationSyntax)Parse.Methods(@" 
+            [MixedSide]
+            void f() { " + source + " };").First();
             return method.Body.Statements;
         }
 
@@ -59,12 +64,5 @@ namespace MiCSTests.TestUtils
             return RosExpr;
         }
 
-        //private ExpressionSyntax ParseExpression(string expr)
-        //{
-        //    var nodes = statements.Where(n => n.Kind == SyntaxKind.EqualsValueClause);
-        //    if (nodes.Count() != 1) throw new Exception();
-        //    var node = (EqualsValueClauseSyntax)nodes.First();
-        //    return node.Value;
-        //}
     }
 }

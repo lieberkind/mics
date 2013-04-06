@@ -183,6 +183,7 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationAssignmentTest()
         {
+
             var RosStmt = Parse.Statement(@"string i = ""foo"";");
             var SSStmt = StatementBuilder.Build(RosStmt);
 
