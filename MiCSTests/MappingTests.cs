@@ -162,7 +162,7 @@ namespace MiCSTests
         public void StatementVariableDeclarationTest()
         {
             var RosStmt = Parse.Statement("string i;");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
             Assert.IsTrue(SSStmt is VariableDeclarationStatement);
@@ -184,7 +184,7 @@ namespace MiCSTests
         public void StatementVariableDeclarationAssignmentTest()
         {
             var RosStmt = Parse.Statement(@"string i = ""foo"";");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
             Assert.IsTrue(SSStmt is VariableDeclarationStatement);
@@ -212,7 +212,7 @@ namespace MiCSTests
         public void StatementVariableVarDeclarationAssignmentTest()
         {
             var RosStmt = Parse.Statement(@"var i = ""foo"";");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
             Assert.IsTrue(SSStmt is VariableDeclarationStatement);
@@ -240,7 +240,7 @@ namespace MiCSTests
         public void StatementVariableAssignmentTest()
         {
             var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(SSStmt is ExpressionStatement);
 
@@ -253,14 +253,14 @@ namespace MiCSTests
         public void StatementAritmethicAssignmentTest()
         {
             var RosStmt = Parse.Statement(@"string i = 1 + 1;");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
         }
 
         [TestMethod]
         public void IfElseStatementTest()
         {
             var RosStmt = Parse.Statement(@"if (true) { int i; } else { int i; }");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(SSStmt is IfElseStatement);
 
@@ -275,7 +275,7 @@ namespace MiCSTests
         public void IfStatementTest()
         {
             var RosStmt = Parse.Statement(@"if (true) { int i; } ");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(SSStmt is IfElseStatement);
 
@@ -296,7 +296,7 @@ namespace MiCSTests
                     int i;
                 ");
 
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(SSStmt is IfElseStatement);
 
@@ -311,7 +311,7 @@ namespace MiCSTests
         public void IfStatementNoBlockTest()
         {
             var RosStmt = Parse.Statement(@"if (true) int i;");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(SSStmt is IfElseStatement);
 
@@ -326,7 +326,7 @@ namespace MiCSTests
         public void ReturnStatementTest()
         {
             var RosStmt = Parse.Statement(@"return 12;");
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(SSStmt is ReturnStatement);
 
@@ -388,7 +388,7 @@ namespace MiCSTests
         public void ConditionalExpressionTest()
         {
             var roslynExpression = Parse.Expression("2 > 1 ? 10 : 0");
-            var scriptSharpExpression = ExpressionBuilder.Map(roslynExpression);
+            var scriptSharpExpression = ExpressionBuilder.Build(roslynExpression);
 
             Assert.IsTrue(scriptSharpExpression is ConditionalExpression);
 
@@ -435,7 +435,7 @@ namespace MiCSTests
         public void ExpressionUnaryExpressionTest()
         {
             var RosExpr = Parse.Expression(@"-1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is PrefixUnaryExpressionSyntax);
             Assert.IsTrue(SSExpr is UnaryExpression);
@@ -459,7 +459,7 @@ namespace MiCSTests
         public void ExpressionStringLiteralTest()
         {
             var RosExpr = Parse.Expression(@"""foo""");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
             Assert.IsTrue(SSExpr is LiteralExpression);
@@ -475,7 +475,7 @@ namespace MiCSTests
         public void ExpressionIntLiteralTest()
         {
             var RosExpr = Parse.Expression(@"1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
             Assert.IsTrue(SSExpr is LiteralExpression);
@@ -491,7 +491,7 @@ namespace MiCSTests
         public void ExpressionTrueLiteralTest()
         {
             var RosExpr = Parse.Expression(@"true");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
             Assert.IsTrue(SSExpr is LiteralExpression);
@@ -507,7 +507,7 @@ namespace MiCSTests
         public void ExpressionFalseLiteralTest()
         {
             var RosExpr = Parse.Expression(@"false");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
             Assert.IsTrue(SSExpr is LiteralExpression);
@@ -523,7 +523,7 @@ namespace MiCSTests
         public void ExpressionNullLiteralTest()
         {
             var RosExpr = Parse.Expression(@"null");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
             Assert.IsTrue(SSExpr is LiteralExpression);
@@ -544,7 +544,7 @@ namespace MiCSTests
         public void ExpressionAssignmentTest()
         {
             var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
-            var SSStmt = StatementBuilder.Map(RosStmt);
+            var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(SSStmt is ExpressionStatement);
 
@@ -561,7 +561,7 @@ namespace MiCSTests
         public void ExpressionPlusBinaryTest()
         {
             var RosExpr = Parse.Expression("1 + 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -576,7 +576,7 @@ namespace MiCSTests
         public void ExpressionMinusBinaryTest()
         {
             var RosExpr = Parse.Expression("1 - 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -591,7 +591,7 @@ namespace MiCSTests
         public void ExpressionMultiplyBinaryTest()
         {
             var RosExpr = Parse.Expression("1 * 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -606,7 +606,7 @@ namespace MiCSTests
         public void ExpressionDivideBinaryTest()
         {
             var RosExpr = Parse.Expression("1 / 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -621,7 +621,7 @@ namespace MiCSTests
         public void ExpressionModulusBinaryTest()
         {
             var RosExpr = Parse.Expression("1 % 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -637,7 +637,7 @@ namespace MiCSTests
         public void ExpressionRelationalEqualsTest()
         {
             var RosExpr = Parse.Expression("1 == 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -652,7 +652,7 @@ namespace MiCSTests
         public void ExpressionRelationalNotEqualsTest()
         {
             var RosExpr = Parse.Expression("1 != 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -667,7 +667,7 @@ namespace MiCSTests
         public void ExpressionRelationalGreaterTest()
         {
             var RosExpr = Parse.Expression("1 > 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -682,7 +682,7 @@ namespace MiCSTests
         public void ExpressionRelationalLessTest()
         {
             var RosExpr = Parse.Expression("1 < 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -697,7 +697,7 @@ namespace MiCSTests
         public void ExpressionRelationalGreaterEqualsTest()
         {
             var RosExpr = Parse.Expression("1 >= 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -712,7 +712,7 @@ namespace MiCSTests
         public void ExpressionRelationalLessEqualsTest()
         {
             var RosExpr = Parse.Expression("1 <= 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -727,7 +727,7 @@ namespace MiCSTests
         public void ExpressionLogicalAndTest()
         {
             var RosExpr = Parse.Expression("true && -1 > 6");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -742,7 +742,7 @@ namespace MiCSTests
         public void ExpressionLogicalOrTest()
         {
             var RosExpr = Parse.Expression("true || 1 > -1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(SSExpr is BinaryExpression);
 
@@ -762,7 +762,7 @@ namespace MiCSTests
         public void ExpressionNestedBinaryTest()
         {
             var RosExpr = Parse.Expression("1 + 1 + 1");
-            var SSExpr = ExpressionBuilder.Map(RosExpr);
+            var SSExpr = ExpressionBuilder.Build(RosExpr);
         }
 
         #endregion

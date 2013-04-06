@@ -68,36 +68,38 @@ namespace MiCS.Builders
         public override void VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax localDeclarationStatement)
         {
 
-            var roslynVariable = stmt.Declaration.Variables[0];
+            var variable = localDeclarationStatement.Declaration.Variables[0];
 
-            if (!(stmt.Declaration is VariableDeclarationSyntax))
+            if (!(localDeclarationStatement.Declaration is VariableDeclarationSyntax))
             {
                 throw new NotSupportedException("LocalDeclarationStatement has not supported declaration");
             }
 
-            var identifier = roslynVariable.Identifier;
+            var identifier = variable.Identifier;
             if (identifier.Kind != SyntaxKind.IdentifierToken)
                 throw new NotSupportedException(); // Todo: Maybe not a necesary check...
 
-            var scriptSharpVariable = new VariableSymbol(identifier.ValueText, null, null);
+            var ssVariable = variable.Map();
 
-            var initializer = roslynVariable.Initializer;
+            var initializer = variable.Initializer;
             if (initializer != null)
             {
                 if (!(initializer is EqualsValueClauseSyntax))
                     throw new NotSupportedException("Unsupported initializer");
 
-                var val = roslynVariable.Initializer.Value;
+                var val = variable.Initializer.Value;
 
-                scriptSharpVariable.SetValue(ExpressionBuilder.Map(val));
+                ssVariable.SetValue(ExpressionBuilder.Build(val));
 
             }
 
-            var vDS = new VariableDeclarationStatement();
-            vDS.Variables.Add(scriptSharpVariable);
-            return vDS;
+            var ssVariableDecalarationStatement = new SS.VariableDeclarationStatement();
+            ssVariableDecalarationStatement.Variables.Add(ssVariable);
+            //return vDS;
 
-            ssStatements.Add(localDeclarationStatement.Map(typeReference));
+            ssStatements.Add(ssVariableDecalarationStatement);
+
+            //ssStatements.Add(localDeclarationStatement.Map(typeReference));
 
             base.VisitLocalDeclarationStatement(localDeclarationStatement);
         }

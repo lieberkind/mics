@@ -1,4 +1,5 @@
 ﻿using Roslyn.Compilers.CSharp;
+using Roslyn.Compilers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,15 +18,67 @@ namespace MiCS
 {
     public class MiCSManager
     {
+        private string _source;
+        private SyntaxTree _tree;
+        private SyntaxTree _mixedSideTree;
+        private Compilation _mixedSideCompilation;
+        private SemanticModel _mixedSideSemanticModel;
+        public static SemanticModel SemanticModel
+        {
+            get
+            {
+                return Instance._mixedSideSemanticModel;
+            }
+        }
+
+        public MiCSManager(string source)
+        {
+            _source = source;
+            _tree = SyntaxTree.ParseText(source);
+            var mixedSideCompilationUnit = GetMixedSideCompilationUnit(_tree.GetRoot());
+            _mixedSideTree = _tree.WithChangedText(mixedSideCompilationUnit.GetText());
+
+            // Todo: Investigate maybe...
+            /*
+             * Building the semantic model...
+             * Not sure MetadataFileReference is the correct MetadataReference to use.
+             * See "Roslyn Overview section 4" and (deprecated example) http://social.msdn.microsoft.com/Forums/en-US/roslyn/thread/d82de2da-50eb-4701-b806-aa3ee24f74c2/
+             * 
+             * Not sure if any other assemblies (other than mscorlib) are required?
+             */
+            var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
+            _mixedSideCompilation = Compilation.Create("MixedSideCompilation", syntaxTrees: new[] { _mixedSideTree }, references: new[] { mscorlib });
+            _mixedSideSemanticModel = _mixedSideCompilation.GetSemanticModel(_mixedSideTree);
+
+            MiCSManager._Instance = this;
+        }
+
+        // Todo: Should probably ensure that Instance is singleton!
+        private static MiCSManager Instance
+        {
+            get
+            {
+                if (_Instance == null) throw new Exception("MiCSManager is not instantiated!");
+                return _Instance;
+            }
+        }
+        private static MiCSManager _Instance;
+
+        public MiCSManager()
+        {
+
+        }
+
         // Todo: Script should be build from more than one file.
         public void BuildScript(string filePath, ScriptManager scriptManager, Page page)
         {
             /*
              * Roslyn AST creation, manipulation and validation.
              */
-            var sourceStr = File.ReadAllText(filePath);
-            var syntaxTree = SyntaxTree.ParseText(sourceStr);
-            var mixedSideCompilationUnit = GetMixedSideCompilationUnit(syntaxTree.GetRoot());
+            _source = File.ReadAllText(filePath);
+            _tree = SyntaxTree.ParseText(_source);
+            var mixedSideCompilationUnit = GetMixedSideCompilationUnit(_tree.GetRoot());
+            
             // Todo: Ensure that no mixed side (or client side) code makes calls to (or utilize) server side code only.
 
             /*

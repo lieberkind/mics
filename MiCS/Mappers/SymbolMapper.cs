@@ -1,6 +1,5 @@
 ﻿using MiCS.Builders;
 using Roslyn.Compilers.CSharp;
-using ScriptSharp.ScriptModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,17 +34,17 @@ namespace MiCS.Mappers
             else
                 throw new NotSupportedException("Method declaration return type is currently not supported.");
 
-            var returnType = new ClassSymbol(returnTypeStr, parentNamespaceReference);
+            var returnType = new SS.ClassSymbol(returnTypeStr, parentNamespaceReference);
             var name = methodDeclaration.Identifier.ValueText;
 
             var method = new SS.MethodSymbol(name, parentClassReference, returnType);
 
-            var implementationStatements = new List<Statement>();
+            var implementationStatements = new List<SS.Statement>();
             foreach (var roslynStatement in methodDeclaration.Body.Statements)
             {
-                implementationStatements.Add(StatementBuilder.Map(roslynStatement, parentClassReference));
+                implementationStatements.Add(StatementBuilder.Build(roslynStatement, parentClassReference));
             }
-            var sI = new SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + method.GeneratedName);
+            var sI = new SS.SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + method.GeneratedName);
             method.AddImplementation(sI);
             return method;
 
@@ -68,7 +67,7 @@ namespace MiCS.Mappers
             if (ssParentNamespace == null)
                 throw new Exception("Parent namespace reference is required by ScriptSharp infrastructure.");
             
-            return new ClassSymbol(@class.Identifier.ValueText, ssParentNamespace);
+            return new SS.ClassSymbol(@class.Identifier.ValueText, ssParentNamespace);
         }
 
         /// <summary>
@@ -79,6 +78,20 @@ namespace MiCS.Mappers
         static internal SS.NamespaceSymbol Map(this NamespaceDeclarationSyntax @namespace)
         {
             return new SS.NamespaceSymbol(@namespace.NameText(), null);
+        }
+
+
+        static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable)
+        {
+            var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(variable.Initializer.Value);
+            // Todo: Pass parent value and not null.
+            return new SS.VariableSymbol(variable.Identifier.ValueText, null, typeInfo.Type.Map());
+        }
+
+
+        static internal SS.TypeSymbol Map(this TypeSymbol typeSymbol)
+        {
+            throw new NotImplementedException();
         }
 
     }
