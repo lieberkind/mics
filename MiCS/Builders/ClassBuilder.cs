@@ -33,6 +33,14 @@ namespace MiCS.Builders
             //base.VisitClassDeclaration(node);
         }
 
+        public static SS.ClassSymbol Build(ClassDeclarationSyntax @class, SS.NamespaceSymbol ssNamespace)
+        {
+            var classBuilder = new ClassBuilder(ssNamespace);
+            classBuilder.Visit(@class);
+
+            return classBuilder.ssClasses.First();
+        }
+
     }
 
 }

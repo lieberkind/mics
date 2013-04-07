@@ -38,13 +38,13 @@ namespace MiCSTests
                     void f() { }
                 } 
             }";
-            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = NamespaceBuilder.Map(RosNamespace);
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
-            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
-            Assert.AreEqual(RosNamespace.Members.Count, SSNamespace.Types.Count);
-            Assert.AreEqual(RosMember.Identifier.ValueText, SSMember.Name);
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
+            Assert.AreEqual(@namespace.Members.Count, ssNamespace.Types.Count);
+            Assert.AreEqual(member.Identifier.ValueText, ssMember.Name);
         }
 
         [TestMethod]
@@ -58,7 +58,7 @@ namespace MiCSTests
                 } 
             }";
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = @namespace.Map();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
             var member = (ClassDeclarationSyntax)@namespace.Members.First();
             var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
@@ -80,20 +80,21 @@ namespace MiCSTests
                     void f() { int i; }
                 } 
             }";
-            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = RosNamespace.Map();
+            MiCSManager.Initiate(source);
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
-            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
 
-            var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
-            var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
 
-            var RosStmt = RosMethod.Body.Statements.First();
-            var SSStmt = SSMethod.Implementation.Statements.First();
+            var statement = method.Body.Statements.First();
+            var ssStatement = ssMethod.Implementation.Statements.First();
 
-            Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
         }
 
         [TestMethod]
@@ -141,7 +142,7 @@ namespace MiCSTests
                 } 
             }";
             var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = NamespaceBuilder.Map(RosNamespace);
+            var SSNamespace = NamespaceBuilder.Build(RosNamespace);
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
             var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
@@ -503,7 +504,7 @@ namespace MiCSTests
             }";
             var roslynNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
 
-            var scriptSharpNamespace = NamespaceBuilder.Map(roslynNamespace);
+            var scriptSharpNamespace = NamespaceBuilder.Build(roslynNamespace);
             var foo = (SS.ClassSymbol)scriptSharpNamespace.Types.First();
             var g = (ScriptSharp.ScriptModel.MethodSymbol)foo.Members.ElementAt(1);
             var expressionStatement = (SS.ExpressionStatement)g.Implementation.Statements.First();

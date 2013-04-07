@@ -27,20 +27,13 @@ namespace MiCS.Builders
             //base.VisitNamespaceDeclaration(node);
         }
 
-        public static List<ScriptSharp.ScriptModel.NamespaceSymbol> Maps(SyntaxNode node)
+        public static SS.NamespaceSymbol Build(NamespaceDeclarationSyntax @namespace)
         {
-            var namespaceWalker = new NamespaceBuilder();
-            namespaceWalker.Visit(node);
-            return namespaceWalker.ssNamespaces;
+            var namespaceBuilder = new NamespaceBuilder();
+            namespaceBuilder.Visit(@namespace);
+
+            return namespaceBuilder.ssNamespaces.First();
         }
 
-        public static ScriptSharp.ScriptModel.NamespaceSymbol Map(SyntaxNode node)
-        {
-            var namespaces = NamespaceBuilder.Maps(node);
-            if (namespaces.Count != 1)
-                throw new Exception("There are not exactly one namespace!");
-
-            return namespaces.First();
-        }
     }
 }

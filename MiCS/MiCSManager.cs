@@ -40,6 +40,11 @@ namespace MiCS
             }
         }
 
+        public static void Initiate(string source)
+        {
+            var micsManager = new MiCSManager(source);
+        }
+
         public MiCSManager(string source)
         {
             _source = source;
@@ -152,7 +157,10 @@ namespace MiCS
             var scriptSharpAST = new List<ScriptSharp.ScriptModel.NamespaceSymbol>();
             foreach (var roslynNamespace in root.Members)
             {
-                scriptSharpAST.Add(NamespaceBuilder.Map(roslynNamespace));
+                if (roslynNamespace is NamespaceDeclarationSyntax)
+                {
+                    scriptSharpAST.Add(NamespaceBuilder.Build((NamespaceDeclarationSyntax)roslynNamespace));
+                }
             }
             return scriptSharpAST;
         }

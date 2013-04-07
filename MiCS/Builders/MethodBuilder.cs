@@ -31,5 +31,13 @@ namespace MiCS.Builders
 
             //base.VisitMethodDeclaration(node);
         }
+
+        public static SS.MethodSymbol Build(MethodDeclarationSyntax method, SS.ClassSymbol ssClass, SS.NamespaceSymbol ssNamespace)
+        {
+            var methodBuilder = new MethodBuilder(ssClass, ssNamespace);
+            methodBuilder.Visit(method);
+
+            return methodBuilder.ssMethods.First();
+        }
     }
 }
