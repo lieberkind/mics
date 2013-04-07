@@ -181,7 +181,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void StatementVariableDeclarationAssignmentTest()
+        public void StatementVariableDeclarationStringAssignmentTest()
         {
 
             var RosStmt = Parse.Statement(@"string i = ""foo"";");
@@ -208,6 +208,149 @@ namespace MiCSTests
 
             Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
         }
+
+        [TestMethod]
+        public void StatementVariableDeclarationIntAssignmentTest()
+        {
+
+            var statement = Parse.Statement(@"int i = -1;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)((PrefixUnaryExpressionSyntax)declaration.Variables.First().Initializer.Value).Operand;
+            var ssLiteral = (LiteralExpression)((UnaryExpression)ssDeclaration.Variables.First().Value).Operand;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationUIntAssignmentTest()
+        {
+
+            var statement = Parse.Statement(@"uint i = 0U;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationBooleanAssignmentTest()
+        {
+
+            var statement = Parse.Statement(@"int b = true;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationLongAssignmentTest()
+        {
+
+            var statement = Parse.Statement(@"long l = 1L;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationULongAssignmentTest()
+        {
+
+            var statement = Parse.Statement(@"ulong l = 1UL;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationDecimalAssignmentTest()
+        {
+            var statement = Parse.Statement(@"decimal d = 1.0m;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationDoubleAssignmentTest()
+        {
+            var statement = Parse.Statement(@"double d = 1.0d;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationShortAssignmentTest()
+        {
+            var statement = Parse.Statement(@"short s = (short)1;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)((CastExpressionSyntax)declaration.Variables.First().Initializer.Value).Expression;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        [TestMethod]
+        public void StatementVariableDeclarationUShortAssignmentTest()
+        {
+            var statement = Parse.Statement(@"ushort s = (ushort)1;");
+            var ssStatement = StatementBuilder.Build(statement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)((CastExpressionSyntax)declaration.Variables.First().Initializer.Value).Expression;
+            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+        }
+
+        // Todo: Test short (Int16)... no short literal specifier exists. Maybe use explicit conversion: (ushort)3.0
+        // Todo: Test ushort (UInt16)... no short literal specifier exists. Maybe use explicit conversion: (ushort)3.0
 
         [TestMethod]
         public void StatementVariableVarDeclarationAssignmentTest()

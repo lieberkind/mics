@@ -257,36 +257,34 @@ namespace MiCS.Mappers
             // Todo: Not sure the typeSymbol.Name property is the right one to use? Thinking that using the fullname (System.String and not just String) would be better.
             switch (typeSymbol.Name)
             {
-                case "String":
-                    mappedTypeName = "String";
-                    break;
+                // Todo: Where is float? IntrinsicType.Number?
                 //case IntrinsicType.Object:
                 //    mappedTypeName = "Object";
                 //    break;
-                //case IntrinsicType.Boolean:
-                //    mappedTypeName = "Boolean";
-                //    break;
-                //case IntrinsicType.String:
-                //    mappedTypeName = "String";
-                //    break;
-                //case IntrinsicType.Integer:
-                //    mappedTypeName = "Int32";
-                //    break;
-                //case IntrinsicType.UnsignedInteger:
-                //    mappedTypeName = "UInt32";
-                //    break;
-                //case IntrinsicType.Long:
-                //    mappedTypeName = "Int64";
-                //    break;
-                //case IntrinsicType.UnsignedLong:
-                //    mappedTypeName = "UInt64";
-                //    break;
-                //case IntrinsicType.Short:
-                //    mappedTypeName = "Int16";
-                //    break;
-                //case IntrinsicType.UnsignedShort:
-                //    mappedTypeName = "UInt16";
-                //    break;
+                case "Boolean":
+                    mappedTypeName = "Boolean";
+                    break;
+                case "String":
+                    mappedTypeName = "String";
+                    break;
+                case "Int32":
+                    mappedTypeName = "Int32";
+                    break;
+                case "UInt32":
+                    mappedTypeName = "UInt32";
+                    break;
+                case "Int64":
+                    mappedTypeName = "Int64";
+                    break;
+                case "UInt64":
+                    mappedTypeName = "UInt64";
+                    break;
+                case "Int16":
+                    mappedTypeName = "Int16";
+                    break;
+                case "UInt16":
+                    mappedTypeName = "UInt16";
+                    break;
                 //case IntrinsicType.Byte:
                 //    mappedTypeName = "Byte";
                 //    break;
@@ -299,12 +297,12 @@ namespace MiCS.Mappers
                 //case IntrinsicType.Date:
                 //    mappedTypeName = "Date";
                 //    break;
-                //case IntrinsicType.Decimal:
-                //    mappedTypeName = "Decimal";
-                //    break;
-                //case IntrinsicType.Double:
-                //    mappedTypeName = "Double";
-                //    break;
+                case "Decimal":
+                    mappedTypeName = "Decimal";
+                    break;
+                case "Double":
+                    mappedTypeName = "Double";
+                    break;
                 //case IntrinsicType.Delegate:
                 //    mappedTypeName = "Delegate";
                 //    break;
@@ -355,7 +353,8 @@ namespace MiCS.Mappers
                 //    mappedTypeName = "Nullable`1";
                 //    break;
                 default:
-                    throw new NotSupportedException();
+                    // Todo: Test if there will be a problem with custom and unsupported built-in types?
+                    throw new NotSupportedException("TypeSymbol type is currently not supported.");
                     break;
             }
 
