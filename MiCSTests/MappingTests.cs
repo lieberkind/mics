@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Roslyn.Compilers.CSharp;
-using ScriptSharp.ScriptModel;
+using SS = ScriptSharp.ScriptModel;
 using MiCS;
 using MiCS.Mappers;
 using MiCSTests.TestUtils;
@@ -22,10 +22,10 @@ namespace MiCSTests
         [TestMethod]
         public void NamespaceEmptyTest()
         {
-            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(@"namespace TestNamespace{ }").First();
-            var SSNamespace = RosNamespace.Map();
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(@"namespace TestNamespace{ }").First();
+            var ssNamespace = @namespace.Map();
 
-            Assert.AreEqual(RosNamespace.Name.ToString(), SSNamespace.Name);
+            Assert.AreEqual(@namespace.Name.ToString(), ssNamespace.Name);
         }
 
         [TestMethod]
@@ -42,7 +42,7 @@ namespace MiCSTests
             var SSNamespace = NamespaceBuilder.Map(RosNamespace);
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
             Assert.AreEqual(RosNamespace.Members.Count, SSNamespace.Types.Count);
             Assert.AreEqual(RosMember.Identifier.ValueText, SSMember.Name);
         }
@@ -57,17 +57,17 @@ namespace MiCSTests
                     void f() { }
                 } 
             }";
-            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = RosNamespace.Map();
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = @namespace.Map();
 
-            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
 
-            var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
-            var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
 
-            Assert.AreEqual(RosMethod.Identifier.ValueText, SSMethod.Name);
-            Assert.AreEqual(RosMethod.Body.Statements.Count, SSMethod.Implementation.Statements.Count);
+            Assert.AreEqual(method.Identifier.ValueText, ssMethod.Name);
+            Assert.AreEqual(method.Body.Statements.Count, ssMethod.Implementation.Statements.Count);
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace MiCSTests
             var SSNamespace = RosNamespace.Map();
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
 
             var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
             var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
@@ -93,7 +93,7 @@ namespace MiCSTests
             var SSStmt = SSMethod.Implementation.Statements.First();
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is VariableDeclarationStatement);
+            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
         }
 
         [TestMethod]
@@ -110,7 +110,7 @@ namespace MiCSTests
             var SSNamespace = RosNamespace.Map();
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
 
             var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
             var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
@@ -122,7 +122,7 @@ namespace MiCSTests
             var SSStmt = SSMethod.Implementation.Statements.First();
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is VariableDeclarationStatement);
+            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
         }
 
         [TestMethod]
@@ -144,7 +144,7 @@ namespace MiCSTests
             var SSNamespace = NamespaceBuilder.Map(RosNamespace);
 
             var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (ClassSymbol)SSNamespace.Types.First();
+            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
 
             var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
             var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
@@ -165,10 +165,10 @@ namespace MiCSTests
             var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is VariableDeclarationStatement);
+            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
 
             var RosDeclaration = ((LocalDeclarationStatementSyntax)RosStmt).Declaration;
-            var SSDeclaration = (VariableDeclarationStatement)SSStmt;
+            var SSDeclaration = (SS.VariableDeclarationStatement)SSStmt;
 
             Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
             Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
@@ -180,6 +180,8 @@ namespace MiCSTests
             Assert.AreEqual(RosName, SSName);
         }
 
+        #region Region: Testing TypeSymbol Mapping
+
         [TestMethod]
         public void StatementVariableDeclarationStringAssignmentTest()
         {
@@ -188,10 +190,10 @@ namespace MiCSTests
             var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is VariableDeclarationStatement);
+            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
 
             var RosDeclaration = ((LocalDeclarationStatementSyntax)RosStmt).Declaration;
-            var SSDeclaration = (VariableDeclarationStatement)SSStmt;
+            var SSDeclaration = (SS.VariableDeclarationStatement)SSStmt;
 
             Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
             Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
@@ -201,10 +203,10 @@ namespace MiCSTests
             var SSVal = SSDeclaration.Variables.First().Value;
 
             Assert.IsTrue(RosVal is LiteralExpressionSyntax);
-            Assert.IsTrue(SSVal is LiteralExpression);
+            Assert.IsTrue(SSVal is SS.LiteralExpression);
 
             var RosLiteral = (LiteralExpressionSyntax)RosVal;
-            var SSLiteral = (LiteralExpression)SSVal;
+            var SSLiteral = (SS.LiteralExpression)SSVal;
 
             Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
         }
@@ -217,10 +219,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)((PrefixUnaryExpressionSyntax)declaration.Variables.First().Initializer.Value).Operand;
-            var ssLiteral = (LiteralExpression)((UnaryExpression)ssDeclaration.Variables.First().Value).Operand;
+            var ssLiteral = (SS.LiteralExpression)((SS.UnaryExpression)ssDeclaration.Variables.First().Value).Operand;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -233,10 +235,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -249,10 +251,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -265,10 +267,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -281,10 +283,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -296,10 +298,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -311,10 +313,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -326,10 +328,10 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)((CastExpressionSyntax)declaration.Variables.First().Initializer.Value).Expression;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
@@ -341,16 +343,17 @@ namespace MiCSTests
             var ssStatement = StatementBuilder.Build(statement);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var ssDeclaration = (VariableDeclarationStatement)ssStatement;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             var literal = (LiteralExpressionSyntax)((CastExpressionSyntax)declaration.Variables.First().Initializer.Value).Expression;
-            var ssLiteral = (LiteralExpression)ssDeclaration.Variables.First().Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
 
             Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
         }
 
-        // Todo: Test short (Int16)... no short literal specifier exists. Maybe use explicit conversion: (ushort)3.0
-        // Todo: Test ushort (UInt16)... no short literal specifier exists. Maybe use explicit conversion: (ushort)3.0
+        #endregion
+
+
 
         [TestMethod]
         public void StatementVariableVarDeclarationAssignmentTest()
@@ -359,10 +362,10 @@ namespace MiCSTests
             var SSStmt = StatementBuilder.Build(RosStmt);
 
             Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is VariableDeclarationStatement);
+            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
 
             var RosDeclaration = ((LocalDeclarationStatementSyntax)RosStmt).Declaration;
-            var SSDeclaration = (VariableDeclarationStatement)SSStmt;
+            var SSDeclaration = (SS.VariableDeclarationStatement)SSStmt;
 
             Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
             Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
@@ -372,10 +375,10 @@ namespace MiCSTests
             var SSVal = SSDeclaration.Variables.First().Value;
 
             Assert.IsTrue(RosVal is LiteralExpressionSyntax);
-            Assert.IsTrue(SSVal is LiteralExpression);
+            Assert.IsTrue(SSVal is SS.LiteralExpression);
 
             var RosLiteral = (LiteralExpressionSyntax)RosVal;
-            var SSLiteral = (LiteralExpression)SSVal;
+            var SSLiteral = (SS.LiteralExpression)SSVal;
 
             Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
         }
@@ -386,11 +389,11 @@ namespace MiCSTests
             var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
             var SSStmt = StatementBuilder.Build(RosStmt);
 
-            Assert.IsTrue(SSStmt is ExpressionStatement);
+            Assert.IsTrue(SSStmt is SS.ExpressionStatement);
 
-            var SSExpr = ((ExpressionStatement)SSStmt).Expression;
+            var SSExpr = ((SS.ExpressionStatement)SSStmt).Expression;
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
         }
 
         [TestMethod]
@@ -406,13 +409,13 @@ namespace MiCSTests
             var RosStmt = Parse.Statement(@"if (true) { int i; } else { int i; }");
             var SSStmt = StatementBuilder.Build(RosStmt);
 
-            Assert.IsTrue(SSStmt is IfElseStatement);
+            Assert.IsTrue(SSStmt is SS.IfElseStatement);
 
-            var SSIfElseStmt = (IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
 
-            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
-            Assert.IsTrue(SSIfElseStmt.IfStatement is BlockStatement);
-            Assert.IsTrue(SSIfElseStmt.ElseStatement is BlockStatement);
+            Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is SS.BlockStatement);
+            Assert.IsTrue(SSIfElseStmt.ElseStatement is SS.BlockStatement);
         }
 
         [TestMethod]
@@ -421,12 +424,12 @@ namespace MiCSTests
             var RosStmt = Parse.Statement(@"if (true) { int i; } ");
             var SSStmt = StatementBuilder.Build(RosStmt);
 
-            Assert.IsTrue(SSStmt is IfElseStatement);
+            Assert.IsTrue(SSStmt is SS.IfElseStatement);
 
-            var SSIfElseStmt = (IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
 
-            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
-            Assert.IsTrue(SSIfElseStmt.IfStatement is BlockStatement);
+            Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is SS.BlockStatement);
             Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
         }
 
@@ -442,13 +445,13 @@ namespace MiCSTests
 
             var SSStmt = StatementBuilder.Build(RosStmt);
 
-            Assert.IsTrue(SSStmt is IfElseStatement);
+            Assert.IsTrue(SSStmt is SS.IfElseStatement);
 
-            var SSIfElseStmt = (IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
 
-            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
-            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement);
-            Assert.IsTrue(SSIfElseStmt.ElseStatement is VariableDeclarationStatement);
+            Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is SS.VariableDeclarationStatement);
+            Assert.IsTrue(SSIfElseStmt.ElseStatement is SS.VariableDeclarationStatement);
         }
 
         [TestMethod]
@@ -457,12 +460,12 @@ namespace MiCSTests
             var RosStmt = Parse.Statement(@"if (true) int i;");
             var SSStmt = StatementBuilder.Build(RosStmt);
 
-            Assert.IsTrue(SSStmt is IfElseStatement);
+            Assert.IsTrue(SSStmt is SS.IfElseStatement);
 
-            var SSIfElseStmt = (IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
 
-            Assert.IsTrue(SSIfElseStmt.Condition is LiteralExpression);
-            Assert.IsTrue(SSIfElseStmt.IfStatement is VariableDeclarationStatement);
+            Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
+            Assert.IsTrue(SSIfElseStmt.IfStatement is SS.VariableDeclarationStatement);
             Assert.IsTrue(SSIfElseStmt.ElseStatement == null);
         }
 
@@ -472,11 +475,11 @@ namespace MiCSTests
             var RosStmt = Parse.Statement(@"return 12;");
             var SSStmt = StatementBuilder.Build(RosStmt);
 
-            Assert.IsTrue(SSStmt is ReturnStatement);
+            Assert.IsTrue(SSStmt is SS.ReturnStatement);
 
-            var returnStmt = (ReturnStatement)SSStmt;
+            var returnStmt = (SS.ReturnStatement)SSStmt;
 
-            Assert.IsTrue(returnStmt.Value is LiteralExpression);
+            Assert.IsTrue(returnStmt.Value is SS.LiteralExpression);
         }
 
         [TestMethod]
@@ -501,13 +504,13 @@ namespace MiCSTests
             var roslynNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
 
             var scriptSharpNamespace = NamespaceBuilder.Map(roslynNamespace);
-            var foo = (ClassSymbol)scriptSharpNamespace.Types.First();
+            var foo = (SS.ClassSymbol)scriptSharpNamespace.Types.First();
             var g = (ScriptSharp.ScriptModel.MethodSymbol)foo.Members.ElementAt(1);
-            var expressionStatement = (ExpressionStatement)g.Implementation.Statements.First();
-            var expression = ((MethodExpression)expressionStatement.Expression);
+            var expressionStatement = (SS.ExpressionStatement)g.Implementation.Statements.First();
+            var expression = ((SS.MethodExpression)expressionStatement.Expression);
             var invocationTarget = expression.Method;
 
-            Assert.IsTrue(expression.ObjectReference is ThisExpression);
+            Assert.IsTrue(expression.ObjectReference is SS.ThisExpression);
             Assert.IsTrue(expression.Parameters.Count == 0);
             Assert.IsTrue(invocationTarget.Name.Equals("f"));          
 
@@ -534,13 +537,13 @@ namespace MiCSTests
             var roslynExpression = Parse.Expression("2 > 1 ? 10 : 0");
             var scriptSharpExpression = ExpressionBuilder.Build(roslynExpression);
 
-            Assert.IsTrue(scriptSharpExpression is ConditionalExpression);
+            Assert.IsTrue(scriptSharpExpression is SS.ConditionalExpression);
 
-            var cExpr = (ConditionalExpression)scriptSharpExpression;
+            var cExpr = (SS.ConditionalExpression)scriptSharpExpression;
 
-            Assert.IsTrue(cExpr.Condition is BinaryExpression);
-            Assert.IsTrue(cExpr.TrueValue is LiteralExpression);
-            Assert.IsTrue(cExpr.FalseValue is LiteralExpression);
+            Assert.IsTrue(cExpr.Condition is SS.BinaryExpression);
+            Assert.IsTrue(cExpr.TrueValue is SS.LiteralExpression);
+            Assert.IsTrue(cExpr.FalseValue is SS.LiteralExpression);
         }
 
         [TestMethod]
@@ -571,7 +574,7 @@ namespace MiCSTests
             Assert.IsTrue(oces.Count() == 1);
 
             // Todo: Fuckly hack! This should be changed!
-            var SSNe = ((ObjectCreationExpressionSyntax)oces.First()).Map(new ClassSymbol("Person", new ScriptSharp.ScriptModel.NamespaceSymbol("dummyNamespace", null)));
+            var SSNe = ((ObjectCreationExpressionSyntax)oces.First()).Map(new SS.ClassSymbol("Person", new ScriptSharp.ScriptModel.NamespaceSymbol("dummyNamespace", null)));
             Assert.IsTrue(SSNe.EvaluatedType.GeneratedName == "Person");
         }
 
@@ -582,16 +585,16 @@ namespace MiCSTests
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is PrefixUnaryExpressionSyntax);
-            Assert.IsTrue(SSExpr is UnaryExpression);
+            Assert.IsTrue(SSExpr is SS.UnaryExpression);
 
             var RosUnaryExpr = (PrefixUnaryExpressionSyntax)RosExpr;
-            var SSUnaryExpression = (UnaryExpression)SSExpr;
+            var SSUnaryExpression = (SS.UnaryExpression)SSExpr;
 
             Assert.IsTrue(RosUnaryExpr.OperatorToken.Kind == SyntaxKind.MinusToken);
-            Assert.IsTrue(SSUnaryExpression.Operator == Operator.Minus);
-            Assert.IsTrue(SSUnaryExpression.Operand is LiteralExpression);
+            Assert.IsTrue(SSUnaryExpression.Operator == SS.Operator.Minus);
+            Assert.IsTrue(SSUnaryExpression.Operand is SS.LiteralExpression);
 
-            var SSLiteral = (LiteralExpression)SSUnaryExpression.Operand;
+            var SSLiteral = (SS.LiteralExpression)SSUnaryExpression.Operand;
             Assert.AreEqual(SSLiteral.Value, 1);
         }
 
@@ -606,10 +609,10 @@ namespace MiCSTests
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
+            Assert.IsTrue(SSExpr is SS.LiteralExpression);
 
             var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
+            var SSLiteral = (SS.LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
             Assert.AreEqual(SSLiteral.Value, "foo");
@@ -622,10 +625,10 @@ namespace MiCSTests
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
+            Assert.IsTrue(SSExpr is SS.LiteralExpression);
 
             var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
+            var SSLiteral = (SS.LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
             Assert.AreEqual(SSLiteral.Value, 1);
@@ -638,10 +641,10 @@ namespace MiCSTests
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
+            Assert.IsTrue(SSExpr is SS.LiteralExpression);
 
             var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
+            var SSLiteral = (SS.LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
             Assert.AreEqual(SSLiteral.Value, true);
@@ -654,10 +657,10 @@ namespace MiCSTests
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
+            Assert.IsTrue(SSExpr is SS.LiteralExpression);
 
             var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
+            var SSLiteral = (SS.LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
             Assert.AreEqual(SSLiteral.Value, false);
@@ -670,10 +673,10 @@ namespace MiCSTests
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
             Assert.IsTrue(RosExpr is LiteralExpressionSyntax);
-            Assert.IsTrue(SSExpr is LiteralExpression);
+            Assert.IsTrue(SSExpr is SS.LiteralExpression);
 
             var RosLiteral = (LiteralExpressionSyntax)RosExpr;
-            var SSLiteral = (LiteralExpression)SSExpr;
+            var SSLiteral = (SS.LiteralExpression)SSExpr;
 
             Assert.AreEqual(RosLiteral.Token.Value, SSLiteral.Value);
             Assert.AreEqual(SSLiteral.Value, null);
@@ -690,14 +693,14 @@ namespace MiCSTests
             var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
             var SSStmt = StatementBuilder.Build(RosStmt);
 
-            Assert.IsTrue(SSStmt is ExpressionStatement);
+            Assert.IsTrue(SSStmt is SS.ExpressionStatement);
 
-            var SSExpr = (BinaryExpression)((ExpressionStatement)SSStmt).Expression;
+            var SSExpr = (SS.BinaryExpression)((SS.ExpressionStatement)SSStmt).Expression;
 
-            Assert.IsTrue(SSExpr.Operator == Operator.Equals);
-            Assert.IsTrue(SSExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSExpr.LeftOperand is LocalExpression);
-            Assert.IsTrue(((LocalExpression)SSExpr.LeftOperand).Symbol is VariableSymbol);
+            Assert.IsTrue(SSExpr.Operator == SS.Operator.Equals);
+            Assert.IsTrue(SSExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSExpr.LeftOperand is SS.LocalExpression);
+            Assert.IsTrue(((SS.LocalExpression)SSExpr.LeftOperand).Symbol is SS.VariableSymbol);
         }
 
 
@@ -707,13 +710,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 + 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Plus);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.Plus);
         }
 
         [TestMethod]
@@ -722,13 +725,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 - 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Minus);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.Minus);
         }
 
         [TestMethod]
@@ -737,13 +740,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 * 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Multiply);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.Multiply);
         }
 
         [TestMethod]
@@ -752,13 +755,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 / 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Divide);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.Divide);
         }
 
         [TestMethod]
@@ -767,13 +770,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 % 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Mod);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.Mod);
         }
 
 
@@ -783,13 +786,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 == 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.EqualEqual);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.EqualEqual);
         }
 
         [TestMethod]
@@ -798,13 +801,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 != 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.NotEqual);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.NotEqual);
         }
 
         [TestMethod]
@@ -813,13 +816,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 > 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Greater);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.Greater);
         }
 
         [TestMethod]
@@ -828,13 +831,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 < 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.Less);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.Less);
         }
 
         [TestMethod]
@@ -843,13 +846,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 >= 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.GreaterEqual);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.GreaterEqual);
         }
 
         [TestMethod]
@@ -858,13 +861,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("1 <= 1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.LessEqual);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.LessEqual);
         }
 
         [TestMethod]
@@ -873,13 +876,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("true && -1 > 6");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is BinaryExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.LogicalAnd);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.BinaryExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.LogicalAnd);
         }
 
         [TestMethod]
@@ -888,13 +891,13 @@ namespace MiCSTests
             var RosExpr = Parse.Expression("true || 1 > -1");
             var SSExpr = ExpressionBuilder.Build(RosExpr);
 
-            Assert.IsTrue(SSExpr is BinaryExpression);
+            Assert.IsTrue(SSExpr is SS.BinaryExpression);
 
-            var SSBinaryExpr = (BinaryExpression)SSExpr;
+            var SSBinaryExpr = (SS.BinaryExpression)SSExpr;
 
-            Assert.IsTrue(SSBinaryExpr.LeftOperand is LiteralExpression);
-            Assert.IsTrue(SSBinaryExpr.RightOperand is BinaryExpression);
-            Assert.IsTrue(SSBinaryExpr.Operator == Operator.LogicalOr);
+            Assert.IsTrue(SSBinaryExpr.LeftOperand is SS.LiteralExpression);
+            Assert.IsTrue(SSBinaryExpr.RightOperand is SS.BinaryExpression);
+            Assert.IsTrue(SSBinaryExpr.Operator == SS.Operator.LogicalOr);
         }
 
 
