@@ -25,6 +25,8 @@ namespace MiCS.Builders
         {
             var ssMethod = method.Map(ssParentClass, ssParentNamespace);
 
+            //var ssMethodImplementation = new SS.SymbolImplementation(
+            //ssMethod.AddImplementation(
             //var statementBuilder = new StatementBuilder(
 
             ssMethods.Add(ssMethod);
@@ -32,12 +34,23 @@ namespace MiCS.Builders
             //base.VisitMethodDeclaration(node);
         }
 
-        public static SS.MethodSymbol Build(MethodDeclarationSyntax method, SS.ClassSymbol ssClass, SS.NamespaceSymbol ssNamespace)
+        public static SS.MethodSymbol Build(SyntaxNode node, SS.ClassSymbol ssClass, SS.NamespaceSymbol ssNamespace)
         {
             var methodBuilder = new MethodBuilder(ssClass, ssNamespace);
-            methodBuilder.Visit(method);
+            methodBuilder.Visit(node);
+
+            if (methodBuilder.ssMethods.Count != 1)
+                throw new Exception("Trying to build a single method but there are multiple!");
 
             return methodBuilder.ssMethods.First();
+        }
+
+        public static List<SS.MethodSymbol> BuildList(SyntaxNode node, SS.ClassSymbol ssClass, SS.NamespaceSymbol ssNamespace)
+        {
+            var methodBuilder = new MethodBuilder(ssClass, ssNamespace);
+            methodBuilder.Visit(node);
+
+            return methodBuilder.ssMethods;
         }
     }
 }

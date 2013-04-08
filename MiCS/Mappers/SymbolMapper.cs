@@ -81,9 +81,9 @@ namespace MiCS.Mappers
         }
 
 
-        static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable)
+        static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable, TypeInfo typeInfo)
         {
-            var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(variable.Initializer.Value);
+            //var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(variable.Parent);
 
             // Todo: Pass parent value and not null.
             return new SS.VariableSymbol(variable.Identifier.ValueText, null, typeInfo.Type.Map());

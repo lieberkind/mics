@@ -13,7 +13,9 @@ namespace MiCSTests.TestUtils
 
         public static CompilationUnitSyntax CompilationUnit(string source)
         {
-            var syntaxTree = SyntaxTree.ParseText(source);
+            //var syntaxTree = SyntaxTree.ParseText(source);
+            MiCSManager.Initiate(source);
+            var syntaxTree = MiCSManager.Tree;
             if (!Syntax.IsCompleteSubmission(syntaxTree))
                 throw new Exception("Source submission failed!");
             return syntaxTree.GetRoot();
@@ -26,11 +28,16 @@ namespace MiCSTests.TestUtils
             return namespaces;
         }
 
+        public static IEnumerable<SyntaxNode> Namespaces(CompilationUnitSyntax root)
+        {
+            var namespaces = root.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration);
+            return namespaces;
+        }
+
         public static IEnumerable<SyntaxNode> Classes(string classSource)
         {
-            var mm = new MiCSManager(@"namespace TestNameSpace{ " + classSource + @" }");
-            //var cUnit = CompilationUnit(@"namespace TestNameSpace{ " + classSource + @" }");
-            var cUnit = MiCSManager.CompilationUnit;
+            var cUnit = CompilationUnit(@"namespace TestNameSpace{ " + classSource + @" }");
+
             var namespaces = cUnit.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration);
             return namespaces.First().DescendantNodes().Where(m => m.Kind == SyntaxKind.ClassDeclaration);
         }

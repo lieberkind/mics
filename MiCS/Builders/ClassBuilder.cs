@@ -23,10 +23,12 @@ namespace MiCS.Builders
         {
             var ssClass = @class.Map(ssParentNamespace);
 
-            var methodBuilder = new MethodBuilder(ssClass, ssParentNamespace);
-            methodBuilder.Visit(@class);
+            //var methodBuilder = new MethodBuilder(ssClass, ssParentNamespace);
+            //methodBuilder.Visit(@class);
 
-            ssClass.Members.AddRange(methodBuilder.ssMethods);
+            //ssClass.Members.AddRange(methodBuilder.ssMethods);
+
+            ssClass.Members.AddRange(MethodBuilder.BuildList(@class, ssClass, ssParentNamespace));
 
             ssClasses.Add(ssClass);
 

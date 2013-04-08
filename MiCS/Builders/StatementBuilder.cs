@@ -20,6 +20,11 @@ namespace MiCS.Builders
             this.typeReference = typeReference;
         }
 
+        public override void DefaultVisit(SyntaxNode node)
+        {
+            base.DefaultVisit(node);
+        }
+
         public override void VisitIfStatement(IfStatementSyntax ifStatement)
         {
             var ssCondition = ExpressionBuilder.Build(ifStatement.Condition);
@@ -79,8 +84,10 @@ namespace MiCS.Builders
             var identifier = variable.Identifier;
             if (identifier.Kind != SyntaxKind.IdentifierToken)
                 throw new NotSupportedException(); // Todo: Maybe not a necesary check...
+ 
 
-            var ssVariable = variable.Map();
+            var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(localDeclarationStatement.Declaration.Type);
+            var ssVariable = variable.Map(typeInfo);
 
             var initializer = variable.Initializer;
             if (initializer != null)
@@ -114,6 +121,14 @@ namespace MiCS.Builders
         {
             var statementBuilder = new StatementBuilder(typeReference);
             statementBuilder.Visit(statement);
+
+            return statementBuilder.ssStatements;
+        }
+
+        public static List<SS.Statement> BuildList(SyntaxNode node, SS.ClassSymbol typeReference = null)
+        {
+            var statementBuilder = new StatementBuilder(typeReference);
+            statementBuilder.Visit(node);
 
             return statementBuilder.ssStatements;
         }

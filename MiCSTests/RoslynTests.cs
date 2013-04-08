@@ -9,6 +9,7 @@ using Roslyn.Compilers.CSharp;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using MiCSTests.TestUtils;
+using MiCS;
 namespace MiCSTests
 {
     [TestClass]
@@ -26,6 +27,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NoMixedOrClientSideException))]
         public void RoslynClassTest()
         {
             var classes = Parse.Classes(@"class TestClass{ }");
@@ -38,41 +40,25 @@ namespace MiCSTests
         [TestMethod]
         public void RoslynMethodTest()
        { 
-            var methods = Parse.Methods(@"void TestMethod() { }");
+            var methods = Parse.Methods(@"void [MixedSide]
+                                                TestMethod() { }");
             Assert.IsTrue(methods.Count() == 1);
 
             var method = (MethodDeclarationSyntax)methods.First();
             Assert.IsTrue(method.Identifier.Value.Equals("TestMethod"));
         }
 
-        //[TestMethod]
-        //public void RoslynSyntaxListTest()
-        //{
-        //    Syntax.List(
-        //    var list = new SyntaxList<MethodDeclarationSyntax>();
-        //    var mD = Syntax.MethodDeclaration(Syntax.IdentifierName("typeIdenifierName"), "name");
-        //    //list.Add(mD);
-        //    var l = new List<MethodDeclarationSyntax>();
-        //    l.Add(mD);
-        //    var clist = list.Concat<MethodDeclarationSyntax>(mD);
-        //    Assert.IsTrue(list.Count == 0);
 
-        //}
 
 
 
         #region Region: Statement Tests
 
-        private IEnumerable<SyntaxNode> ParseStatements(string statements)
-        {
-            var methods = Parse.Methods(@"void TestMethod() { " + statements + " }");
-            var method = (MethodDeclarationSyntax)methods.First();
-            return method.Body.DescendantNodes();
-        }
+
 
         private SyntaxNode ParseStatement(string statement)
         {
-            var statements = ParseStatements(statement);
+            var statements = Parse.Statements(statement);
             if (statements.Count() != 1) throw new Exception();
             return statements.First();
         }

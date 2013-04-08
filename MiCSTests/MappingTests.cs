@@ -20,6 +20,24 @@ namespace MiCSTests
     {
 
         [TestMethod]
+        public void MiCSManagerTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    void f() { }
+                } 
+                class TestClass2 { 
+                    [MixedSide]
+                    void f() { }
+                } 
+            }";
+
+            MiCSManager.Initiate(source);
+            Assert.IsTrue(((NamespaceDeclarationSyntax)MiCSManager.MixedSideCompilationUnit.Members[0]).Members.Count == 1);
+        }
+
+        [TestMethod]
         public void NamespaceEmptyTest()
         {
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(@"namespace TestNamespace{ }").First();
@@ -77,11 +95,11 @@ namespace MiCSTests
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
-                    void f() { int i; }
+                    void f() { int i = 0; }
                 } 
             }";
             MiCSManager.Initiate(source);
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(MiCSManager.CompilationUnit).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
             var member = (ClassDeclarationSyntax)@namespace.Members.First();

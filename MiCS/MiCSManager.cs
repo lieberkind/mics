@@ -19,26 +19,66 @@ namespace MiCS
     public class MiCSManager
     {
         private string _source;
+        public static SyntaxTree Tree
+        {
+            get
+            {
+                return Instance._tree;
+            }
+        }
         private SyntaxTree _tree;
-        private SyntaxTree _mixedSideTree;
-        private Compilation _mixedSideCompilation;
-        private CompilationUnitSyntax _mixedSideCompilationUnit;
-        private SemanticModel _mixedSideSemanticModel;
 
-        public static SemanticModel SemanticModel
+        public static SyntaxTree MixedSideTree
+        {
+            get
+            {
+                if (Instance._mixedSideTree == null)
+                    throw new Exception("MixedSide tree is null!");
+                return Instance._mixedSideTree;
+            }
+        }
+        private SyntaxTree _mixedSideTree;
+
+
+        private Compilation _mixedSideCompilation;
+        private Compilation _compilation;
+
+        public static CompilationUnitSyntax MixedSideCompilationUnit
+        {
+            get
+            {
+                return Instance._mixedSideCompilationUnit;
+            }
+        }
+        private CompilationUnitSyntax _mixedSideCompilationUnit;
+
+        public static SemanticModel MixedSideSemanticModel
         {
             get
             {
                 return Instance._mixedSideSemanticModel;
             }
         }
+        private SemanticModel _mixedSideSemanticModel;
+
+        public static SemanticModel SemanticModel
+        {
+            get
+            {
+                return Instance._semanticModel;
+            }
+        }
+        private SemanticModel _semanticModel;
+
+
         public static CompilationUnitSyntax CompilationUnit
         {
             get
             {
-                return Instance._mixedSideTree.GetRoot();
+                return Instance._compilationUnit;
             }
         }
+        private CompilationUnitSyntax _compilationUnit;
 
         public static void Initiate(string source)
         {
@@ -49,7 +89,8 @@ namespace MiCS
         {
             _source = source;
             _tree = SyntaxTree.ParseText(source);
-            _mixedSideCompilationUnit = GetMixedSideCompilationUnit(_tree.GetRoot());
+            _compilationUnit = _tree.GetRoot();
+            _mixedSideCompilationUnit = GetMixedSideCompilationUnit(_compilationUnit);
             _mixedSideTree = _tree.WithChangedText(_mixedSideCompilationUnit.GetText());
 
             // Todo: Investigate maybe...
@@ -61,6 +102,10 @@ namespace MiCS
              * Not sure if any other assemblies (other than mscorlib) are required?
              */
             var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
+
+            _compilation = Compilation.Create("MixedSideCompilation", syntaxTrees: new[] { _tree }, references: new[] { mscorlib });
+            _semanticModel = _compilation.GetSemanticModel(_tree);
+
             _mixedSideCompilation = Compilation.Create("MixedSideCompilation", syntaxTrees: new[] { _mixedSideTree }, references: new[] { mscorlib });
             _mixedSideSemanticModel = _mixedSideCompilation.GetSemanticModel(_mixedSideTree);
 
@@ -72,7 +117,7 @@ namespace MiCS
         {
             get
             {
-                if (_Instance == null) throw new Exception("MiCSManager is not instantiated!");
+                if (MiCSManager._Instance == null) throw new Exception("MiCSManager is not instantiated!");
                 return _Instance;
             }
         }
@@ -144,7 +189,7 @@ namespace MiCS
 
 
             if (mixedSideCompilationUnit == null)
-                throw new Exception("No MixedSide or ClientSide attributed code was found!");
+                throw new NoMixedOrClientSideException("No MixedSide or ClientSide attributed code was found!");
 
             return mixedSideCompilationUnit;
         }
@@ -185,5 +230,17 @@ namespace MiCS
 
             return stringWriter.ToString();
         }
+    }
+
+    [Serializable]
+    public class NoMixedOrClientSideException : Exception
+    {
+        public NoMixedOrClientSideException() { }
+        public NoMixedOrClientSideException(string message) : base(message) { }
+        public NoMixedOrClientSideException(string message, Exception inner) : base(message, inner) { }
+        protected NoMixedOrClientSideException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
     }
 }
