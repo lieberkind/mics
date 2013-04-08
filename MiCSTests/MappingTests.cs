@@ -116,23 +116,23 @@ namespace MiCSTests
                     void f() { int i; }
                 } 
             }";
-            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = RosNamespace.Map();
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
-            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
 
-            var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
-            var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
 
-            var RosReturnTypeName = ((PredefinedTypeSyntax)RosMethod.ReturnType).Keyword.ValueText;
-            Assert.AreEqual(RosReturnTypeName, SSMethod.AssociatedType.Name);
+            var returnTypeName = ((PredefinedTypeSyntax)method.ReturnType).Keyword.ValueText;
+            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name);
 
-            var RosStmt = RosMethod.Body.Statements.First();
-            var SSStmt = SSMethod.Implementation.Statements.First();
+            var statement = method.Body.Statements.First();
+            var ssStatement = ssMethod.Implementation.Statements.First();
 
-            Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
         }
 
         [TestMethod]
@@ -150,17 +150,17 @@ namespace MiCSTests
                     void f() { int i; }
                 } 
             }";
-            var RosNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var SSNamespace = NamespaceBuilder.Build(RosNamespace);
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
-            var RosMember = (ClassDeclarationSyntax)RosNamespace.Members.First();
-            var SSMember = (SS.ClassSymbol)SSNamespace.Types.First();
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
 
-            var RosMethod = (MethodDeclarationSyntax)RosMember.Members.First();
-            var SSMethod = (ScriptSharp.ScriptModel.MethodSymbol)SSMember.Members.First();
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
 
-            var RosReturnTypeName = ((IdentifierNameSyntax)RosMethod.ReturnType).Identifier.ValueText;
-            Assert.AreEqual(RosReturnTypeName, SSMethod.AssociatedType.Name);
+            var returnTypeName = ((IdentifierNameSyntax)method.ReturnType).Identifier.ValueText;
+            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name);
 
         }
 
@@ -522,7 +522,7 @@ namespace MiCSTests
 
             Assert.IsTrue(expression.ObjectReference is SS.ThisExpression);
             Assert.IsTrue(expression.Parameters.Count == 0);
-            Assert.IsTrue(invocationTarget.Name.Equals("f"));          
+            Assert.IsTrue(invocationTarget.Name.Equals("f"));
 
             /*
              * The property InvocationTarget.Implementation has an 
@@ -533,6 +533,7 @@ namespace MiCSTests
              */
 
         }
+
         // Todo: Static member invocation and regular member invocation (none local/this invocation).
 
         // Todo: Add more statements tests...

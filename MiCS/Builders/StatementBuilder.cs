@@ -48,7 +48,8 @@ namespace MiCS.Builders
             }
 
             ssBlock.Statements.AddRange(ssChildStatements);
-            
+            ssStatements.Add(ssBlock);
+
             //base.VisitBlock(block);
         }
 
