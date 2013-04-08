@@ -64,7 +64,7 @@ namespace MiCS.Builders
 
         public override void VisitExpressionStatement(ExpressionStatementSyntax expressionStatement)
         {
-            var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression);
+            var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression, typeReference);
             
             ssStatements.Add(expressionStatement.Map(ssExpression));
 
@@ -109,7 +109,7 @@ namespace MiCS.Builders
 
             //ssStatements.Add(localDeclarationStatement.Map(typeReference));
 
-            base.VisitLocalDeclarationStatement(localDeclarationStatement);
+            //base.VisitLocalDeclarationStatement(localDeclarationStatement);
         }
 
         public static SS.Statement Build(StatementSyntax statement, SS.ClassSymbol typeReference = null)

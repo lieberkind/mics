@@ -19,7 +19,8 @@ namespace MiCSTests
         [TestMethod]
         public void RoslynNamespaceTest()
         {
-            var namespaces = Parse.Namespaces(@"namespace TestNameSpace{ }");
+            var namespaces = Parse.Namespaces(@"namespace TestNameSpace{ class TestClass { [MixedSide]
+                                                void f() { } } }");
             Assert.IsTrue(namespaces.Count() == 1);
 
             var ns = (NamespaceDeclarationSyntax)namespaces.First();
@@ -27,10 +28,10 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(NoMixedOrClientSideException))]
         public void RoslynClassTest()
         {
-            var classes = Parse.Classes(@"class TestClass{ }");
+            var classes = Parse.Classes(@"class TestClass{ [MixedSide]
+                                                void f() { } }");
             Assert.IsTrue(classes.Count() == 1);
 
             var cl = (ClassDeclarationSyntax)classes.First();

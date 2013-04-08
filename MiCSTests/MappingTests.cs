@@ -38,15 +38,6 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void NamespaceEmptyTest()
-        {
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(@"namespace TestNamespace{ }").First();
-            var ssNamespace = @namespace.Map();
-
-            Assert.AreEqual(@namespace.Name.ToString(), ssNamespace.Name);
-        }
-
-        [TestMethod]
         public void NamespaceMemberTest()
         {
             var source = @"
