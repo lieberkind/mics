@@ -193,6 +193,50 @@ namespace MiCSTests
         #region Region: Testing TypeSymbol Mapping
 
         [TestMethod]
+        public void TypeSymbolDeclarationTest()
+        {
+
+            var statement = (LocalDeclarationStatementSyntax)Parse.Statement(@"int i;");
+            var ssStatement = (SS.VariableDeclarationStatement)StatementBuilder.Build(statement);
+
+            var @type = MiCSManager.SemanticModel.GetTypeInfo(statement.Declaration.Type).Type;
+            Assert.IsTrue(@type is NamedTypeSymbol);
+            Assert.IsTrue(@type.Name.Equals("Int32"));
+
+            var ssVariable = ssStatement.Variables.ElementAt(0);
+            Assert.IsTrue(ssVariable.ValueType.Name.Equals("Int32"));
+
+        }
+
+        [TestMethod]
+        public void TypeSymbolInvocationTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    int f() { return 3; }
+
+                    [MixedSide]
+                    int g() { return f(); }
+                } 
+
+            }";
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var invocation = (InvocationExpressionSyntax)@namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.InvocationExpression).First();
+            var invokedSymbol = MiCSManager.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
+
+            var methodDeclaration = (MethodDeclarationSyntax)invokedSymbol.DeclaringSyntaxNodes[0];
+
+            var @type = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
+          
+            Assert.AreEqual(@type.Name, "Int32");
+
+        }
+
+        [TestMethod]
         public void StatementVariableDeclarationStringAssignmentTest()
         {
 

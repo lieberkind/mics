@@ -26,7 +26,7 @@ namespace MiCS.Mappers
             //var parentNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol("ns", null);
 
             var returnTypeStr = "";
-
+            
             if (methodDeclaration.ReturnType is IdentifierNameSyntax)      // Custom complex types.
                 returnTypeStr = ((IdentifierNameSyntax)methodDeclaration.ReturnType).Identifier.ValueText;
             else if (methodDeclaration.ReturnType is PredefinedTypeSyntax) // Predefined types like void and string
