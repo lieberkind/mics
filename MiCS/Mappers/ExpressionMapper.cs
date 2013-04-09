@@ -260,6 +260,11 @@ namespace MiCS.Mappers
             }
         }
 
+        static internal SS.FieldExpression Map(this MemberAccessExpressionSyntax memberAccess, SS.Expression ssObjectReference, SS.FieldSymbol ssField)
+        {
+            return new SS.FieldExpression(ssObjectReference, ssField);
+        }
+
         static internal SS.ConditionalExpression Map(this ConditionalExpressionSyntax conditionalExpression, 
             SS.Expression ssCondition, 
             SS.Expression ssTrueExpression, 

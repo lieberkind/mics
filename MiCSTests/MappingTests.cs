@@ -165,6 +165,9 @@ namespace MiCSTests
         }
 
 
+
+
+
         #region Region: Statement Test
 
 
@@ -234,6 +237,30 @@ namespace MiCSTests
           
             Assert.AreEqual(@type.Name, "Int32");
 
+        }
+
+        [TestMethod]
+        public void TypeSymbolFieldTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    int f() { var s = ""hello""; return s.Length; }
+                } 
+            }";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var memberAccess = (MemberAccessExpressionSyntax)@namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.MemberAccessExpression).First();
+
+            var ssMethod = (SS.MethodSymbol)ssNamespace.Types.ElementAt(0).Members.ElementAt(0);
+            var ssReturnStatement = (SS.ReturnStatement)ssMethod.Implementation.Statements.ElementAt(1);
+            Assert.IsTrue(ssReturnStatement.Value is SS.FieldExpression);
+
+            var ssFieldExpression = (SS.FieldExpression)ssReturnStatement.Value;
+            Assert.IsTrue(ssFieldExpression.Field.AssociatedType.Name.Equals("Int32"));
         }
 
         [TestMethod]

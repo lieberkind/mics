@@ -89,7 +89,22 @@ namespace MiCS.Builders
             var ssFalseExpression = ExpressionBuilder.Build(conditionalExpression.WhenFalse);
 
             ssExpressions.Add(conditionalExpression.Map(ssCondition, ssTrueExpression, ssFalseExpression));
+
+            //base.VisitConditionalExpression(node);
+        }
+
+        public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax memberAccess)
+        {
+            var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression);
+            var ssParentType = MiCSManager.SemanticModel.GetTypeInfo(memberAccess.Expression).Type.Map();
+            var ssType = MiCSManager.SemanticModel.GetTypeInfo(memberAccess.Name).Type.Map();
+            var ssFieldName = memberAccess.Name.Identifier.ValueText;
             
+            var ssField = new SS.FieldSymbol(ssFieldName, ssParentType, ssType); 
+            var ssFieldExpression = new SS.FieldExpression(ssObjectReference, ssField);
+
+            ssExpressions.Add(ssFieldExpression);
+
             //base.VisitConditionalExpression(node);
         }
 
