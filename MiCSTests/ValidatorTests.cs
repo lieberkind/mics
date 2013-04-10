@@ -55,7 +55,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ValidationPassesWhenTreeIsValid()
+        public void MixedSideValidationPassesWhenTreeIsValid()
         {
             string treeText = @"
                 using MiCS;
@@ -94,6 +94,140 @@ namespace MiCSTests
             mixedSideValidator.Validate();
 
             Assert.IsTrue(mixedSideValidator.IsValid);
+        }
+
+        [TestMethod]
+        public void MixedSideValidationFailWhenMixedSideCallsNonMixedSide()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+
+                        }
+
+                        public void MethodWithMixedSideAttribute()
+                        {
+                        }
+
+                        [MixedSide]
+                        public void TestFunction(string name, string name2, string name3)
+                        {
+                            Person p = new Person(""Tomas"");
+                            p.MethodWithMixedSideAttribute();
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
+            mixedSideValidator.Validate();
+
+            Assert.IsFalse(mixedSideValidator.IsValid);
+        }
+
+        [TestMethod]
+        public void ClientSideValidationPassesWhenTreeIsValid()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+
+                        }
+
+                        [MixedSide]
+                        public void IDontDoAnythingButAtLeastImMixedSide()
+                        {
+                        }
+
+                        [ClientSide]
+                        public void MethodWithMixedSideAttribute()
+                        {
+                        }
+
+                        [ClientSide]
+                        public void TestFunction(string name, string name2, string name3)
+                        {
+                            Person p = new Person(""Tomas"");
+                            p.MethodWithMixedSideAttribute();
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            var clientSideValidator = new ClientSideValidator(MiCSManager.CompilationUnit);
+            clientSideValidator.Validate();
+
+            Assert.IsTrue(clientSideValidator.IsValid);
+        }
+
+        [TestMethod]
+        public void ClientSideValidationFailWhenMixedSideCallsNonMixedOrClientSide()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+
+                        }
+
+                        [MixedSide]
+                        public void IDontDoAnythingButAtLeastImMixedSide()
+                        {
+                        }
+
+                        public void MethodWithMixedSideAttribute()
+                        {
+                        }
+
+                        [ClientSide]
+                        public void TestFunction(string name, string name2, string name3)
+                        {
+                            Person p = new Person(""Tomas"");
+                            p.MethodWithMixedSideAttribute();
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            var clientSideValidator = new ClientSideValidator(MiCSManager.CompilationUnit);
+            clientSideValidator.Validate();
+
+            Assert.IsFalse(clientSideValidator.IsValid);
         }
     }
 }
