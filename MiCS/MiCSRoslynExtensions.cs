@@ -23,7 +23,7 @@ namespace MiCS
             return ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText;
         }
 
-        public static bool IsMixedSide(this MethodDeclarationSyntax methodDeclaration)
+        public static bool hasAttribute(this MethodDeclarationSyntax methodDeclaration, string attributeName)
         {
             if (methodDeclaration.AttributeLists.Any())
             {
@@ -31,7 +31,7 @@ namespace MiCS
                 {
                     foreach (AttributeSyntax att in attList.Attributes)
                     {
-                        if (att.NameText().Equals("MixedSide"))
+                        if (att.NameText().Equals(attributeName))
                         {
                             return true;
                         }

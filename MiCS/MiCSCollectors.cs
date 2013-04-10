@@ -10,13 +10,24 @@ namespace MiCS
     public class ClassCollector : SyntaxWalker
     {
         public readonly List<ClassDeclarationSyntax> Classes = new List<ClassDeclarationSyntax>();
+        string attributeName;
+        
+        public MethodCollector MethodCollector
+        {
+            get; private set;
+        }
+
+        public ClassCollector(string attributeName)
+        {
+            this.attributeName = attributeName;
+            MethodCollector = new MethodCollector(attributeName);
+        }
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            var methodCollector = new MethodCollector();
-            methodCollector.Visit(node);
+            MethodCollector.Visit(node);
 
-            if (methodCollector.Methods.Count > 0)
+            if (MethodCollector.Methods.Count > 0)
             {
                 Classes.Add(node);
             }
@@ -29,10 +40,16 @@ namespace MiCS
     public class MethodCollector : SyntaxWalker
     {
         public readonly List<MethodDeclarationSyntax> Methods = new List<MethodDeclarationSyntax>();
+        string attributeName;
+
+        public MethodCollector(string attributeName)
+        {
+            this.attributeName = attributeName;
+        }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            var attributeCollector = new AttributeCollector();
+            var attributeCollector = new AttributeCollector(attributeName);
             attributeCollector.Visit(node);
 
             if (attributeCollector.Attributes.Count > 0) 
@@ -48,10 +65,16 @@ namespace MiCS
     public class AttributeCollector : SyntaxWalker
     {
         public readonly List<AttributeSyntax> Attributes = new List<AttributeSyntax>();
+        string attributeName;
+
+        public AttributeCollector(string attributeName)
+        {
+            this.attributeName = attributeName;
+        }
 
         public override void VisitAttribute(AttributeSyntax node)
         {
-            if (((IdentifierNameSyntax)node.Name).Identifier.ValueText == "MixedSide") 
+            if (((IdentifierNameSyntax)node.Name).Identifier.ValueText == attributeName) 
             {
                 Attributes.Add(node);
             }   

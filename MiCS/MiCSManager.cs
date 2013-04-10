@@ -18,7 +18,7 @@ namespace MiCS
 {
     public class MiCSManager
     {
-        private string _source;
+        
         public static SyntaxTree Tree
         {
             get
@@ -39,6 +39,17 @@ namespace MiCS
         }
         private SyntaxTree _mixedSideTree;
 
+        private SyntaxTree _clientSideTree;
+        public static SyntaxTree ClientSideTree
+        {
+            get 
+            {
+                if (Instance._clientSideTree == null)
+                    throw new Exception("ClientSide tree is null");
+                return Instance._clientSideTree;
+            }
+        }
+
 
         private Compilation _mixedSideCompilation;
         private Compilation _compilation;
@@ -51,6 +62,12 @@ namespace MiCS
             }
         }
         private CompilationUnitSyntax _mixedSideCompilationUnit;
+
+        public static CompilationUnitSyntax ClientSideCompilationUnit
+        {
+            get;
+            private set;
+        }
 
         public static SemanticModel MixedSideSemanticModel
         {
@@ -85,12 +102,22 @@ namespace MiCS
             var micsManager = new MiCSManager(source);
         }
 
-        public MiCSManager(string source)
+        public static void Initiate(SyntaxTree tree)
         {
-            _source = source;
-            _tree = SyntaxTree.ParseText(source);
+            var micsManager = new MiCSManager(tree);
+        }
+        
+        public MiCSManager(string source) : this(SyntaxTree.ParseText(source))
+        { 
+            
+        }
+
+        public MiCSManager(SyntaxTree tree)
+        {
+            _tree = tree;
             _compilationUnit = _tree.GetRoot();
-            _mixedSideCompilationUnit = GetMixedSideCompilationUnit(_compilationUnit);
+            _mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "MixedSide");
+            ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
             _mixedSideTree = _tree.WithChangedText(_mixedSideCompilationUnit.GetText());
 
             // Todo: Investigate maybe...
@@ -134,9 +161,9 @@ namespace MiCS
             /*
              * Roslyn AST creation, manipulation and validation.
              */
-            _source = File.ReadAllText(filePath);
-            _tree = SyntaxTree.ParseText(_source);
-            var mixedSideCompilationUnit = GetMixedSideCompilationUnit(_tree.GetRoot());
+            //_source = File.ReadAllText(filePath);
+            //_tree = SyntaxTree.ParseText(_source);
+            var mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_tree.GetRoot(), "MixedSide");
             
             // Todo: Ensure that no mixed side (or client side) code makes calls to (or utilize) server side code only.
 
@@ -157,11 +184,11 @@ namespace MiCS
         /// Returns a new compilation unit that only contains
         /// the mixed side syntax nodes (e.i. the mixed side AST).
         /// </summary>
-        private CompilationUnitSyntax GetMixedSideCompilationUnit(CompilationUnitSyntax root)
+        public static CompilationUnitSyntax GetCompilationUnitWithAttribute(CompilationUnitSyntax root, string attributeName)
         {
             // Todo: Not sure nested namespaces are supported currently!
 
-            CompilationUnitSyntax mixedSideCompilationUnit = null;
+            CompilationUnitSyntax compilationUnit = null;
             var mappedNamespaces = new List<MemberDeclarationSyntax>();
             foreach (NamespaceDeclarationSyntax rootMember in root.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration))
             {
@@ -174,8 +201,8 @@ namespace MiCS
                     foreach (var methodMember in classDeclaration.DescendantNodes().Where(m => m.Kind == SyntaxKind.MethodDeclaration))
                     {
                         var methodDeclaration = (MethodDeclarationSyntax)methodMember;
-                        if (methodDeclaration.IsMixedSide())
-                            mappedMethods.Add(methodDeclaration); // Todo: Seems like the Add function doesn't work?
+                        if (methodDeclaration.hasAttribute(attributeName))
+                            mappedMethods.Add(methodDeclaration);
                     }
 
                     if (mappedMethods.Count > 0)
@@ -185,13 +212,13 @@ namespace MiCS
                     mappedNamespaces.Add(namespaceDeclaration.WithMembers(Syntax.List(mappedClasses.ToArray())));
             }
             if (mappedNamespaces.Count > 0)
-                mixedSideCompilationUnit = root.WithMembers(Syntax.List(mappedNamespaces.ToArray()));
+                compilationUnit = root.WithMembers(Syntax.List(mappedNamespaces.ToArray()));
 
+            // Todo: Find out what to do with this
+            //if (compilationUnit == null)
+            //    throw new NoMixedOrClientSideException("No MixedSide or ClientSide attributed code was found!");
 
-            if (mixedSideCompilationUnit == null)
-                throw new NoMixedOrClientSideException("No MixedSide or ClientSide attributed code was found!");
-
-            return mixedSideCompilationUnit;
+            return compilationUnit;
         }
 
         /// <summary>
