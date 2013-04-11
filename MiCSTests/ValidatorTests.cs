@@ -229,5 +229,131 @@ namespace MiCSTests
 
             Assert.IsFalse(clientSideValidator.IsValid);
         }
+
+
+        [TestMethod]
+        public void InstanceCreationOfNonMixedOrClientSideClassFails()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+
+                        }
+                    }
+
+                    public class SomeClass
+                    {
+                        [MixedSide]
+                        public void someMethod()
+                        {
+                            var p = new Person(""Person Name"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
+            mixedSideValidator.Validate();
+
+            Assert.IsFalse(mixedSideValidator.IsValid);
+        }
+
+        [TestMethod]
+        public void ObjectCreationIsPossibleIfObjectIsMixedSide()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+                        }
+
+                        [MixedSide]
+                        public void SomeMethod() 
+                        {
+                        }
+                    }
+
+                    public class SomeClass
+                    {
+                        [MixedSide]
+                        public void SomeMethod()
+                        {
+                            var p = new Person(""Person Name"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
+            mixedSideValidator.Validate();
+
+            Assert.IsTrue(mixedSideValidator.IsValid);
+        }
+
+        [TestMethod]
+        public void ClientSideCanCreateMixedSideObjects()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+                        }
+
+                        [MixedSide]
+                        public void SomeMethod() 
+                        {
+                        }
+                    }
+
+                    public class SomeClass
+                    {
+                        [ClientSide]
+                        public void SomeMethod()
+                        {
+                            var p = new Person(""Person Name"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            var clientSideValidator = new ClientSideValidator(MiCSManager.CompilationUnit);
+            clientSideValidator.Validate();
+
+            Assert.IsTrue(clientSideValidator.IsValid);
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace MiCS.Validators
         {
             this.compilationUnit = compilationUnit;
             this.attributeName = attributeName;
+
             currentMethods = new List<string>();
             Members = new Dictionary<string, List<string>>();
         }
