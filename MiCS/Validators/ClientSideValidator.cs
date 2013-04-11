@@ -55,6 +55,21 @@ namespace MiCS.Validators
             if (!valid)
                 IsValid = false;
         }
+
+        public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
+        {
+            if (!(node.Type is IdentifierNameSyntax))
+                throw new Exception("Only IdentifierNameSyntax is supported at this time");
+
+            var typeName = ((IdentifierNameSyntax)node.Type).Identifier.ValueText;
+
+            var valid = mixedSideMembers.ContainsKey(typeName) || clientSideMembers.ContainsKey(typeName);
+
+            if (!valid)
+                IsValid = false;
+
+            base.VisitObjectCreationExpression(node);
+        }
     }
 
 
