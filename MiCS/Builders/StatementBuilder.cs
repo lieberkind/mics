@@ -87,7 +87,7 @@ namespace MiCS.Builders
                 throw new NotSupportedException(); // Todo: Maybe not a necesary check...
  
 
-            var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(localDeclarationStatement.Declaration.Type);
+            var typeInfo = MiCSManager.MixedSideSemanticModel.GetTypeInfo(localDeclarationStatement.Declaration.Type);
             var ssVariable = variable.Map(typeInfo);
 
             var initializer = variable.Initializer;
@@ -98,7 +98,7 @@ namespace MiCS.Builders
 
                 var val = variable.Initializer.Value;
 
-                ssVariable.SetValue(ExpressionBuilder.Build(val));
+                ssVariable.SetValue(ExpressionBuilder.Build(val, typeReference));
 
             }
 

@@ -222,7 +222,7 @@ namespace MiCS.Mappers
 
         static internal SS.MethodExpression Map(this InvocationExpressionSyntax expr, SS.TypeSymbol ssParent, Collection<SS.Expression> ssParameters)
         {
-            if (!(expr.Expression is IdentifierNameSyntax))
+            if (!(expr.Expression is IdentifierNameSyntax) && !(expr.Expression is MemberAccessExpressionSyntax))
                 throw new NotSupportedException("Currently only this/local invocations is supported!");
 
             if (!(expr.Parent is ExpressionStatementSyntax) &&
@@ -253,6 +253,21 @@ namespace MiCS.Mappers
 
                 // Todo: This constructor also seems to work. Not sure what the difference is.
                 //return new MethodExpression(thisExpr, methodSymbol);
+            }
+            else if (expr.Expression is MemberAccessExpressionSyntax)
+            {
+                var iNS = (MemberAccessExpressionSyntax)expr.Expression;
+
+                // Todo: Not sure if the return type is important at all? as the static return types doesn't really exist in JavaScript.
+                var voidReturnType = new SS.ClassSymbol("void", parentNamespace);
+                var methodSymbol = new SS.MethodSymbol(iNS.Name.Identifier.ValueText, parentClass, voidReturnType);
+
+                // Todo: Add support for non-local invocations
+                //var thisExpr = new SS.LocalExpression(ExpressionBuilder.Build(iNS.Expression));
+                return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, thisExpr, methodSymbol, ssParameters);
+
+                // Todo: This constructor also seems to work. Not sure what the difference is.
+                //return new MethodExpression(thisExpr, methodSymbol);   
             }
             else
             {

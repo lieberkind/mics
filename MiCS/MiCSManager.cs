@@ -127,8 +127,10 @@ namespace MiCS
             _tree = tree;
             _compilationUnit = _tree.GetRoot();
             _mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "MixedSide");
-            ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
+            //ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
             _mixedSideTree = _tree.WithChangedText(_mixedSideCompilationUnit.GetText());
+
+            _mixedSideCompilationUnit = _mixedSideTree.GetRoot();
 
             var mixedSideCollector = new Collector(_compilationUnit, "MixedSide");
             var clientSideCollector = new Collector(_compilationUnit, "ClientSide");
@@ -151,7 +153,7 @@ namespace MiCS
              */
             var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
 
-            _compilation = Compilation.Create("MixedSideCompilation", syntaxTrees: new[] { _tree }, references: new[] { mscorlib });
+            _compilation = Compilation.Create("Compilation", syntaxTrees: new[] { _tree }, references: new[] { mscorlib });
             _semanticModel = _compilation.GetSemanticModel(_tree);
 
             _mixedSideCompilation = Compilation.Create("MixedSideCompilation", syntaxTrees: new[] { _mixedSideTree }, references: new[] { mscorlib });
@@ -171,20 +173,14 @@ namespace MiCS
         }
         private static MiCSManager _Instance;
 
-        public MiCSManager()
-        {
-
-        }
-
         // Todo: Script should be build from more than one file.
-        public void BuildScript(string filePath, ScriptManager scriptManager, Page page)
+        public static void BuildScript(ScriptManager scriptManager, Page page)
         {
             /*
              * Roslyn AST creation, manipulation and validation.
              */
             //var source = File.ReadAllText(filePath);
             //_tree = SyntaxTree.ParseText(source);
-            var mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_Instance._tree.GetRoot(), "MixedSide");
             //var mixedSideCompilationUnit = _Instance._tree.GetRoot();
             
             // Todo: Ensure that no mixed side (or client side) code makes calls to (or utilize) server side code only.
@@ -192,13 +188,13 @@ namespace MiCS
             /*
              * Map from Roslyn (C#) to ScriptSharp (JavaScript) AST.
              */
-            var scriptSharpAST = MapCompilationUnit(mixedSideCompilationUnit);
+            var scriptSharpAST = Instance.MapCompilationUnit(MixedSideCompilationUnit);
             // Todo: Maybe wrap MiCS code in its own namespace.
 
             /*
              * Generate script code and register with ASP.NET ScriptManager.
              */
-            var scriptText = GenerateScriptText(scriptSharpAST);
+            var scriptText = Instance.GenerateScriptText(scriptSharpAST);
             ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "MiCSGeneratedScript", scriptText, true);
         }
 

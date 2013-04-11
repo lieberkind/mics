@@ -16,11 +16,9 @@ namespace MiCSCaseStudy
         {
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
-            var filePath = @"C:\Users\L520\Documents\visual studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
+            var filePath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
             MiCSManager.Initiate(File.ReadAllText(filePath));
-            var MiCSGen = new MiCSManager();
-            //MiCSGen.BuildScript(@"C:\Users\Tomas Lieberkind\documents\visual studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs", scriptManager, this);
-            MiCSGen.BuildScript(filePath, scriptManager, this);
+            MiCSManager.BuildScript(scriptManager, this);
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -42,6 +40,9 @@ namespace MiCSCaseStudy
         [MixedSide]
         bool isNameInvalid(string name)
         {
+            Validator v = new Validator();
+            v.isNameValid("tomas");
+
             if (2 < 3)
             {
                 return true;
