@@ -5,6 +5,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Html;
+using System.IO;
 
 namespace MiCSCaseStudy
 {
@@ -14,8 +16,11 @@ namespace MiCSCaseStudy
         {
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
+            var filePath = @"C:\Users\L520\Documents\visual studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
+            MiCSManager.Initiate(File.ReadAllText(filePath));
             var MiCSGen = new MiCSManager();
-            MiCSGen.BuildScript(@"C:\Users\Tomas Lieberkind\documents\visual studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs", scriptManager, this);
+            //MiCSGen.BuildScript(@"C:\Users\Tomas Lieberkind\documents\visual studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs", scriptManager, this);
+            MiCSGen.BuildScript(filePath, scriptManager, this);
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -29,7 +34,22 @@ namespace MiCSCaseStudy
         [MixedSide]
         bool isNameValid(string name)
         {
-	        return false;
+            //var child = Document.GetElementById("hdjwhd").ChildNodes[0];
+
+            return false;
+        }
+
+        [MixedSide]
+        bool isNameInvalid(string name)
+        {
+            if (2 < 3)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

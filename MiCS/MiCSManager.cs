@@ -161,9 +161,10 @@ namespace MiCS
             /*
              * Roslyn AST creation, manipulation and validation.
              */
-            //_source = File.ReadAllText(filePath);
-            //_tree = SyntaxTree.ParseText(_source);
-            var mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_tree.GetRoot(), "MixedSide");
+            //var source = File.ReadAllText(filePath);
+            //_tree = SyntaxTree.ParseText(source);
+            var mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_Instance._tree.GetRoot(), "MixedSide");
+            //var mixedSideCompilationUnit = _Instance._tree.GetRoot();
             
             // Todo: Ensure that no mixed side (or client side) code makes calls to (or utilize) server side code only.
 
