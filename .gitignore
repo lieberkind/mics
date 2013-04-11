@@ -1,5 +1,5 @@
 # Custom stuff, NOT to be ignored
-!MiCS/ScriptSharp/Web/Html/Data/Sql
+!MiCS/ScriptSharp/Web/Html/Data/Sql/
 !MiCS/ScriptSharp/Web/Html/Data/Sql/*
 
 # Build Folders (you can keep bin if you'd like, to store dlls and pdbs)
@@ -95,7 +95,6 @@ AppPackages/
 # Others
 [Bb]in
 [Oo]bj
-sql
 TestResults
 [Tt]est[Rr]esult*
 *.Cache

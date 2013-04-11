@@ -111,12 +111,24 @@
     <Compile Include="ScriptSharp\Web\Html\Data\IndexedDB\DBRequest.cs" />
     <Compile Include="ScriptSharp\Web\Html\Data\IndexedDB\DBTransaction.cs" />
     <Compile Include="ScriptSharp\Web\Html\Data\IndexedDB\DBVersionChangeEvent.cs" />
-    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlDatabase.cs" />
-    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlError.cs" />
-    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlResultSet.cs" />
-    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlResultSetRow.cs" />
-    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlResultSetRowList.cs" />
-    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlTransaction.cs" />
+    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlDatabase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlError.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlResultSet.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlResultSetRow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlResultSetRowList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ScriptSharp\Web\Html\Data\Sql\SqlTransaction.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="ScriptSharp\Web\Html\Data\Storage.cs" />
     <Compile Include="ScriptSharp\Web\Html\DivElement.cs" />
     <Compile Include="ScriptSharp\Web\Html\Document.cs" />
