@@ -12,19 +12,29 @@ using ScriptSharp.Generator;
 using MiCS.Builders;
 using ScriptSharp;
 using ScriptSharp.ScriptModel;
+using MiCS.Validators;
 
 
 namespace MiCS
 {
     public class MiCSManager
     {
+
+        public static Dictionary<string, List<string>> MixedSideMembers
+        {
+            get;
+            private set;
+        }
+
+        public static Dictionary<string, List<string>> ClientSideMembers
+        {
+            get;
+            private set;
+        }
         
         public static SyntaxTree Tree
         {
-            get
-            {
-                return Instance._tree;
-            }
+            get { return Instance._tree; }
         }
         private SyntaxTree _tree;
 
@@ -106,7 +116,7 @@ namespace MiCS
         {
             var micsManager = new MiCSManager(tree);
         }
-        
+
         public MiCSManager(string source) : this(SyntaxTree.ParseText(source))
         { 
             
@@ -119,6 +129,17 @@ namespace MiCS
             _mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "MixedSide");
             ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
             _mixedSideTree = _tree.WithChangedText(_mixedSideCompilationUnit.GetText());
+
+            var mixedSideCollector = new Collector(_compilationUnit, "MixedSide");
+            var clientSideCollector = new Collector(_compilationUnit, "ClientSide");
+
+            mixedSideCollector.Collect();
+            clientSideCollector.Collect();
+
+            MixedSideMembers = mixedSideCollector.Members;
+            ClientSideMembers = clientSideCollector.Members;
+
+
 
             // Todo: Investigate maybe...
             /*

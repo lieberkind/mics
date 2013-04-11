@@ -250,6 +250,7 @@ namespace MiCS.Mappers
             //        }
             #endregion
 
+
             string mappedTypeName = null;
             string mappedNamespace = null;
 
@@ -354,7 +355,14 @@ namespace MiCS.Mappers
                 //    break;
                 default:
                     // Todo: Test if there will be a problem with custom and unsupported built-in types?
-                    throw new NotSupportedException("TypeSymbol type is currently not supported.");
+                    var isSupportedType =
+                           MiCSManager.ClientSideMembers.ContainsKey(typeSymbol.Name)
+                        || MiCSManager.MixedSideMembers.ContainsKey(typeSymbol.Name);
+
+                    if(!isSupportedType)
+                        throw new NotSupportedException("TypeSymbol type is currently not supported.");
+
+                    mappedTypeName = typeSymbol.Name;
                     break;
             }
 
