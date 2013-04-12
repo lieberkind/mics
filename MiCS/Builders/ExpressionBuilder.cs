@@ -12,12 +12,14 @@ namespace MiCS.Builders
 {
     class ExpressionBuilder : SyntaxWalker
     {
-        ScriptSharp.ScriptModel.TypeSymbol associatedType;
+        SS.TypeSymbol associatedType;
+        SS.MemberSymbol associatedParent;
         public readonly List<SS.Expression> ssExpressions = new List<SS.Expression>();
 
-        public ExpressionBuilder(ScriptSharp.ScriptModel.TypeSymbol associatedType = null)
+        public ExpressionBuilder(SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent)
 	    {
             this.associatedType = associatedType;
+            this.associatedParent = associatedParent;
 	    }
 
         public override void VisitIdentifierName(IdentifierNameSyntax identifierName)
@@ -60,7 +62,7 @@ namespace MiCS.Builders
                 ssParameters.Add(ExpressionBuilder.Build(arg.Expression));
             }
 
-            ssExpressions.Add(invocationExpression.Map(associatedType, ssParameters));
+            ssExpressions.Add(invocationExpression.Map((SS.ClassSymbol)associatedType, (SS.MethodSymbol)associatedParent, ssParameters));
             
             //base.VisitInvocationExpression(node);
         }
@@ -108,9 +110,17 @@ namespace MiCS.Builders
             //base.VisitConditionalExpression(node);
         }
 
-        public static SS.Expression Build(ExpressionSyntax expression, SS.TypeSymbol associatedType = null)
+        public static SS.Expression Build(ExpressionSyntax expression)
         {
-            var expressionBuilder = new ExpressionBuilder(associatedType);
+            return Build(expression, null, null);
+        }
+        public static SS.Expression Build(ExpressionSyntax expression, SS.TypeSymbol associatedType)
+        {
+            return Build(expression, associatedType, null);
+        }
+        public static SS.Expression Build(ExpressionSyntax expression, SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent)
+        {
+            var expressionBuilder = new ExpressionBuilder(associatedType, associatedParent);
             expressionBuilder.Visit(expression);
             return expressionBuilder.ssExpressions.First();
         }

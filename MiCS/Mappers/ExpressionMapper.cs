@@ -220,7 +220,7 @@ namespace MiCS.Mappers
             }
         }
 
-        static internal SS.MethodExpression Map(this InvocationExpressionSyntax expr, SS.TypeSymbol ssParent, Collection<SS.Expression> ssParameters)
+        static internal SS.MethodExpression Map(this InvocationExpressionSyntax expr, SS.ClassSymbol ssParent, SS.MethodSymbol ssParentMethod, Collection<SS.Expression> ssParameters)
         {
             if (!(expr.Expression is IdentifierNameSyntax) && !(expr.Expression is MemberAccessExpressionSyntax))
                 throw new NotSupportedException("Currently only this/local invocations is supported!");
@@ -232,11 +232,11 @@ namespace MiCS.Mappers
             if (!(ssParent is SS.ClassSymbol)) 
                 throw new NotSupportedException("The parent class symbol (of the method that is the invocation target) is required.");
 
-            var parentClass = (SS.ClassSymbol)ssParent;
-            if (!(parentClass.Parent is SS.NamespaceSymbol)) 
+            var ssParentClass = (SS.ClassSymbol)ssParent;
+            if (!(ssParentClass.Parent is SS.NamespaceSymbol)) 
                 throw new Exception("The parent class namespace is currently required.");
 
-            var parentNamespace = (SS.NamespaceSymbol)parentClass.Parent;
+            var ssParentNamespace = (SS.NamespaceSymbol)ssParentClass.Parent;
 
             // Todo: This check is probably unneeded. It has already been checked.
             if (expr.Expression is IdentifierNameSyntax)
@@ -244,11 +244,11 @@ namespace MiCS.Mappers
                 var iNS = (IdentifierNameSyntax)expr.Expression;
 
                 // Todo: Not sure if the return type is important at all? as the static return types doesn't really exist in JavaScript.
-                var voidReturnType = new SS.ClassSymbol("void", parentNamespace);
-                var methodSymbol = new SS.MethodSymbol(iNS.Identifier.ValueText, parentClass, voidReturnType);
+                var voidReturnType = new SS.ClassSymbol("void", ssParentNamespace);
+                var methodSymbol = new SS.MethodSymbol(iNS.Identifier.ValueText, ssParentClass, voidReturnType);
 
                 // Todo: Add support for non-local invocations
-                var thisExpr = new SS.ThisExpression(parentClass, true);
+                var thisExpr = new SS.ThisExpression(ssParentClass, true);
                 return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, thisExpr, methodSymbol, ssParameters);
 
                 // Todo: This constructor also seems to work. Not sure what the difference is.
@@ -256,18 +256,35 @@ namespace MiCS.Mappers
             }
             else if (expr.Expression is MemberAccessExpressionSyntax)
             {
-                var iNS = (MemberAccessExpressionSyntax)expr.Expression;
+                var memberAccess = (MemberAccessExpressionSyntax)expr.Expression;
+                if (!(memberAccess.Expression is IdentifierNameSyntax))
+                    throw new NotSupportedException();
 
-                // Todo: Not sure if the return type is important at all? as the static return types doesn't really exist in JavaScript.
-                var voidReturnType = new SS.ClassSymbol("void", parentNamespace);
-                var methodSymbol = new SS.MethodSymbol(iNS.Name.Identifier.ValueText, parentClass, voidReturnType);
+                var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
+                var methodName = memberAccess.Name.Identifier.ValueText;
 
-                // Todo: Add support for non-local invocations
-                //var thisExpr = new SS.LocalExpression(ExpressionBuilder.Build(iNS.Expression));
-                return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, thisExpr, methodSymbol, ssParameters);
+                var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
+                var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
+                var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+                var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+                
+                //// variableSymbol.MethodSymbol(arguments)
+                ////                 -- ssName --
+                //// -- localExpr --
+                //// ------------- MethodExpr --------------
 
-                // Todo: This constructor also seems to work. Not sure what the difference is.
-                //return new MethodExpression(thisExpr, methodSymbol);   
+                //if (!(expr.Parent.Parent.Parent is MethodDeclarationSyntax))
+                //    throw new NotSupportedException();
+                //var parentMethod = (MethodDeclarationSyntax)expr.Parent.Parent.Parent;
+                //var ssParentMethod = MethodBuilder.Build(parentMethod, ssParentClass, ssParentNamespace);
+                string ssName = objectReference.Identifier.ValueText;
+                var ssVariableType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(objectReference).Type.Map();
+                var ssObjectReference = new SS.VariableSymbol(ssName, ssParentMethod, ssVariableType);
+       
+                var ssLocalExpression = new SS.LocalExpression(ssObjectReference);
+                var ssMethodExpression = new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssLocalExpression, ssMethodSymbol, ssParameters);
+
+                return ssMethodExpression;
             }
             else
             {

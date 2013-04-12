@@ -16,7 +16,7 @@ namespace MiCSCaseStudy
         {
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
-            var filePath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
+            var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
             MiCSManager.Initiate(File.ReadAllText(filePath));
             MiCSManager.BuildScript(scriptManager, this);
         }
