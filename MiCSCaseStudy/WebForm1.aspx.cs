@@ -17,7 +17,16 @@ namespace MiCSCaseStudy
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
             var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
-            MiCSManager.Initiate(File.ReadAllText(filePath));
+            var filePathBuiltInType2 = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCS\ScriptSharp\Web\Html\Element.cs";
+            var filePathBuiltInType = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCS\ScriptSharp\Web\Html\Document.cs";
+
+
+            var source = File.ReadAllText(filePath);
+            source += File.ReadAllText(filePathBuiltInType);
+            source += File.ReadAllText(filePathBuiltInType2);
+
+
+            MiCSManager.Initiate(source);
             MiCSManager.BuildScript(scriptManager, this);
         }
 
@@ -42,6 +51,11 @@ namespace MiCSCaseStudy
         {
             Validator v = new Validator();
             v.isNameValid("tomas");
+
+            Document.HasFocus();
+            bool b = Document.HasFocus();
+            var b2 = Document.HasFocus();
+            Element e = Document.GetElementById("test");
 
             if (2 < 3)
             {

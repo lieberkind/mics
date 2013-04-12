@@ -7,6 +7,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Html.StyleSheets;
 using System.Html.Editing;
+using MiCS;
 
 namespace System.Html {
 
@@ -185,7 +186,8 @@ namespace System.Html {
 
         public static void Focus() {
         }
-
+        // Todo: Remove MixedSide attribute.
+        [MixedSide]
         public static Element GetElementById(string id) {
             return null;
         }
@@ -205,7 +207,8 @@ namespace System.Html {
         public static ElementCollection GetElementsByTagName(string tagName) {
             return null;
         }
-
+        // Todo: Remove MixedSide attribute.
+        [MixedSide]
         public static bool HasFocus() {
             return false;
         }

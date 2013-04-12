@@ -15,8 +15,29 @@ namespace MiCS
     {
         public static string NameText(this NamespaceDeclarationSyntax roslynNamespace)
         {
-            return ((IdentifierNameSyntax)roslynNamespace.Name).Identifier.ValueText;
+            try
+            {
+                if (roslynNamespace.Name is IdentifierNameSyntax)
+                    return ((IdentifierNameSyntax)roslynNamespace.Name).Identifier.ValueText;
+                else if (roslynNamespace.Name is QualifiedNameSyntax)
+                {
+                    return ((QualifiedNameSyntax)roslynNamespace.Name).ToString();
+                }
+                else
+                    throw new NotSupportedException();
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
+            
         }
+
+        //public static string NameText(this SimpleNameSyntax simpleName)
+        //{
+        //    return simpleName.ri + qualifiedName.Ri
+        //}
 
         public static string NameText(this AttributeSyntax attribute)
         {

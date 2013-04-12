@@ -226,7 +226,8 @@ namespace MiCS.Mappers
                 throw new NotSupportedException("Currently only this/local invocations is supported!");
 
             if (!(expr.Parent is ExpressionStatementSyntax) &&
-                !(expr.Parent is ReturnStatementSyntax))
+                !(expr.Parent is ReturnStatementSyntax) &&
+                !(expr.Parent is EqualsValueClauseSyntax))
                 throw new NotSupportedException("Method invocation is being performed in a context that is not currently supported.");
 
             if (!(ssParent is SS.ClassSymbol)) 

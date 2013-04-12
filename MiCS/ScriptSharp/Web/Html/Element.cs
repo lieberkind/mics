@@ -6,6 +6,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Html.Media.Filters;
+using MiCS;
 
 namespace System.Html {
 
@@ -363,6 +364,8 @@ namespace System.Html {
         public void AttachEvent(string eventName, ElementEventHandler handler) {
         }
 
+        // Todo: Remove MixedSide attribute.
+        [MixedSide]
         public void Blur() {
         }
 
