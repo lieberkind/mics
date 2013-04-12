@@ -89,8 +89,8 @@ namespace MiCSTests
                     void f() { int i = 0; }
                 } 
             }";
-            MiCSManager.Initiate(source);
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(MiCSManager.CompilationUnit).First();
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
             var member = (ClassDeclarationSyntax)@namespace.Members.First();
