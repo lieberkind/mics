@@ -69,16 +69,15 @@ namespace MiCS.Builders
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax objectCreationExpression)
         {
-            var ssNewExpression = objectCreationExpression.Map(associatedType);
-
-            var ssArguments = new List<SS.Expression>();
+            // Todo: This type might have been mapped already...
+            var ssTargetType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(objectCreationExpression.Type).Type.Map();
+            var ssNewExpression = objectCreationExpression.Map(ssTargetType);
 
             foreach (var argument in objectCreationExpression.ArgumentList.Arguments)
             {
-                ssArguments.Add(ExpressionBuilder.Build(argument.Expression));
+                ssNewExpression.AddParameterValue(ExpressionBuilder.Build(argument.Expression));
             }
 
-            ssNewExpression.Parameters.AddRange(ssArguments);
             ssExpressions.Add(ssNewExpression);
             
             //base.VisitObjectCreationExpression(node);

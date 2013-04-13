@@ -44,7 +44,10 @@ namespace MiCSCaseStudy
         [MixedSide]
         bool isNameInvalid(string name)
         {
-            Validator v = new Validator();
+
+            var rx = new RegExp(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
+            var usr = new User();
+            var v = new Validator();
             v.isNameValid("tomas");
 
             Document.HasFocus();
@@ -60,6 +63,16 @@ namespace MiCSCaseStudy
             {
                 return false;
             }
+        }
+    }
+
+    class User
+    {
+
+        [MixedSide]
+        int CalculateBMI()
+        {
+            return 0;
         }
     }
 }

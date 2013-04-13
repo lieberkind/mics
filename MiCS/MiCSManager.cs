@@ -131,6 +131,7 @@ namespace MiCS
         {
             _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
             _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
+            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
         }
         private static string _builtInScriptTypesSource;
 
@@ -276,12 +277,23 @@ namespace MiCS
                 }
             }
             return scriptSharpAST;
+
+            
+
+            //var namespaces = root.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration);
+
+            //var ssSymbolSet = new SS.SymbolSet();
+            //foreach (var @namespace in namespaces)
+            //    ssSymbolSet.Namespaces.Add(NamespaceBuilder.Build((NamespaceDeclarationSyntax)@namespace));
+
+            //return ssSymbolSet;
+  
         }
 
         /// <summary>
         /// Generate script string from ScriptSharp AST.
         /// </summary>
-        private string GenerateScriptText(List<ScriptSharp.ScriptModel.NamespaceSymbol> scriptSharpAST)
+        private string GenerateScriptText(List<SS.NamespaceSymbol> scriptSharpAST)
         {
             var stringWriter = new StringWriter();
             var writer = new ScriptTextWriter(stringWriter);
@@ -296,6 +308,16 @@ namespace MiCS
                 }
             }
 
+            return stringWriter.ToString();
+        }
+
+        private string GenerateScriptText(SS.SymbolSet symbols)
+        {
+            var stringWriter = new StringWriter();
+            var writer = new ScriptTextWriter(stringWriter);
+            var options = new CompilerOptions();
+            var generator = new ScriptGenerator(writer, options, symbols);
+            generator.GenerateScript(symbols);
             return stringWriter.ToString();
         }
     }

@@ -251,6 +251,7 @@ namespace MiCS.Mappers
             string mappedTypeName = null;
             string mappedNamespace = null;
 
+            SS.TypeSymbol ssType = null;
 
             // Todo: Not sure the typeSymbol.Name property is the right one to use? Thinking that using the fullname (System.String and not just String) would be better.
             switch (typeSymbol.Name)
@@ -360,11 +361,21 @@ namespace MiCS.Mappers
                         throw new NotSupportedException("TypeSymbol type is currently not supported.");
 
                     mappedTypeName = typeSymbol.ScriptName();
+                    // Todo: Parent namespace should probably not be a dummy namspace.
+                    ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
+                        if (typeSymbol.IsScriptType())
+                            ssType.SetIgnoreNamespace();
                     break;
             }
 
-            // Todo: Parent namespace should probably not be a dummy namspace.
-            return new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
+
+            
+            if (ssType == null)
+            {
+                // Todo: Parent namespace should probably not be a dummy namspace.
+                ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
+            }
+            return ssType;
         }
 
     }

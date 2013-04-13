@@ -3,6 +3,7 @@
 // This source code is subject to terms and conditions of the Apache License, Version 2.0.
 //
 
+using MiCS;
 using System.Runtime.CompilerServices;
 
 namespace System {
@@ -74,6 +75,8 @@ namespace System {
             return null;
         }
 
+        // Todo: Remove attribute and usign
+        [MixedSide]
         public bool Test(string s) {
             return false;
         }
