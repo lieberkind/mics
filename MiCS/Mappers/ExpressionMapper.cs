@@ -225,11 +225,6 @@ namespace MiCS.Mappers
             if (!(expr.Expression is IdentifierNameSyntax) && !(expr.Expression is MemberAccessExpressionSyntax))
                 throw new NotSupportedException("Currently only this/local invocations is supported!");
 
-            if (!(expr.Parent is ExpressionStatementSyntax) &&
-                !(expr.Parent is ReturnStatementSyntax) &&
-                !(expr.Parent is EqualsValueClauseSyntax))
-                throw new NotSupportedException("Method invocation is being performed in a context that is not currently supported.");
-
             if (!(ssParent is SS.ClassSymbol)) 
                 throw new NotSupportedException("The parent class symbol (of the method that is the invocation target) is required.");
 
@@ -242,54 +237,64 @@ namespace MiCS.Mappers
             // Todo: This check is probably unneeded. It has already been checked.
             if (expr.Expression is IdentifierNameSyntax)
             {
-                var iNS = (IdentifierNameSyntax)expr.Expression;
+                var identifierName = (IdentifierNameSyntax)expr.Expression;
 
-                // Todo: Not sure if the return type is important at all? as the static return types doesn't really exist in JavaScript.
-                var voidReturnType = new SS.ClassSymbol("void", ssParentNamespace);
-                var methodSymbol = new SS.MethodSymbol(iNS.Identifier.ValueText, ssParentClass, voidReturnType);
+                var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(identifierName).Symbol;
+                var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
+                var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+                var methodName = identifierName.Identifier.ValueText;
 
-                // Todo: Add support for non-local invocations
-                var thisExpr = new SS.ThisExpression(ssParentClass, true);
-                return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, thisExpr, methodSymbol, ssParameters);
+                var methodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
 
-                // Todo: This constructor also seems to work. Not sure what the difference is.
-                //return new MethodExpression(thisExpr, methodSymbol);
+                var ssThisExpr = new SS.ThisExpression(ssParentClass, false);
+                return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssThisExpr, methodSymbol, ssParameters);
+
             }
             else if (expr.Expression is MemberAccessExpressionSyntax)
             {
                 var memberAccess = (MemberAccessExpressionSyntax)expr.Expression;
-                if (!(memberAccess.Expression is IdentifierNameSyntax))
+                if (memberAccess.Expression is IdentifierNameSyntax)
+                {
+                    var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
+                    string objectReferenceName = objectReference.Identifier.ValueText;
+
+                    var methodName = memberAccess.Name.Identifier.ValueText;
+
+                    var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
+                    var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
+                    var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+                    var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+
+                    var ssVariableType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(objectReference).Type.Map();
+                    var ssObjectReference = new SS.VariableSymbol(objectReferenceName, ssParentMethod, ssVariableType);
+
+                    var ssLocalExpression = new SS.LocalExpression(ssObjectReference);
+                    var ssMethodExpression = new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssLocalExpression, ssMethodSymbol, ssParameters);
+
+                    return ssMethodExpression;
+
+                }
+                else if (memberAccess.Expression is ThisExpressionSyntax)
+                {
+                    var methodName = memberAccess.Name.Identifier.ValueText;
+                    var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
+                    var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
+                    var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+                    var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+
+                    var ssThisExpression = new SS.ThisExpression(ssParentClass, true);
+                    var ssMethodExpression = new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssThisExpression, ssMethodSymbol, ssParameters);
+
+                    return ssMethodExpression;
+                }
+                else
+                {
                     throw new NotSupportedException();
-
-                var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
-                var methodName = memberAccess.Name.Identifier.ValueText;
-
-                var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
-                var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
-                var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
-                var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
-                
-                //// variableSymbol.MethodSymbol(arguments)
-                ////                 -- ssName --
-                //// -- localExpr --
-                //// ------------- MethodExpr --------------
-
-                //if (!(expr.Parent.Parent.Parent is MethodDeclarationSyntax))
-                //    throw new NotSupportedException();
-                //var parentMethod = (MethodDeclarationSyntax)expr.Parent.Parent.Parent;
-                //var ssParentMethod = MethodBuilder.Build(parentMethod, ssParentClass, ssParentNamespace);
-                string ssName = objectReference.Identifier.ValueText;
-                var ssVariableType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(objectReference).Type.Map();
-                var ssObjectReference = new SS.VariableSymbol(ssName, ssParentMethod, ssVariableType);
-       
-                var ssLocalExpression = new SS.LocalExpression(ssObjectReference);
-                var ssMethodExpression = new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssLocalExpression, ssMethodSymbol, ssParameters);
-
-                return ssMethodExpression;
+                }
             }
             else
             {
-                throw new NotImplementedException("Member access invocation is currently not supported.");
+                throw new NotImplementedException();
             }
         }
 

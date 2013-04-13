@@ -165,7 +165,33 @@ namespace MiCSTests
         }
 
 
+        [TestMethod]
+        public void InvocationTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    int f() { return 3; }
 
+                    [MixedSide]
+                    int g() { return this.f(); }
+                } 
+
+            }";
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var invocation = (InvocationExpressionSyntax)@namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.InvocationExpression).First();
+            var invokedSymbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
+
+            var methodDeclaration = (MethodDeclarationSyntax)invokedSymbol.DeclaringSyntaxNodes[0];
+
+            var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
+
+            Assert.AreEqual(@type.Name, "Int32");
+
+        }
 
 
         #region Region: Statement Test
@@ -229,11 +255,11 @@ namespace MiCSTests
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
             var invocation = (InvocationExpressionSyntax)@namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.InvocationExpression).First();
-            var invokedSymbol = MiCSManager.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
+            var invokedSymbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
 
             var methodDeclaration = (MethodDeclarationSyntax)invokedSymbol.DeclaringSyntaxNodes[0];
 
-            var @type = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
+            var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
           
             Assert.AreEqual(@type.Name, "Int32");
 
