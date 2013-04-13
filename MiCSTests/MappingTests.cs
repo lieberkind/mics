@@ -164,6 +164,73 @@ namespace MiCSTests
 
         }
 
+        [TestMethod]
+        public void MultipleNamespaceTest()
+        {
+            var source = @"
+            namespace TestNamespace1 { 
+                class TestClass1 { 
+                    [MixedSide]
+                    void g() { Document.HasFocus(); }
+                }
+            }
+            namespace TestNamespace2 { 
+                class TestClass2 { 
+                    [MixedSide]
+                    void f() { Document.HasFocus(); }
+                }
+            }
+            ";
+
+            var namespaces = Parse.Namespaces(source);
+
+        }
+
+        [TestMethod]
+        public void DuplicateFunctionsInDifferentClassesTest()
+        {
+            var source = @"
+            namespace TestNamespace1 { 
+                class TestClass1 { 
+                    [MixedSide]
+                    void f() { int i; }
+                }
+
+                class TestClass2 { 
+                    [MixedSide]
+                    void f() { int i; }
+                }
+            }
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+        }
+
+        [TestMethod]
+        public void DuplicateClassesInDifferentNamespacesTest()
+        {
+            var source = @"
+            namespace TestNamespace1 { 
+                class TestClass1 { 
+                    [MixedSide]
+                    void f() { int i; }
+                }
+            }
+            namespace TestNamespace2 {
+                class TestClass1 { 
+                    [MixedSide]
+                    void g() { int i; }
+                }
+            }
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+        }
+
         string builtInTypesRootPath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\";
 
         [TestMethod]
