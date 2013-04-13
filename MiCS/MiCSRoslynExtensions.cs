@@ -90,7 +90,7 @@ namespace MiCS
                 if (declaration is ClassDeclarationSyntax)
                 {
                     var @class = (ClassDeclarationSyntax)declaration;
-                    if (@class.hasAttribute("ScriptName"))
+                    if (@class.HasAttribute("ScriptName"))
                     {
                         var argList = @class.GetAttribute("ScriptName").ArgumentList;
                         if (argList.Arguments.Count != 1)
@@ -114,16 +114,6 @@ namespace MiCS
             }
         }
 
-        public static List<MethodDeclarationSyntax> MethodDeclarationNodes(this ClassDeclarationSyntax @class)
-        {
-            var methodDeclarations = new List<MethodDeclarationSyntax>();
-            foreach (var method in @class.Members.Where(m => m.Kind == SyntaxKind.MethodDeclaration))
-            {
-                methodDeclarations.Add((MethodDeclarationSyntax)method);
-            }
-            return methodDeclarations;
-        }
-
         public static string NameText(this AttributeSyntax attribute)
         {
             return ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText;
@@ -131,10 +121,10 @@ namespace MiCS
 
         public static bool IsScriptType(this ClassDeclarationSyntax classDeclaration)
         {
-            return classDeclaration.hasAttribute("ScriptImport");
+            return classDeclaration.HasAttribute("ScriptImport");
         }
 
-        public static bool hasAttribute(this MethodDeclarationSyntax methodDeclaration, string attributeName)
+        public static bool HasAttribute(this MethodDeclarationSyntax methodDeclaration, string attributeName)
         {
             if (methodDeclaration.AttributeLists.Any())
             {
@@ -147,7 +137,7 @@ namespace MiCS
             return false;
         }
 
-        public static bool hasAttribute(this ClassDeclarationSyntax classDeclaration, string attributeName)
+        public static bool HasAttribute(this ClassDeclarationSyntax classDeclaration, string attributeName)
         {
             if (classDeclaration.AttributeLists.Any())
             {

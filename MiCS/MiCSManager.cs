@@ -216,10 +216,10 @@ namespace MiCS
                 {
                     var classDeclaration = (ClassDeclarationSyntax)namespaceMember;
                     var mappedMethods = new List<MemberDeclarationSyntax>();
-                    foreach (var methodMember in classDeclaration.MethodDeclarationNodes())
+                    foreach (var methodMember in classDeclaration.Members.Where(m => m.Kind == SyntaxKind.MethodDeclaration))
                     {
                         var methodDeclaration = (MethodDeclarationSyntax)methodMember;
-                        if (methodDeclaration.hasAttribute(attributeName))
+                        if (methodDeclaration.HasAttribute(attributeName))
                             mappedMethods.Add(methodDeclaration);
                     }
 

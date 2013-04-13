@@ -45,7 +45,7 @@ namespace MiCS.Validators
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            if (node.hasAttribute(attributeName))
+            if (node.HasAttribute(attributeName))
                 currentMethods.Add(node.Identifier.ValueText);
 
             base.VisitMethodDeclaration(node);
