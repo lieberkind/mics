@@ -256,8 +256,7 @@ namespace MiCS.Mappers
                 if (memberAccess.Expression is IdentifierNameSyntax)
                 {
                     var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
-                    string objectReferenceName = objectReference.Identifier.ValueText;
-
+                    var objectReferenceName = objectReference.ScriptName();
                     var methodName = memberAccess.Name.Identifier.ValueText;
 
                     var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;

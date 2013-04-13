@@ -34,14 +34,104 @@ namespace MiCS
             
         }
 
-        //public static string NameText(this SimpleNameSyntax simpleName)
-        //{
-        //    return simpleName.ri + qualifiedName.Ri
-        //}
+        public static bool IsScriptType(this TypeSymbol typeSymbol)
+        {
+            if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
+                throw new NotSupportedException();
+
+            var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+            if (declaration is ClassDeclarationSyntax)
+            {
+                var @class = (ClassDeclarationSyntax)declaration;
+                return @class.IsScriptType();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the script name defined by ScriptSharp if the type is a built
+        /// in JavaScript/DOM type. Otherwise the original type name is return.
+        /// IdentifierNameSyntax script name can be different from the defined name
+        /// e.g. in the Document.HasFocus() call where Document is translated to 
+        /// document.HasFocus() (lower case "d"). The method name (HasFocus) is 
+        /// translated internally by ScriptSharp (to hasFocus).
+        /// </summary>
+        public static string ScriptName(this IdentifierNameSyntax identifierName)
+        {
+            var nameText = identifierName.Identifier.ValueText;
+            var symbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(identifierName).Symbol;
+            var declaration = symbol.DeclaringSyntaxNodes[0];
+            if (declaration is ClassDeclarationSyntax)
+            {
+                var @class = (ClassDeclarationSyntax)declaration;
+                if (@class.IsScriptType())
+                {
+                    // Check if static reference to type.
+                    if (@class.Identifier.ValueText.Equals(nameText))
+                    {
+                        var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(identifierName).Type;
+                        return @type.ScriptName();
+                    }
+                }
+            }
+            return nameText;
+        }
+
+        /// <summary>
+        /// Returns the script name defined by ScriptSharp if the type is a built
+        /// in JavaScript/DOM type. Otherwise the original type name is return.
+        /// </summary>
+        public static string ScriptName(this TypeSymbol typeSymbol)
+        {
+            if (typeSymbol.IsScriptType())
+            {
+                var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+                if (declaration is ClassDeclarationSyntax)
+                {
+                    var @class = (ClassDeclarationSyntax)declaration;
+                    if (@class.hasAttribute("ScriptName"))
+                    {
+                        var argList = @class.GetAttribute("ScriptName").ArgumentList;
+                        if (argList.Arguments.Count != 1)
+                            throw new NotSupportedException();
+
+                        var argExpression = argList.Arguments[0].Expression;
+                        if (!(argExpression is LiteralExpressionSyntax))
+                            throw new NotSupportedException();
+
+                        return ((LiteralExpressionSyntax)argExpression).Token.ValueText;
+                    }
+                    else
+                        throw new NotSupportedException();
+                }
+                else
+                    throw new NotSupportedException();
+            }
+            else
+            {
+                return typeSymbol.Name;
+            }
+        }
+
+        public static List<MethodDeclarationSyntax> MethodDeclarationNodes(this ClassDeclarationSyntax @class)
+        {
+            var methodDeclarations = new List<MethodDeclarationSyntax>();
+            foreach (var method in @class.Members.Where(m => m.Kind == SyntaxKind.MethodDeclaration))
+            {
+                methodDeclarations.Add((MethodDeclarationSyntax)method);
+            }
+            return methodDeclarations;
+        }
 
         public static string NameText(this AttributeSyntax attribute)
         {
             return ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText;
+        }
+
+        public static bool IsScriptType(this ClassDeclarationSyntax classDeclaration)
+        {
+            return classDeclaration.hasAttribute("ScriptImport");
         }
 
         public static bool hasAttribute(this MethodDeclarationSyntax methodDeclaration, string attributeName)
@@ -50,13 +140,51 @@ namespace MiCS
             {
                 foreach (var attList in methodDeclaration.AttributeLists)
                 {
+                    if (attList.HasAttribute(attributeName))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool hasAttribute(this ClassDeclarationSyntax classDeclaration, string attributeName)
+        {
+            if (classDeclaration.AttributeLists.Any())
+            {
+                foreach (var attList in classDeclaration.AttributeLists)
+                {
+                    if (attList.HasAttribute(attributeName))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        public static AttributeSyntax GetAttribute(this ClassDeclarationSyntax classDeclaration, string attributeName)
+        {
+            if (classDeclaration.AttributeLists.Any())
+            {
+                foreach (var attList in classDeclaration.AttributeLists)
+                {
                     foreach (AttributeSyntax att in attList.Attributes)
                     {
                         if (att.NameText().Equals(attributeName))
                         {
-                            return true;
+                            return att;
                         }
                     }
+                }
+            }
+            return null;
+        }
+
+        public static bool HasAttribute(this AttributeListSyntax attributeList, string attributeName)
+        {
+            foreach (AttributeSyntax att in attributeList.Attributes)
+            {
+                if (att.NameText().Equals(attributeName))
+                {
+                    return true;
                 }
             }
             return false;

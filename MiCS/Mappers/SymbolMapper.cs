@@ -362,7 +362,7 @@ namespace MiCS.Mappers
                     if(!isSupportedType)
                         throw new NotSupportedException("TypeSymbol type is currently not supported.");
 
-                    mappedTypeName = typeSymbol.Name;
+                    mappedTypeName = typeSymbol.ScriptName();
                     break;
             }
 

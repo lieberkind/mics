@@ -216,7 +216,7 @@ namespace MiCS
                 {
                     var classDeclaration = (ClassDeclarationSyntax)namespaceMember;
                     var mappedMethods = new List<MemberDeclarationSyntax>();
-                    foreach (var methodMember in classDeclaration.DescendantNodes().Where(m => m.Kind == SyntaxKind.MethodDeclaration))
+                    foreach (var methodMember in classDeclaration.MethodDeclarationNodes())
                     {
                         var methodDeclaration = (MethodDeclarationSyntax)methodMember;
                         if (methodDeclaration.hasAttribute(attributeName))

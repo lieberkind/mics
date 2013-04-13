@@ -21,17 +21,21 @@ namespace MiCS.Builders
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax @class)
         {
-            var ssClass = @class.Map(ssParentNamespace);
+            // Ignore JavaScript/DOM built in types.
+            if (!@class.IsScriptType())
+            {
+                var ssClass = @class.Map(ssParentNamespace);
 
-            //var methodBuilder = new MethodBuilder(ssClass, ssParentNamespace);
-            //methodBuilder.Visit(@class);
+                //var methodBuilder = new MethodBuilder(ssClass, ssParentNamespace);
+                //methodBuilder.Visit(@class);
 
-            //ssClass.Members.AddRange(methodBuilder.ssMethods);
+                //ssClass.Members.AddRange(methodBuilder.ssMethods);
 
-            ssClass.Members.AddRange(MethodBuilder.BuildList(@class, ssClass, ssParentNamespace));
+                ssClass.Members.AddRange(MethodBuilder.BuildList(@class, ssClass, ssParentNamespace));
 
-            ssClasses.Add(ssClass);
 
+                ssClasses.Add(ssClass);
+            }
             //base.VisitClassDeclaration(node);
         }
 
