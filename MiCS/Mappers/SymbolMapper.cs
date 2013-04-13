@@ -17,36 +17,33 @@ namespace MiCS.Mappers
             return new SS.ParameterSymbol(p.Identifier.ValueText, null, null, SS.ParameterMode.InOut);
         }
 
-        static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, 
-            SS.ClassSymbol parentClassReference, 
-            SS.NamespaceSymbol parentNamespaceReference)
+        static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
-            // Todo: Should this random namespace symbol be used here or should the actual namespace be applied!
-            // Namespace is apparently only required for return type! Should it then be the namespase of the return type?
-            //var parentNamespace = new ScriptSharp.ScriptModel.NamespaceSymbol("ns", null);
+            // Todo: Remove
+            //var returnTypeStr = "";
 
-            var returnTypeStr = "";
-            
-            if (methodDeclaration.ReturnType is IdentifierNameSyntax)      // Custom complex types.
-                returnTypeStr = ((IdentifierNameSyntax)methodDeclaration.ReturnType).Identifier.ValueText;
-            else if (methodDeclaration.ReturnType is PredefinedTypeSyntax) // Predefined types like void and string
-                returnTypeStr = ((PredefinedTypeSyntax)methodDeclaration.ReturnType).Keyword.ValueText;
-            else
-                throw new NotSupportedException("Method declaration return type is currently not supported.");
+            //if (methodDeclaration.ReturnType is IdentifierNameSyntax)      // Custom complex types.
+            //    returnTypeStr = ((IdentifierNameSyntax)methodDeclaration.ReturnType).Identifier.ValueText;
+            //else if (methodDeclaration.ReturnType is PredefinedTypeSyntax) // Predefined types like void and string
+            //    returnTypeStr = ((PredefinedTypeSyntax)methodDeclaration.ReturnType).Keyword.ValueText;
+            //else
+            //    throw new NotSupportedException("Method declaration return type is currently not supported.");
 
-            var returnType = new SS.ClassSymbol(returnTypeStr, parentNamespaceReference);
-            var name = methodDeclaration.Identifier.ValueText;
+            // Todo: Consider how return type and returnType's namespace can be referenced in a nice way.
+            var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+            //var ssReturnType = new SS.ClassSymbol(returnTypeStr, ssParentNamespace);
+            var methodName = methodDeclaration.Identifier.ValueText;
 
-            var method = new SS.MethodSymbol(name, parentClassReference, returnType);
+            var ssMethod = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
 
             var implementationStatements = new List<SS.Statement>();
-            foreach (var roslynStatement in methodDeclaration.Body.Statements)
+            foreach (var statement in methodDeclaration.Body.Statements)
             {
-                implementationStatements.Add(StatementBuilder.Build(roslynStatement, parentClassReference));
+                implementationStatements.Add(StatementBuilder.Build(statement, ssParentClass, ssMethod));
             }
-            var sI = new SS.SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + method.GeneratedName);
-            method.AddImplementation(sI);
-            return method;
+            var sI = new SS.SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + ssMethod.GeneratedName);
+            ssMethod.AddImplementation(sI);
+            return ssMethod;
 
         }
 
@@ -81,12 +78,12 @@ namespace MiCS.Mappers
         }
 
 
-        static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable, TypeInfo typeInfo)
+        static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable, SS.MemberSymbol ssParentMember, SS.TypeSymbol ssType)
         {
-            //var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(variable.Parent);
+            if (ssParentMember == null)
+                throw new Exception("Variable parent member cannot be null.");
 
-            // Todo: Pass parent value and not null.
-            return new SS.VariableSymbol(variable.Identifier.ValueText, null, typeInfo.Type.Map());
+            return new SS.VariableSymbol(variable.Identifier.ValueText, ssParentMember, ssType);
         }
 
 
@@ -310,9 +307,9 @@ namespace MiCS.Mappers
                 //case IntrinsicType.Function:
                 //    mappedTypeName = "Function";
                 //    break;
-                //case IntrinsicType.Void:
-                //    mappedTypeName = "Void";
-                //    break;
+                case "Void":
+                    mappedTypeName = "Void";
+                    break;
                 //case IntrinsicType.Array:
                 //    mappedTypeName = "Array";
                 //    break;

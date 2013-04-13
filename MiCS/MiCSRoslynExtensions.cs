@@ -49,6 +49,32 @@ namespace MiCS
             return false;
         }
 
+        public static NamespaceDeclarationSyntax ParentNamespace(this TypeSymbol typeSymbol)
+        {
+            if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
+                throw new NotSupportedException();
+
+            var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+            if (declaration is ClassDeclarationSyntax)
+            {
+                var @class = (ClassDeclarationSyntax)declaration;
+                return @class.ParentNamespace();
+            }
+            else
+                throw new NotSupportedException();
+        }
+        public static NamespaceDeclarationSyntax ParentNamespace(this SyntaxNode node)
+        {
+            if (node.Parent is NamespaceDeclarationSyntax)
+                return (NamespaceDeclarationSyntax)node;
+            else if (node.Parent == null)
+                throw new Exception("No parent namespace was found!");
+            else
+                return node.Parent.ParentNamespace();
+        }
+
+        //public static MethodDeclarationSyntax
+
         /// <summary>
         /// Returns the script name defined by ScriptSharp if the type is a built
         /// in JavaScript/DOM type. Otherwise the original type name is return.

@@ -11,7 +11,7 @@ using MiCS.Mappers;
 using ScriptSharp.Generator;
 using MiCS.Builders;
 using ScriptSharp;
-using ScriptSharp.ScriptModel;
+using SS = ScriptSharp.ScriptModel;
 using MiCS.Validators;
 
 
@@ -31,6 +31,11 @@ namespace MiCS
             get;
             private set;
         }
+
+        //public static bool IsMixedSide(TypeSymbol typeSymbol)
+        //{
+
+        //}
         
         public static SyntaxTree Tree
         {
@@ -287,7 +292,7 @@ namespace MiCS
             {
                 foreach (var scriptSharpClass in scriptSharpNamespace.Types)
                 {
-                    TypeGenerator.GenerateClass(generator, (ClassSymbol)scriptSharpClass);
+                    TypeGenerator.GenerateClass(generator, (SS.ClassSymbol)scriptSharpClass);
                 }
             }
 

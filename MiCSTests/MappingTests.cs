@@ -285,14 +285,15 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationTest()
         {
-            var RosStmt = Parse.Statement("string i;");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"string i;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
 
-            var RosDeclaration = ((LocalDeclarationStatementSyntax)RosStmt).Declaration;
-            var SSDeclaration = (SS.VariableDeclarationStatement)SSStmt;
+            var RosDeclaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var SSDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
             Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
@@ -309,9 +310,9 @@ namespace MiCSTests
         [TestMethod]
         public void TypeSymbolDeclarationTest()
         {
-
-            var statement = (LocalDeclarationStatementSyntax)Parse.Statement(@"int i;");
-            var ssStatement = (SS.VariableDeclarationStatement)StatementBuilder.Build(statement);
+            string source = @"int i;";
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementsToSS(source).First();
+            var statement = (LocalDeclarationStatementSyntax)Parse.Statement(source);
 
             var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(statement.Declaration.Type).Type;
             Assert.IsTrue(@type is NamedTypeSymbol);
@@ -377,15 +378,15 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationStringAssignmentTest()
         {
+            var source = @"string i = ""foo"";";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            var RosStmt = Parse.Statement(@"string i = ""foo"";");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
 
-            Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
-
-            var RosDeclaration = ((LocalDeclarationStatementSyntax)RosStmt).Declaration;
-            var SSDeclaration = (SS.VariableDeclarationStatement)SSStmt;
+            var RosDeclaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var SSDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
             Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
@@ -406,9 +407,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationIntAssignmentTest()
         {
-
-            var statement = Parse.Statement(@"int i = -1;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"int i = -1;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -422,9 +423,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationUIntAssignmentTest()
         {
-
-            var statement = Parse.Statement(@"uint i = 0U;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"uint i = 0U;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -438,9 +439,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationBooleanAssignmentTest()
         {
-
-            var statement = Parse.Statement(@"int b = true;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"int b = true;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -454,9 +455,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationLongAssignmentTest()
         {
-
-            var statement = Parse.Statement(@"long l = 1L;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"long l = 1L;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -470,9 +471,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationULongAssignmentTest()
         {
-
-            var statement = Parse.Statement(@"ulong l = 1UL;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"ulong l = 1UL;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -486,8 +487,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationDecimalAssignmentTest()
         {
-            var statement = Parse.Statement(@"decimal d = 1.0m;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"decimal d = 1.0m;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -501,8 +503,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationDoubleAssignmentTest()
         {
-            var statement = Parse.Statement(@"double d = 1.0d;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"double d = 1.0d;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -516,8 +519,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationShortAssignmentTest()
         {
-            var statement = Parse.Statement(@"short s = (short)1;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"short s = (short)1;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -531,8 +535,9 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableDeclarationUShortAssignmentTest()
         {
-            var statement = Parse.Statement(@"ushort s = (ushort)1;");
-            var ssStatement = StatementBuilder.Build(statement);
+            var source = @"ushort s = (ushort)1;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
             var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
             var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
@@ -550,14 +555,15 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableVarDeclarationAssignmentTest()
         {
-            var RosStmt = Parse.Statement(@"var i = ""foo"";");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"var i = ""foo"";";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            Assert.IsTrue(RosStmt is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(SSStmt is SS.VariableDeclarationStatement);
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
 
-            var RosDeclaration = ((LocalDeclarationStatementSyntax)RosStmt).Declaration;
-            var SSDeclaration = (SS.VariableDeclarationStatement)SSStmt;
+            var RosDeclaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var SSDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
             Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
             Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
@@ -578,12 +584,13 @@ namespace MiCSTests
         [TestMethod]
         public void StatementVariableAssignmentTest()
         {
-            var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"string i = ""foo""; i = ""hello"";";
+            var statement = Parse.Statements(source).First();
+            var ssStatement = Parse.StatementsToSS(source).First();
 
-            Assert.IsTrue(SSStmt is SS.ExpressionStatement);
+            Assert.IsTrue(ssStatement is SS.ExpressionStatement);
 
-            var SSExpr = ((SS.ExpressionStatement)SSStmt).Expression;
+            var SSExpr = ((SS.ExpressionStatement)ssStatement).Expression;
 
             Assert.IsTrue(SSExpr is SS.BinaryExpression);
         }
@@ -591,19 +598,21 @@ namespace MiCSTests
         [TestMethod]
         public void StatementAritmethicAssignmentTest()
         {
-            var RosStmt = Parse.Statement(@"string i = 1 + 1;");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"string i = 1 + 1;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
         }
 
         [TestMethod]
         public void IfElseStatementTest()
         {
-            var RosStmt = Parse.Statement(@"if (true) { int i; } else { int i; }");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"if (true) { int i; } else { int i; }";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            Assert.IsTrue(SSStmt is SS.IfElseStatement);
+            Assert.IsTrue(ssStatement is SS.IfElseStatement);
 
-            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)ssStatement;
 
             Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is SS.BlockStatement);
@@ -613,12 +622,13 @@ namespace MiCSTests
         [TestMethod]
         public void IfStatementTest()
         {
-            var RosStmt = Parse.Statement(@"if (true) { int i; } ");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"if (true) { int i; } ";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            Assert.IsTrue(SSStmt is SS.IfElseStatement);
+            Assert.IsTrue(ssStatement is SS.IfElseStatement);
 
-            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)ssStatement;
 
             Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is SS.BlockStatement);
@@ -628,18 +638,18 @@ namespace MiCSTests
         [TestMethod]
         public void IfElseStatementExplicitNoBlockTest()
         {
-            var RosStmt = Parse.Statement(@"
+            var source = @"
                 if (true)
                     int i;
                 else
                     int i;
-                ");
+                ";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            Assert.IsTrue(ssStatement is SS.IfElseStatement);
 
-            Assert.IsTrue(SSStmt is SS.IfElseStatement);
-
-            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)ssStatement;
 
             Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is SS.VariableDeclarationStatement);
@@ -649,12 +659,13 @@ namespace MiCSTests
         [TestMethod]
         public void IfStatementNoBlockTest()
         {
-            var RosStmt = Parse.Statement(@"if (true) int i;");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"if (true) int i;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            Assert.IsTrue(SSStmt is SS.IfElseStatement);
+            Assert.IsTrue(ssStatement is SS.IfElseStatement);
 
-            var SSIfElseStmt = (SS.IfElseStatement)SSStmt;
+            var SSIfElseStmt = (SS.IfElseStatement)ssStatement;
 
             Assert.IsTrue(SSIfElseStmt.Condition is SS.LiteralExpression);
             Assert.IsTrue(SSIfElseStmt.IfStatement is SS.VariableDeclarationStatement);
@@ -664,12 +675,13 @@ namespace MiCSTests
         [TestMethod]
         public void ReturnStatementTest()
         {
-            var RosStmt = Parse.Statement(@"return 12;");
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"return 12;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-            Assert.IsTrue(SSStmt is SS.ReturnStatement);
+            Assert.IsTrue(ssStatement is SS.ReturnStatement);
 
-            var returnStmt = (SS.ReturnStatement)SSStmt;
+            var returnStmt = (SS.ReturnStatement)ssStatement;
 
             Assert.IsTrue(returnStmt.Value is SS.LiteralExpression);
         }
@@ -883,12 +895,12 @@ namespace MiCSTests
         [TestMethod]
         public void ExpressionAssignmentTest()
         {
-            var RosStmt = Parse.Statements(@"string i = ""foo""; i = ""hello"";").ElementAt(1);
-            var SSStmt = StatementBuilder.Build(RosStmt);
+            var source = @"string i = ""foo""; i = ""hello"";";
+            var ssStatement = Parse.StatementsToSS(source).First();
 
-            Assert.IsTrue(SSStmt is SS.ExpressionStatement);
+            Assert.IsTrue(ssStatement is SS.ExpressionStatement);
 
-            var SSExpr = (SS.BinaryExpression)((SS.ExpressionStatement)SSStmt).Expression;
+            var SSExpr = (SS.BinaryExpression)((SS.ExpressionStatement)ssStatement).Expression;
 
             Assert.IsTrue(SSExpr.Operator == SS.Operator.Equals);
             Assert.IsTrue(SSExpr.RightOperand is SS.LiteralExpression);

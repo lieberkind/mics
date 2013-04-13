@@ -12,12 +12,19 @@ namespace MiCS.Builders
     class StatementBuilder : SyntaxWalker
     {
 
-        SS.ClassSymbol typeReference;
+        SS.ClassSymbol ssTypeReference;
+        SS.MemberSymbol ssParentMember;
         public readonly List<SS.Statement> ssStatements = new List<SS.Statement>();
 
-        public StatementBuilder(ScriptSharp.ScriptModel.ClassSymbol typeReference = null)
+        //public StatementBuilder(SS.ClassSymbol typeReference)
+        //{
+        //    this.ssTypeReference = typeReference;
+        //}
+
+        public StatementBuilder(SS.ClassSymbol typeReference, SS.MemberSymbol ssParentMember)
         {
-            this.typeReference = typeReference;
+            this.ssTypeReference = typeReference;
+            this.ssParentMember = ssParentMember;
         }
 
         public override void DefaultVisit(SyntaxNode node)
@@ -28,8 +35,8 @@ namespace MiCS.Builders
         public override void VisitIfStatement(IfStatementSyntax ifStatement)
         {
             var ssCondition = ExpressionBuilder.Build(ifStatement.Condition);
-            var ssIfStatement = StatementBuilder.Build(ifStatement.Statement);
-            var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.Build(ifStatement.Else.Statement);
+            var ssIfStatement = StatementBuilder.Build(ifStatement.Statement, ssTypeReference, ssParentMember);
+            var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.Build(ifStatement.Else.Statement, ssTypeReference, ssParentMember);
 
             ssStatements.Add(ifStatement.Map(ssCondition, ssIfStatement, ssElseStatement));
             
@@ -44,7 +51,7 @@ namespace MiCS.Builders
 
             foreach (var statement in block.Statements)
             {
-                ssChildStatements.Add(StatementBuilder.Build(statement, typeReference));
+                ssChildStatements.Add(StatementBuilder.Build(statement, ssTypeReference, ssParentMember));
             }
 
             ssBlock.Statements.AddRange(ssChildStatements);
@@ -56,7 +63,7 @@ namespace MiCS.Builders
         public override void VisitReturnStatement(ReturnStatementSyntax returnStatement)
         {
 
-            var ssExpression = ExpressionBuilder.Build(returnStatement.Expression, typeReference);
+            var ssExpression = ExpressionBuilder.Build(returnStatement.Expression, ssTypeReference);
 
             ssStatements.Add(returnStatement.Map(ssExpression));
 
@@ -65,7 +72,7 @@ namespace MiCS.Builders
 
         public override void VisitExpressionStatement(ExpressionStatementSyntax expressionStatement)
         {
-            var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression, typeReference);
+            var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression, ssTypeReference);
             
             ssStatements.Add(expressionStatement.Map(ssExpression));
 
@@ -88,7 +95,7 @@ namespace MiCS.Builders
  
 
             var typeInfo = MiCSManager.MixedSideSemanticModel.GetTypeInfo(localDeclarationStatement.Declaration.Type);
-            var ssVariable = variable.Map(typeInfo);
+            var ssVariable = variable.Map(ssParentMember, typeInfo.Type.Map());
 
             var initializer = variable.Initializer;
             if (initializer != null)
@@ -98,37 +105,34 @@ namespace MiCS.Builders
 
                 var val = variable.Initializer.Value;
 
-                ssVariable.SetValue(ExpressionBuilder.Build(val, typeReference));
+                ssVariable.SetValue(ExpressionBuilder.Build(val, ssTypeReference));
 
             }
 
             var ssVariableDecalarationStatement = new SS.VariableDeclarationStatement();
             ssVariableDecalarationStatement.Variables.Add(ssVariable);
-            //return vDS;
 
             ssStatements.Add(ssVariableDecalarationStatement);
-
-            //ssStatements.Add(localDeclarationStatement.Map(typeReference));
 
             //base.VisitLocalDeclarationStatement(localDeclarationStatement);
         }
 
-        public static SS.Statement Build(StatementSyntax statement, SS.ClassSymbol typeReference = null)
+        public static SS.Statement Build(StatementSyntax statement, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
         {
-            return StatementBuilder.BuildList(statement, typeReference).First();
+            return StatementBuilder.BuildList(statement, ssTypeReference, ssParentMember).First();
         }
 
-        public static List<SS.Statement> BuildList(StatementSyntax statement, SS.ClassSymbol typeReference = null)
+        public static List<SS.Statement> BuildList(StatementSyntax statement, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
         {
-            var statementBuilder = new StatementBuilder(typeReference);
+            var statementBuilder = new StatementBuilder(ssTypeReference, ssParentMember);
             statementBuilder.Visit(statement);
 
             return statementBuilder.ssStatements;
         }
 
-        public static List<SS.Statement> BuildList(SyntaxNode node, SS.ClassSymbol typeReference = null)
+        public static List<SS.Statement> BuildList(SyntaxNode node, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
         {
-            var statementBuilder = new StatementBuilder(typeReference);
+            var statementBuilder = new StatementBuilder(ssTypeReference, ssParentMember);
             statementBuilder.Visit(node);
 
             return statementBuilder.ssStatements;

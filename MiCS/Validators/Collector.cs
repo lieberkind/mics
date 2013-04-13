@@ -43,6 +43,8 @@ namespace MiCS.Validators
                 Members.Add(node.Identifier.ValueText, currentMethods.ToList());
         }
 
+
+
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             if (node.HasAttribute(attributeName))
