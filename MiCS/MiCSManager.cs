@@ -122,9 +122,26 @@ namespace MiCS
             
         }
 
+        public static void IncludeBuiltInScriptTypes(string rootPath)
+        {
+            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
+            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
+        }
+        private static string _builtInScriptTypesSource;
+
         public MiCSManager(SyntaxTree tree)
         {
-            _tree = tree;
+            if (!String.IsNullOrEmpty(_builtInScriptTypesSource))
+            {
+                _tree = SyntaxTree.ParseText(tree.GetText() + _builtInScriptTypesSource);
+                _builtInScriptTypesSource = "";
+            }
+            else
+            {
+                _tree = tree;
+            }
+
+
             _compilationUnit = _tree.GetRoot();
             _mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "MixedSide");
             //ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
@@ -197,6 +214,7 @@ namespace MiCS
             var scriptText = Instance.GenerateScriptText(scriptSharpAST);
             ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "MiCSGeneratedScript", scriptText, true);
         }
+
 
         /// <summary>
         /// Returns a new compilation unit that only contains

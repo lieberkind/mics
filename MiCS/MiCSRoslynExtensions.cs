@@ -60,6 +60,7 @@ namespace MiCS
         public static string ScriptName(this IdentifierNameSyntax identifierName)
         {
             var nameText = identifierName.Identifier.ValueText;
+            var m = MiCSManager.MixedSideCompilationUnit;
             var symbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(identifierName).Symbol;
             var declaration = symbol.DeclaringSyntaxNodes[0];
             if (declaration is ClassDeclarationSyntax)

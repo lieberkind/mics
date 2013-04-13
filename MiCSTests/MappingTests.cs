@@ -164,6 +164,24 @@ namespace MiCSTests
 
         }
 
+        string builtInTypesRootPath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\";
+
+        [TestMethod]
+        public void BuiltInTranslationTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() { Document.HasFocus(); }
+                }
+            }";
+            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var ssClass = (SS.ClassSymbol)ssNamespace.Types.ElementAt(0);
+        }
 
         [TestMethod]
         public void InvocationTest()
