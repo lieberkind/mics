@@ -202,7 +202,7 @@ namespace MiCSTests
             var statement = (LocalDeclarationStatementSyntax)Parse.Statement(@"int i;");
             var ssStatement = (SS.VariableDeclarationStatement)StatementBuilder.Build(statement);
 
-            var @type = MiCSManager.SemanticModel.GetTypeInfo(statement.Declaration.Type).Type;
+            var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(statement.Declaration.Type).Type;
             Assert.IsTrue(@type is NamedTypeSymbol);
             Assert.IsTrue(@type.Name.Equals("Int32"));
 

@@ -98,8 +98,8 @@ namespace MiCS.Builders
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax memberAccess)
         {
             var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression);
-            var ssParentType = MiCSManager.SemanticModel.GetTypeInfo(memberAccess.Expression).Type.Map();
-            var ssType = MiCSManager.SemanticModel.GetTypeInfo(memberAccess.Name).Type.Map();
+            var ssParentType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(memberAccess.Expression).Type.Map();
+            var ssType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(memberAccess.Name).Type.Map();
             var ssFieldName = memberAccess.Name.Identifier.ValueText;
             
             var ssField = new SS.FieldSymbol(ssFieldName, ssParentType, ssType); 
