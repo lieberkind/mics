@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace MiCS.ScriptSharp.Web
 {
-    class Source
+
+    class Web
     {
         public static string Text = @"
+
 // ActiveXObject.cs
 // Script#/Libraries/Web
 // This source code is subject to terms and conditions of the Apache License, Version 2.0.
@@ -720,8 +722,7 @@ namespace System.Html {
 
         public static void Focus() {
         }
-        // Todo: Remove MixedSide attribute.
-        [MixedSide]
+
         public static Element GetElementById(string id) {
             return null;
         }
@@ -741,8 +742,7 @@ namespace System.Html {
         public static ElementCollection GetElementsByTagName(string tagName) {
             return null;
         }
-        // Todo: Remove MixedSide attribute.
-        [MixedSide]
+
         public static bool HasFocus() {
             return false;
         }
@@ -1648,8 +1648,6 @@ namespace System.Html {
         public void AttachEvent(string eventName, ElementEventHandler handler) {
         }
 
-        // Todo: Remove MixedSide attribute.
-        [MixedSide]
         public void Blur() {
         }
 
@@ -9100,7 +9098,10 @@ namespace System.Html.StyleSheets {
 }
 
 
+
+
         ";
+
 
     }
 }

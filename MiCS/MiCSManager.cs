@@ -130,7 +130,7 @@ namespace MiCS
         public static void IncludeBuiltInScriptTypes(string rootPath)
         {
             // Code to read the built in source files.
-            //foreach (string filePath in Directory.EnumerateFiles( rootPath + @"MiCS\ScriptSharp\Web\Html\", "*.*", SearchOption.AllDirectories))
+            //foreach (string filePath in Directory.EnumerateFiles(rootPath + @"MiCS\ScriptSharp\Web\Html\", "*.*", SearchOption.AllDirectories))
             //{
             //    using (StreamWriter w = File.AppendText("TestSourceFile.txt"))
             //    {
@@ -139,11 +139,11 @@ namespace MiCS
             //    }
             //}
 
-            _builtInScriptTypesSource = ScriptSharp.Web.Source.Text;
+            //_builtInScriptTypesSource = ScriptSharp.Web.Source.Text + ScriptSharp.CoreLib.Source.Text;
 
-            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
-            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
-            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
+            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
+            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
+            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
         }
         private static string _builtInScriptTypesSource;
 

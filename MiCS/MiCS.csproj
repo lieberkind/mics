@@ -75,6 +75,7 @@
     <Compile Include="ScriptSharp\CoreLib\RegExp.cs" />
     <Compile Include="ScriptSharp\CoreLib\Runtime.cs" />
     <Compile Include="ScriptSharp\CoreLib\ScriptMetadata.cs" />
+    <Compile Include="ScriptSharp\TextSources\CoreLib.cs" />
     <Compile Include="ScriptSharp\CoreLib\Type.cs" />
     <Compile Include="MiCSValue.cs" />
     <Compile Include="ScriptSharp\Web\Html\ActiveXObject.cs" />
@@ -220,7 +221,7 @@
     <Compile Include="ScriptSharp\Web\Html\TouchInfo.cs" />
     <Compile Include="ScriptSharp\Web\Html\Window.cs" />
     <Compile Include="ScriptSharp\Web\Html\WindowInstance.cs" />
-    <Compile Include="ScriptSharp\Web\Source.cs" />
+    <Compile Include="ScriptSharp\TextSources\Web.cs" />
     <Compile Include="Validators\ClientSideValidator.cs" />
     <Compile Include="Validators\Collector.cs" />
     <Compile Include="Validators\MixedSideValidator.cs" />
