@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace MiCS.Validators
 {
-    internal class ClientSideValidator : SyntaxWalker
+    public class ClientSideValidator : SyntaxWalker
     {
-        Dictionary<string, List<string>> mixedSideMembers;
-        Dictionary<string, List<string>> clientSideMembers;
+        Dictionary<string, Dictionary<string, List<string>>> mixedSideMembers;
+        Dictionary<string, Dictionary<string, List<string>>> clientSideMembers;
         CompilationUnitSyntax root;
 
         public bool IsValid
@@ -22,7 +22,7 @@ namespace MiCS.Validators
         public ClientSideValidator(CompilationUnitSyntax root)
         {
             this.root = root;
-            IsValid = true;
+            IsValid = false;
 
             var mixedSideCollector = new Collector(root, "MixedSide");
             var clientSideCollector = new Collector(root, "ClientSide");
@@ -44,16 +44,26 @@ namespace MiCS.Validators
             var model = MiCSManager.SemanticModel;
             var info = model.GetTypeInfo(node.Expression);
 
+            var @namespace = info.Type.ParentNamespace();
+            var namespaceName = ((IdentifierNameSyntax)@namespace.Name).Identifier.ValueText;
+
             var typeName = info.Type.Name;
             var methodName = node.Name.Identifier.ValueText;
 
-            var isValidMixedSideMember = mixedSideMembers.ContainsKey(typeName) && mixedSideMembers[typeName].Contains(methodName);
-            var isValidClientSideMember = clientSideMembers.ContainsKey(typeName) && clientSideMembers[typeName].Contains(methodName);
+            var isValidMixedSideMember =
+                mixedSideMembers.ContainsKey(namespaceName) &&
+                mixedSideMembers[namespaceName].ContainsKey(methodName) &&
+                mixedSideMembers[namespaceName][typeName].Contains(methodName);
 
-            var valid = isValidMixedSideMember || isValidClientSideMember;
+            var isValidClientSideMember =
+                clientSideMembers.ContainsKey(namespaceName) &&
+                clientSideMembers[namespaceName].ContainsKey(typeName) &&
+                clientSideMembers[namespaceName][typeName].Contains(methodName);
 
-            if (!valid)
-                IsValid = false;
+            IsValid = isValidMixedSideMember || isValidClientSideMember;
+
+            if (IsValid)
+                base.VisitMemberAccessExpression(node);
         }
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
@@ -63,12 +73,21 @@ namespace MiCS.Validators
 
             var typeName = ((IdentifierNameSyntax)node.Type).Identifier.ValueText;
 
-            var valid = mixedSideMembers.ContainsKey(typeName) || clientSideMembers.ContainsKey(typeName);
+            var @namespace = node.Type.ParentNamespace();
+            var namespaceName = ((IdentifierNameSyntax)@namespace.Name).Identifier.ValueText;
 
-            if (!valid)
-                IsValid = false;
+            var isValidMixedSideMember =
+                mixedSideMembers.ContainsKey(namespaceName) &&
+                mixedSideMembers[namespaceName].ContainsKey(typeName);
 
-            base.VisitObjectCreationExpression(node);
+            var isValidClientSideMember =
+                clientSideMembers.ContainsKey(namespaceName) &&
+                clientSideMembers[namespaceName].ContainsKey(typeName);
+
+            IsValid = isValidMixedSideMember || isValidMixedSideMember;
+
+            if (IsValid)
+                base.VisitObjectCreationExpression(node);
         }
     }
 

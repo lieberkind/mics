@@ -50,8 +50,8 @@ namespace MiCSTests
             var collector = new Collector(st.GetRoot(), "MixedSide");
             collector.Collect();
 
-            Assert.AreEqual(collector.Members["Person"].Count, 2);
-            Assert.AreEqual(collector.Members["Animal"].Count, 1);
+            Assert.AreEqual(collector.Members["ScriptLibrary1"]["Person"].Count, 2);
+            Assert.AreEqual(collector.Members["ScriptLibrary1"]["Animal"].Count, 1);
         }
 
         [TestMethod]
