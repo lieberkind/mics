@@ -37,13 +37,14 @@ namespace MiCS.Validators
 
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
+
             currentNamespaceMembers.Clear();
 
             base.VisitNamespaceDeclaration(node);
 
             if (currentNamespaceMembers.Count > 0)
             {
-                var namespaceName = ((IdentifierNameSyntax)node.Name).Identifier.ValueText;
+                var namespaceName = GetFullName(node.Name);
                 Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
             }
         }
@@ -67,5 +68,25 @@ namespace MiCS.Validators
 
             base.VisitMethodDeclaration(node);
         }
+
+        #region Helper Methods
+        private string GetFullName(NameSyntax name)
+        {
+            if (name is IdentifierNameSyntax)
+            {
+                return ((IdentifierNameSyntax)name).Identifier.ValueText;
+            }
+            else if (name is QualifiedNameSyntax)
+            {
+                var qualifiedName = (QualifiedNameSyntax)name;
+
+                return GetFullName(qualifiedName.Left) + qualifiedName.DotToken.ValueText + GetFullName(qualifiedName.Right);
+            }
+            else
+            {
+                throw new NotSupportedException("The namesyntax on the provided namespace is not supported");
+            }
+        }
+        #endregion
     }
 }

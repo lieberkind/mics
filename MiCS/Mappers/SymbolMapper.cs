@@ -249,7 +249,6 @@ namespace MiCS.Mappers
 
 
             string mappedTypeName = null;
-            string mappedNamespace = null;
 
             SS.TypeSymbol ssType = null;
 
@@ -357,9 +356,6 @@ namespace MiCS.Mappers
                     // Todo: This is a bit of an assumption. Can probably not be sure that containingSymbol is always a namespace
                     var namespaceName = typeSymbol.ContainingSymbol.Name;
 
-                    var csm = MiCSManager.ClientSideMembers;
-                    var msm = MiCSManager.MixedSideMembers;
-
                     var isSupportedClientSideType =
                         MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
                         MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
@@ -375,9 +371,13 @@ namespace MiCS.Mappers
 
                     mappedTypeName = typeSymbol.ScriptName();
                     // Todo: Parent namespace should probably not be a dummy namspace.
-                    ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
-                        if (typeSymbol.IsScriptType())
-                            ssType.SetIgnoreNamespace();
+                    //ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
+
+                    ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
+
+                    if (typeSymbol.IsScriptType())
+                        ssType.SetIgnoreNamespace();
+
                     break;
             }
 

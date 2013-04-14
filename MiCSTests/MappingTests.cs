@@ -233,17 +233,28 @@ namespace MiCSTests
 
         string builtInTypesRootPath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\";
 
+        // Todo: What exactly does this method test?
         [TestMethod]
         public void BuiltInTranslationTest()
         {
             var source = @"
             using System.Html;
+
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
                     void f() { Document.HasFocus(); }
                 }
-            }";
+            }
+
+            namespace TestNameSpace.Nested.NestedAgain.Andagain {
+                class Lol {
+                    [MixedSide]
+                    void lol() { }
+                }
+            }
+
+            ";
             MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
