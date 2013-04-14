@@ -358,7 +358,8 @@ namespace MiCS.Mappers
                     // Todo: Test if there will be a problem with custom and unsupported built-in types?
 
                     // Todo: This is a bit of an assumption. Can probably not be sure that containingSymbol is always a namespace
-                    var namespaceName = typeSymbol.ContainingSymbol.Name;
+                    //var namespaceName = typeSymbol.ContainingSymbol.Name;
+                    var namespaceName = typeSymbol.ContainingNamespace.FullName();
 
                     var csm = MiCSManager.ClientSideMembers;
                     var msm = MiCSManager.MixedSideMembers;

@@ -130,22 +130,22 @@ namespace MiCS
 
         public MiCSManager(SyntaxTree tree)
         {
-            //if (!String.IsNullOrEmpty(_builtInScriptTypesSource))
-            //{
-            //    _tree = SyntaxTree.ParseText(tree.GetText() + _builtInScriptTypesSource);
-            //    _builtInScriptTypesSource = "";
-            //}
-            //else
-            //{
-            _tree = tree;
-            //}
+            if (!String.IsNullOrEmpty(_builtInScriptTypesSource))
+            {
+                _tree = SyntaxTree.ParseText(tree.GetText() + _builtInScriptTypesSource);
+                _builtInScriptTypesSource = "";
+            }
+            else
+            {
+                _tree = tree;
+            }
 
             _compilationUnit = _tree.GetRoot();
 
             
             _mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "MixedSide");
             // Todo: built in script types should be added to client side.
-            _mixedSideTree = SyntaxTree.ParseText(_mixedSideCompilationUnit.GetText() + _builtInScriptTypesSource);
+            _mixedSideTree = SyntaxTree.ParseText(_mixedSideCompilationUnit.GetText());
             _mixedSideCompilationUnit = _mixedSideTree.GetRoot(); // Ensure compatible compilation unit and tree.
 
             //ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");

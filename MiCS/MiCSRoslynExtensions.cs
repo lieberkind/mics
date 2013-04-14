@@ -73,7 +73,20 @@ namespace MiCS
                 return node.Parent.ParentNamespace();
         }
 
-        //public static MethodDeclarationSyntax
+        public static string FullName(this NamespaceSymbol @namespace)
+        {
+            var fullName = @namespace.FullNameRecursive();
+            return fullName; // Remove leading dot.
+        }
+
+        private static string FullNameRecursive(this NamespaceSymbol @namespace)
+        {
+            // Containing namespace name is empty string when it is the global namespace.
+            if (@namespace.ContainingNamespace == null || String.IsNullOrEmpty(@namespace.ContainingNamespace.Name))
+                return @namespace.Name;
+            else
+                return @namespace.ContainingNamespace.FullNameRecursive() + "." + @namespace.Name;
+        }
 
         /// <summary>
         /// Returns the script name defined by ScriptSharp if the type is a built
