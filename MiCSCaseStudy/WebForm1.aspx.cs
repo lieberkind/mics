@@ -16,13 +16,23 @@ namespace MiCSCaseStudy
         {
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
-            var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
 
+            var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
             var source = File.ReadAllText(filePath);
 
             MiCSManager.IncludeBuiltInScriptTypes(@"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\");
             MiCSManager.Initiate(source);
             MiCSManager.BuildScript(scriptManager, this);
+
+
+            var message = "Implemented!";
+            var button = new Button() { Text = "Test Button" };
+            form1.Controls.Add(button);
+
+            button.MiCSOnClientClick(() =>
+            {
+                Window.Alert(MiCSValue.String(message));
+            });
         }
 
         protected void Page_Load(object sender, EventArgs e)
