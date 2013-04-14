@@ -65,7 +65,7 @@ namespace MiCS
         }
         public static NamespaceDeclarationSyntax ParentNamespace(this SyntaxNode node)
         {
-            if (node.Parent is NamespaceDeclarationSyntax)
+            if (node is NamespaceDeclarationSyntax)
                 return (NamespaceDeclarationSyntax)node;
             else if (node.Parent == null)
                 throw new Exception("No parent namespace was found!");

@@ -20,13 +20,13 @@ namespace MiCS
     public class MiCSManager
     {
 
-        public static Dictionary<string, List<string>> MixedSideMembers
+        public static Dictionary<string, Dictionary<string, List<string>>> MixedSideMembers
         {
             get;
             private set;
         }
 
-        public static Dictionary<string, List<string>> ClientSideMembers
+        public static Dictionary<string, Dictionary<string, List<string>>> ClientSideMembers
         {
             get;
             private set;

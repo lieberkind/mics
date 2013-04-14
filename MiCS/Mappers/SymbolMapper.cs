@@ -356,9 +356,22 @@ namespace MiCS.Mappers
                 //    break;
                 default:
                     // Todo: Test if there will be a problem with custom and unsupported built-in types?
-                    var isSupportedType =
-                           MiCSManager.ClientSideMembers.ContainsKey(typeSymbol.Name)
-                        || MiCSManager.MixedSideMembers.ContainsKey(typeSymbol.Name);
+
+                    // Todo: This is a bit of an assumption. Can probably not be sure that containingSymbol is always a namespace
+                    var namespaceName = typeSymbol.ContainingSymbol.Name;
+
+                    var csm = MiCSManager.ClientSideMembers;
+                    var msm = MiCSManager.MixedSideMembers;
+
+                    var isSupportedClientSideType =
+                        MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
+                        MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
+
+                    var isSupportedMixedSideType =
+                        MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
+                        MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
+
+                    var isSupportedType = isSupportedClientSideType || isSupportedMixedSideType;
 
                     if(!isSupportedType)
                         throw new NotSupportedException("TypeSymbol type is currently not supported.");

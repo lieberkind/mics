@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MiCS.Validators
 {
-    internal class MixedSideValidator : SyntaxWalker
+    public class MixedSideValidator : SyntaxWalker
     {
-        Dictionary<string, List<string>> mixedSideMembers;
+        Dictionary<string, Dictionary<string, List<string>>> mixedSideMembers;
         CompilationUnitSyntax root;
 
         public bool IsValid
@@ -22,7 +22,7 @@ namespace MiCS.Validators
         {
             this.root = root;
             var mixedSideCollector = new Collector(root, "MixedSide");
-            IsValid = true;
+            IsValid = false;
             mixedSideCollector.Collect();
             mixedSideMembers = mixedSideCollector.Members;
         }
@@ -34,18 +34,22 @@ namespace MiCS.Validators
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
-            var model = MiCSManager.SemanticModel;
+            var model = MiCSManager.MixedSideSemanticModel;
             var info = model.GetTypeInfo(node.Expression);
-            
-            var typeName = info.Type.Name;
+
+            var @namespace = info.Type.ParentNamespace();
+            var namespaceName = ((IdentifierNameSyntax)@namespace.Name).Identifier.ValueText;
+
+            var typeName = info.Type.Name;            
             var methodName = node.Name.Identifier.ValueText;
 
-            var valid = mixedSideMembers.ContainsKey(typeName) && mixedSideMembers[typeName].Contains(methodName);
+            IsValid =
+                mixedSideMembers.ContainsKey(namespaceName) &&
+                mixedSideMembers[namespaceName].ContainsKey(typeName) &&
+                mixedSideMembers[namespaceName][typeName].Contains(methodName);
 
-            if (!valid)
-                IsValid = false;
-
-            base.VisitMemberAccessExpression(node);
+            if (IsValid)
+                base.VisitMemberAccessExpression(node);
         }
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
@@ -55,12 +59,15 @@ namespace MiCS.Validators
             
             var typeName = ((IdentifierNameSyntax)node.Type).Identifier.ValueText;
 
-            var valid = mixedSideMembers.ContainsKey(typeName);
+            var @namespace = node.Type.ParentNamespace();
+            var namespaceName = ((IdentifierNameSyntax)@namespace.Name).Identifier.ValueText;
 
-            if (!valid)
-                IsValid = false;
+            IsValid =
+                mixedSideMembers.ContainsKey(namespaceName) &&
+                mixedSideMembers[namespaceName].ContainsKey(typeName);
 
-            base.VisitObjectCreationExpression(node);
+            if(IsValid)
+                base.VisitObjectCreationExpression(node);
         }
     }
 }

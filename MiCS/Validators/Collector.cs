@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace MiCS.Validators
 {
-    class Collector : SyntaxWalker
+    public class Collector : SyntaxWalker
     {
         string attributeName;
+        Dictionary<string, List<string>> currentNamespaceMembers;
         List<string> currentMethods;
         CompilationUnitSyntax compilationUnit;
 
-        public Dictionary<string, List<string>> Members
+        public Dictionary<string, Dictionary<string, List<string>>> Members
         {
             get;
             private set;
@@ -25,12 +26,26 @@ namespace MiCS.Validators
             this.attributeName = attributeName;
 
             currentMethods = new List<string>();
-            Members = new Dictionary<string, List<string>>();
+            currentNamespaceMembers = new Dictionary<string, List<string>>();
+            Members = new Dictionary<string, Dictionary<string, List<string>>>();
         }
 
         public void Collect()
         {
             Visit(compilationUnit);
+        }
+
+        public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+        {
+            currentNamespaceMembers.Clear();
+
+            base.VisitNamespaceDeclaration(node);
+
+            if (currentNamespaceMembers.Count > 0)
+            {
+                var namespaceName = ((IdentifierNameSyntax)node.Name).Identifier.ValueText;
+                Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
+            }
         }
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
@@ -40,7 +55,7 @@ namespace MiCS.Validators
             base.VisitClassDeclaration(node);
 
             if (currentMethods.Count > 0)
-                Members.Add(node.Identifier.ValueText, currentMethods.ToList());
+                currentNamespaceMembers.Add(node.Identifier.ValueText, currentMethods.ToList());
         }
 
 

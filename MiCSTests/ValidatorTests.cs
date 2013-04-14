@@ -50,8 +50,8 @@ namespace MiCSTests
             var collector = new Collector(st.GetRoot(), "MixedSide");
             collector.Collect();
 
-            Assert.AreEqual(collector.Members["Person"].Count, 2);
-            Assert.AreEqual(collector.Members["Animal"].Count, 1);
+            Assert.AreEqual(collector.Members["ScriptLibrary1"]["Person"].Count, 2);
+            Assert.AreEqual(collector.Members["ScriptLibrary1"]["Animal"].Count, 1);
         }
 
         [TestMethod]
@@ -90,7 +90,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
+            var mixedSideValidator = new MixedSideValidator(MiCSManager.MixedSideCompilationUnit);
             mixedSideValidator.Validate();
 
             Assert.IsTrue(mixedSideValidator.IsValid);
@@ -131,7 +131,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
+            var mixedSideValidator = new MixedSideValidator(MiCSManager.MixedSideCompilationUnit);
             mixedSideValidator.Validate();
 
             Assert.IsFalse(mixedSideValidator.IsValid);
@@ -178,7 +178,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new ClientSideValidator(MiCSManager.CompilationUnit);
+            var clientSideValidator = new ClientSideValidator(MiCSManager.ClientSideCompilationUnit);
             clientSideValidator.Validate();
 
             Assert.IsTrue(clientSideValidator.IsValid);
