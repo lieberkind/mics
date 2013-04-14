@@ -126,7 +126,7 @@ namespace MiCSTests
             var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
 
             var returnTypeName = ((PredefinedTypeSyntax)method.ReturnType).Keyword.ValueText;
-            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name);
+            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name.ToLower());
 
             var statement = method.Body.Statements.First();
             var ssStatement = ssMethod.Implementation.Statements.First();
@@ -237,6 +237,7 @@ namespace MiCSTests
         public void BuiltInTranslationTest()
         {
             var source = @"
+            using System.Html;
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
@@ -585,8 +586,8 @@ namespace MiCSTests
         public void StatementVariableAssignmentTest()
         {
             var source = @"string i = ""foo""; i = ""hello"";";
-            var statement = Parse.Statements(source).First();
-            var ssStatement = Parse.StatementsToSS(source).First();
+            var statement = Parse.Statements(source).ElementAt(1);
+            var ssStatement = Parse.StatementsToSS(source).ElementAt(1);
 
             Assert.IsTrue(ssStatement is SS.ExpressionStatement);
 
@@ -896,16 +897,16 @@ namespace MiCSTests
         public void ExpressionAssignmentTest()
         {
             var source = @"string i = ""foo""; i = ""hello"";";
-            var ssStatement = Parse.StatementsToSS(source).First();
+            var ssStatement = Parse.StatementsToSS(source).ElementAt(1);
 
             Assert.IsTrue(ssStatement is SS.ExpressionStatement);
 
-            var SSExpr = (SS.BinaryExpression)((SS.ExpressionStatement)ssStatement).Expression;
+            var ssBinaryExpression = (SS.BinaryExpression)((SS.ExpressionStatement)ssStatement).Expression;
 
-            Assert.IsTrue(SSExpr.Operator == SS.Operator.Equals);
-            Assert.IsTrue(SSExpr.RightOperand is SS.LiteralExpression);
-            Assert.IsTrue(SSExpr.LeftOperand is SS.LocalExpression);
-            Assert.IsTrue(((SS.LocalExpression)SSExpr.LeftOperand).Symbol is SS.VariableSymbol);
+            Assert.IsTrue(ssBinaryExpression.Operator == SS.Operator.Equals);
+            Assert.IsTrue(ssBinaryExpression.RightOperand is SS.LiteralExpression);
+            Assert.IsTrue(ssBinaryExpression.LeftOperand is SS.LocalExpression);
+            Assert.IsTrue(((SS.LocalExpression)ssBinaryExpression.LeftOperand).Symbol is SS.VariableSymbol);
         }
 
 
