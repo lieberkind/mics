@@ -247,6 +247,9 @@ namespace MiCS.Mappers
             //        }
             #endregion
 
+            if (typeSymbol is ErrorTypeSymbol)
+                throw new Exception("Not possible to map error type!");
+
 
             string mappedTypeName = null;
             string mappedNamespace = null;

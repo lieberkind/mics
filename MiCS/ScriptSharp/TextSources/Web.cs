@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiCS.ScriptSharp.Web
+namespace MiCS.ScriptSharp.TextSources
 {
 
     class Web

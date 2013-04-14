@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiCS.ScriptSharp.CoreLib
+namespace MiCS.ScriptSharp.TextSources
 {
     class CoreLib
     {

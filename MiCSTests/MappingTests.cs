@@ -252,6 +252,33 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        public void BuiltInElementTranslationTest()
+        {
+            var source = @"
+            using System.Html;
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() { Element e = new Element(); var e2 = Document.GetElementById(""ewjde""); }
+                }
+            }";
+            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+        }
+
+        [TestMethod]
+        public void BuiltInTestTranslationTest()
+        {
+
+            var source = @"Element e = new Element(); var e2 = Document.GetElementById(""ewjde"");";
+            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
+            var ssStatement = Parse.StatementsToSS(source);
+
+        }
+
+        [TestMethod]
         public void InvocationTest()
         {
             var source = @"
