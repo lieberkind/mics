@@ -220,6 +220,7 @@
     <Compile Include="ScriptSharp\Web\Html\TouchInfo.cs" />
     <Compile Include="ScriptSharp\Web\Html\Window.cs" />
     <Compile Include="ScriptSharp\Web\Html\WindowInstance.cs" />
+    <Compile Include="ScriptSharp\Web\Source.cs" />
     <Compile Include="Validators\ClientSideValidator.cs" />
     <Compile Include="Validators\Collector.cs" />
     <Compile Include="Validators\MixedSideValidator.cs" />

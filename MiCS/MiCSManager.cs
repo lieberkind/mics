@@ -129,9 +129,21 @@ namespace MiCS
 
         public static void IncludeBuiltInScriptTypes(string rootPath)
         {
-            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
-            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
-            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
+            // Code to read the built in source files.
+            //foreach (string filePath in Directory.EnumerateFiles( rootPath + @"MiCS\ScriptSharp\Web\Html\", "*.*", SearchOption.AllDirectories))
+            //{
+            //    using (StreamWriter w = File.AppendText("TestSourceFile.txt"))
+            //    {
+            //        var str = File.ReadAllText(filePath).Replace("\"", "\"\"");
+            //        w.Write(File.ReadAllText(filePath).Replace("\"", "\"\""));
+            //    }
+            //}
+
+            _builtInScriptTypesSource = ScriptSharp.Web.Source.Text;
+
+            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
+            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
+            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
         }
         private static string _builtInScriptTypesSource;
 
@@ -266,9 +278,9 @@ namespace MiCS
         /// <summary>
         /// Map the mixed side Roslyn AST to ScriptSharp AST.
         /// </summary>
-        private List<ScriptSharp.ScriptModel.NamespaceSymbol> MapCompilationUnit(CompilationUnitSyntax root)
+        private List<SS.NamespaceSymbol> MapCompilationUnit(CompilationUnitSyntax root)
         {
-            var scriptSharpAST = new List<ScriptSharp.ScriptModel.NamespaceSymbol>();
+            var scriptSharpAST = new List<SS.NamespaceSymbol>();
             foreach (var roslynNamespace in root.Members)
             {
                 if (roslynNamespace is NamespaceDeclarationSyntax)
