@@ -88,6 +88,8 @@ namespace MiCS
             var nameText = identifierName.Identifier.ValueText;
 
             var symbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(identifierName).Symbol;
+            if (symbol == null)
+                throw new Exception();
             var declaration = symbol.DeclaringSyntaxNodes[0];
             if (declaration is ClassDeclarationSyntax)
             {

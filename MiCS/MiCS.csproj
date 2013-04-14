@@ -65,6 +65,7 @@
     <Compile Include="Mappers\ExpressionMapper.cs" />
     <Compile Include="Mappers\StatementMapper.cs" />
     <Compile Include="Mappers\SymbolMapper.cs" />
+    <Compile Include="MiCSWebControlExtensions.cs" />
     <Compile Include="ScriptSharp\CoreLib\Collections\Dictionary.cs" />
     <Compile Include="ScriptSharp\CoreLib\Date.cs" />
     <Compile Include="ScriptSharp\CoreLib\Delegate.cs" />
@@ -74,7 +75,9 @@
     <Compile Include="ScriptSharp\CoreLib\RegExp.cs" />
     <Compile Include="ScriptSharp\CoreLib\Runtime.cs" />
     <Compile Include="ScriptSharp\CoreLib\ScriptMetadata.cs" />
+    <Compile Include="ScriptSharp\TextSources\CoreLib.cs" />
     <Compile Include="ScriptSharp\CoreLib\Type.cs" />
+    <Compile Include="MiCSValue.cs" />
     <Compile Include="ScriptSharp\Web\Html\ActiveXObject.cs" />
     <Compile Include="ScriptSharp\Web\Html\AnchorElement.cs" />
     <Compile Include="ScriptSharp\Web\Html\AreaElement.cs" />
@@ -218,6 +221,7 @@
     <Compile Include="ScriptSharp\Web\Html\TouchInfo.cs" />
     <Compile Include="ScriptSharp\Web\Html\Window.cs" />
     <Compile Include="ScriptSharp\Web\Html\WindowInstance.cs" />
+    <Compile Include="ScriptSharp\TextSources\Web.cs" />
     <Compile Include="Validators\ClientSideValidator.cs" />
     <Compile Include="Validators\Collector.cs" />
     <Compile Include="Validators\MixedSideValidator.cs" />
