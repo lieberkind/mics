@@ -16,6 +16,7 @@ namespace MiCSTests.TestUtils
         public static SS.SymbolSet NamespacesToSymbolSet(string source)
         {
             var ssSymbolSet = new SS.SymbolSet();
+            source = @"using System.Html;" + source;
             foreach (var @namespace in Namespaces(source))
                 ssSymbolSet.Namespaces.Add(NamespaceBuilder.Build((NamespaceDeclarationSyntax)@namespace));
 

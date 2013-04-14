@@ -44,8 +44,39 @@ namespace MiCS.Validators
 
             if (currentNamespaceMembers.Count > 0)
             {
-                var namespaceName = GetFullName(node.Name);
-                Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
+//<<<<<<< HEAD
+//                var namespaceName = GetFullName(node.Name);
+//                Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
+//=======
+                if (node.Name is IdentifierNameSyntax)
+                {
+                    // Custom namespaces
+                    var namespaceName = ((IdentifierNameSyntax)node.Name).Identifier.ValueText;
+                    if (!Members.ContainsKey(namespaceName))
+                        Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
+                }
+                else if (node.Name is QualifiedNameSyntax)
+                {
+                    // Built in namespaces
+                    var namespaceName = ((QualifiedNameSyntax)node.Name).ToString();
+                    if (!Members.ContainsKey(namespaceName))
+                        Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
+                    else
+                    {
+                        // Todo: do the same for custom namespaces.
+                        // Namespace has already been added but more classes from different .cs
+                        // file (same namespace) needs to be added.
+                        foreach (var key in currentNamespaceMembers.Keys)
+                        {
+                            Members[namespaceName].Add(key, currentNamespaceMembers[key]);
+                        }
+                    }
+
+
+                }
+                else
+                    throw new NotSupportedException();
+//>>>>>>> a317a8aa924c044b25ccf3628a48c625459306c7
             }
         }
 
