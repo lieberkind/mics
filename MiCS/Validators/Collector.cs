@@ -20,7 +20,7 @@ namespace MiCS.Validators
             private set;
         }
 
-        public Collector(CompilationUnitSyntax compilationUnit, string attributeName)
+        public Collector(CompilationUnitSyntax compilationUnit, string attributeName = null)
         {
             this.compilationUnit = compilationUnit;
             this.attributeName = attributeName;
@@ -37,47 +37,23 @@ namespace MiCS.Validators
 
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
-
             currentNamespaceMembers.Clear();
 
             base.VisitNamespaceDeclaration(node);
 
             if (currentNamespaceMembers.Count > 0)
             {
-//<<<<<<< HEAD
-//                var namespaceName = GetFullName(node.Name);
-//                Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
-//=======
+                var namespaceName = node.GetFullName();
 
-                var samothing = node.GetFullName();
-
-                if (node.Name is IdentifierNameSyntax)
+                if (!Members.ContainsKey(namespaceName))
                 {
-                    // Custom namespaces
-                    var namespaceName = ((IdentifierNameSyntax)node.Name).Identifier.ValueText;
-                    if (!Members.ContainsKey(namespaceName))
-                        Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
-                }
-                else if (node.Name is QualifiedNameSyntax)
-                {
-                    // Built in namespaces
-                    var namespaceName = ((QualifiedNameSyntax)node.Name).ToString();
-                    if (!Members.ContainsKey(namespaceName))
-                        Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
-                    else
-                    {
-                        // Todo: do the same for custom namespaces.
-                        // Namespace has already been added but more classes from different .cs
-                        // file (same namespace) needs to be added.
-                        foreach (var key in currentNamespaceMembers.Keys)
-                        {
-                            Members[namespaceName].Add(key, currentNamespaceMembers[key]);
-                        }
-                    }
+                    Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
                 }
                 else
-                    throw new NotSupportedException();
-//>>>>>>> a317a8aa924c044b25ccf3628a48c625459306c7
+                {
+                    foreach (var key in currentNamespaceMembers.Keys)
+                        Members[namespaceName].Add(key, currentNamespaceMembers[key]);
+                }
             }
         }
 
@@ -95,7 +71,7 @@ namespace MiCS.Validators
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            if (node.HasAttribute(attributeName))
+            if (String.IsNullOrEmpty(attributeName) || node.HasAttribute(attributeName))
                 currentMethods.Add(node.Identifier.ValueText);
 
             base.VisitMethodDeclaration(node);

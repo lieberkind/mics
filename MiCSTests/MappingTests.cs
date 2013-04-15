@@ -9,6 +9,7 @@ using MiCS;
 using MiCS.Mappers;
 using MiCSTests.TestUtils;
 using MiCS.Builders;
+using MiCS.Validators;
 
 namespace MiCSTests
 {
@@ -233,7 +234,6 @@ namespace MiCSTests
 
         string builtInTypesRootPath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\";
 
-        // Todo: What exactly does this method test?
         [TestMethod]
         public void BuiltInTranslationTest()
         {
@@ -256,6 +256,40 @@ namespace MiCSTests
 
             ";
             MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var ssClass = (SS.ClassSymbol)ssNamespace.Types.ElementAt(0);
+        }
+
+        [TestMethod]
+        public void BuiltInTranslationTest2()
+        {
+            var source = @"
+            using System.Html;
+
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() { Document.HasFocus(); }
+                }
+            }
+
+            namespace TestNameSpace.Nested.NestedAgain.Andagain {
+                class Lol {
+                    [MixedSide]
+                    void lol() { }
+                }
+            }
+
+            ";
+            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
+
+            MiCSManager.Initiate(source);
+
+            var c = new Collector(MiCSManager.MixedSideCompilationUnit);
+            c.Collect();
+
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 

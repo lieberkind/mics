@@ -141,14 +141,13 @@ namespace MiCS
             }
 
             _compilationUnit = _tree.GetRoot();
-
             
             _mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "MixedSide");
             // Todo: built in script types should be added to client side.
             _mixedSideTree = SyntaxTree.ParseText(_mixedSideCompilationUnit.GetText());
             _mixedSideCompilationUnit = _mixedSideTree.GetRoot(); // Ensure compatible compilation unit and tree.
 
-            //ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
+            ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
 
             var mixedSideCollector = new Collector(_compilationUnit, "MixedSide");
             var clientSideCollector = new Collector(_compilationUnit, "ClientSide");
@@ -204,13 +203,13 @@ namespace MiCS
             //    }
             //}
 
-            //_builtInScriptTypesSource = ScriptSharp.TextSources.Web.Text;
-            //_builtInCSharpTypesSource = ScriptSharp.TextSources.CoreLib.Text;
+            _builtInScriptTypesSource = ScriptSharp.TextSources.Web.Text;
+            _builtInCSharpTypesSource = ScriptSharp.TextSources.CoreLib.Text;
 
 
-            _builtInScriptTypesSource = File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
-            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
-            _builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
+            //_builtInScriptTypesSource = File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
+            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
+            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
         }
         private static string _builtInScriptTypesSource;
         private static string _builtInCSharpTypesSource;
