@@ -48,6 +48,9 @@ namespace MiCS.Validators
 //                var namespaceName = GetFullName(node.Name);
 //                Members.Add(namespaceName, new Dictionary<string, List<string>>(currentNamespaceMembers));
 //=======
+
+                var samothing = node.GetFullName();
+
                 if (node.Name is IdentifierNameSyntax)
                 {
                     // Custom namespaces
@@ -71,8 +74,6 @@ namespace MiCS.Validators
                             Members[namespaceName].Add(key, currentNamespaceMembers[key]);
                         }
                     }
-
-
                 }
                 else
                     throw new NotSupportedException();

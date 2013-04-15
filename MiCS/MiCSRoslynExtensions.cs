@@ -210,6 +210,32 @@ namespace MiCS
             return null;
         }
 
+        public static string GetFullName(this NamespaceDeclarationSyntax @namespace)
+        {
+
+            // Forward declaring lambda - this makes it possible for a lambda to call itself recursively
+            Func<NameSyntax, string> getName = null;
+                
+            getName = name => {
+                if (name is IdentifierNameSyntax)
+                {
+                    return ((IdentifierNameSyntax)name).Identifier.ValueText;
+                }
+                else if (name is QualifiedNameSyntax)
+                {
+                    var qualifiedName = (QualifiedNameSyntax)name;
+
+                    return getName.Invoke(qualifiedName.Left) + qualifiedName.DotToken.ValueText + getName(qualifiedName.Right);
+                }
+                else
+                {
+                    throw new NotSupportedException("The namesyntax on the provided namespace is not supported");
+                }
+            };
+
+            return getName(@namespace.Name);
+        }
+
         public static bool HasAttribute(this AttributeListSyntax attributeList, string attributeName)
         {
             foreach (AttributeSyntax att in attributeList.Attributes)

@@ -16,25 +16,6 @@ namespace MiCS.Mappers
 {
     public static class Expressions
     {
-        //static internal Expression Map(this ExpressionSyntax expr, ScriptSharp.ScriptModel.TypeSymbol parent = null)
-        //{
-        //    if (expr is IdentifierNameSyntax)
-        //        return ((IdentifierNameSyntax)expr).Map();
-        //    else if (expr is LiteralExpressionSyntax)
-        //        return ((LiteralExpressionSyntax)expr).Map();
-        //    else if (expr is PrefixUnaryExpressionSyntax)
-        //        return ((PrefixUnaryExpressionSyntax)expr).Map();
-        //    else if (expr is BinaryExpressionSyntax)
-        //        return ((BinaryExpressionSyntax)expr).Map();
-        //    else if (expr is InvocationExpressionSyntax)
-        //        return ((InvocationExpressionSyntax)expr).Map(parent);
-        //    else if (expr is ObjectCreationExpressionSyntax)
-        //        return ((ObjectCreationExpressionSyntax)expr).Map(parent); 
-        //    else if (expr is ConditionalExpressionSyntax)
-        //        return ((ConditionalExpressionSyntax)expr).Map();
-        //    else
-        //        throw new NotSupportedException("This type of expression is currently not supported!");
-        //}
 
         static internal SS.UnaryExpression Map(this PrefixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
         {
