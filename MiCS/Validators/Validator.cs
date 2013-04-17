@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MiCS.Validators
 {
-    public class MixedSideValidator : SyntaxWalker
+    class Validator : SyntaxWalker
     {
-        Dictionary<string, Dictionary<string, List<string>>> mixedSideMembers;
+        Dictionary<string, Dictionary<string, List<string>>> members;
         CompilationUnitSyntax root;
 
         public bool IsValid
@@ -17,14 +17,11 @@ namespace MiCS.Validators
             get;
             private set;
         }
-        
-        public MixedSideValidator(CompilationUnitSyntax root)
+
+        public Validator(CompilationUnitSyntax root, Dictionary<string, Dictionary<string, List<string>>> members)
         {
             this.root = root;
-            var mixedSideCollector = new Collector(root, "MixedSide");
-            IsValid = false;
-            mixedSideCollector.Collect();
-            mixedSideMembers = mixedSideCollector.Members;
+            this.members = members;
         }
 
         public void Validate()
@@ -38,15 +35,15 @@ namespace MiCS.Validators
             var info = model.GetTypeInfo(node.Expression);
 
             var @namespace = info.Type.ParentNamespace();
-            var namespaceName = ((IdentifierNameSyntax)@namespace.Name).Identifier.ValueText;
+            var namespaceName = @namespace.GetFullName();
 
-            var typeName = info.Type.Name;            
+            var typeName = info.Type.Name;
             var methodName = node.Name.Identifier.ValueText;
 
             IsValid =
-                mixedSideMembers.ContainsKey(namespaceName) &&
-                mixedSideMembers[namespaceName].ContainsKey(typeName) &&
-                mixedSideMembers[namespaceName][typeName].Contains(methodName);
+                members.ContainsKey(namespaceName) &&
+                members[namespaceName].ContainsKey(methodName) &&
+                members[namespaceName][typeName].Contains(methodName);
 
             if (IsValid)
                 base.VisitMemberAccessExpression(node);
@@ -54,19 +51,19 @@ namespace MiCS.Validators
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
         {
-            if(!(node.Type is IdentifierNameSyntax))
+            if (!(node.Type is IdentifierNameSyntax))
                 throw new Exception("Only IdentifierNameSyntax is supported at this time");
-            
+
             var typeName = ((IdentifierNameSyntax)node.Type).Identifier.ValueText;
 
             var @namespace = node.Type.ParentNamespace();
-            var namespaceName = ((IdentifierNameSyntax)@namespace.Name).Identifier.ValueText;
+            var namespaceName = @namespace.GetFullName();
 
             IsValid =
-                mixedSideMembers.ContainsKey(namespaceName) &&
-                mixedSideMembers[namespaceName].ContainsKey(typeName);
+                members.ContainsKey(namespaceName) &&
+                members[namespaceName].ContainsKey(typeName);
 
-            if(IsValid)
+            if (IsValid)
                 base.VisitObjectCreationExpression(node);
         }
     }

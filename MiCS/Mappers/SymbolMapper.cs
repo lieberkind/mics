@@ -30,7 +30,7 @@ namespace MiCS.Mappers
             //    throw new NotSupportedException("Method declaration return type is currently not supported.");
 
             // Todo: Consider how return type and returnType's namespace can be referenced in a nice way.
-            var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+            var ssReturnType = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
             //var ssReturnType = new SS.ClassSymbol(returnTypeStr, ssParentNamespace);
             var methodName = methodDeclaration.Identifier.ValueText;
 
@@ -368,7 +368,14 @@ namespace MiCS.Mappers
                         MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
                         MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
-                    var isSupportedType = isSupportedClientSideType || isSupportedMixedSideType;
+                    var isSupportedCoreType =
+                        CoreTypeManager.Instance.CoreTypeMembers.ContainsKey(namespaceName) &&
+                        CoreTypeManager.Instance.CoreTypeMembers[namespaceName].ContainsKey(typeSymbol.Name);
+
+                    var isSupportedType = 
+                        isSupportedClientSideType || 
+                        isSupportedMixedSideType || 
+                        isSupportedCoreType;
 
                     if(!isSupportedType)
                         throw new NotSupportedException("TypeSymbol type is currently not supported.");

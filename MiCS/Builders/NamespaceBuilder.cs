@@ -23,8 +23,6 @@ namespace MiCS.Builders
             ssNamespace.Types.AddRange(classBuilder.ssClasses);
 
             ssNamespaces.Add(ssNamespace);
-
-            //base.VisitNamespaceDeclaration(node);
         }
 
         public static SS.NamespaceSymbol Build(NamespaceDeclarationSyntax @namespace)

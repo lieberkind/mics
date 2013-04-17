@@ -63,7 +63,7 @@ namespace MiCS.Validators
 
             base.VisitClassDeclaration(node);
 
-            if (currentMethods.Count > 0)
+            if (currentMethods.Count > 0 && !currentNamespaceMembers.ContainsKey(node.Identifier.ValueText))
                 currentNamespaceMembers.Add(node.Identifier.ValueText, currentMethods.ToList());
         }
 

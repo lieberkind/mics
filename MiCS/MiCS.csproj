@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreTypeManager.cs" />
     <Compile Include="MiCSManager.cs" />
     <Compile Include="MiCSRoslynExtensions.cs" />
     <Compile Include="MiCSCSharpExtensions.cs" />
@@ -222,6 +223,8 @@
     <Compile Include="ScriptSharp\Web\Html\Window.cs" />
     <Compile Include="ScriptSharp\Web\Html\WindowInstance.cs" />
     <Compile Include="ScriptSharp\TextSources\Web.cs" />
+    <Compile Include="ScriptTypeManager.cs" />
+    <Compile Include="TypeGetter.cs" />
     <Compile Include="Validators\ClientSideValidator.cs" />
     <Compile Include="Validators\Collector.cs" />
     <Compile Include="Validators\MixedSideValidator.cs" />
@@ -347,6 +350,7 @@
     <Compile Include="ScriptSharp\Utility.cs" />
     <Compile Include="MiCSUtilities.cs" />
     <Compile Include="Builders\NamespaceBuilder.cs" />
+    <Compile Include="Validators\Validator.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

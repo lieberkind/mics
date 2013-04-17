@@ -220,9 +220,9 @@ namespace MiCS.Mappers
             {
                 var identifierName = (IdentifierNameSyntax)expr.Expression;
 
-                var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(identifierName).Symbol;
+                var method = MiCSManager.SemanticModel.GetSymbolInfo(identifierName).Symbol;
                 var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
-                var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+                var ssReturnType = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
                 var methodName = identifierName.Identifier.ValueText;
 
                 var methodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
@@ -240,12 +240,12 @@ namespace MiCS.Mappers
                     var objectReferenceName = objectReference.ScriptName();
                     var methodName = memberAccess.Name.Identifier.ValueText;
 
-                    var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
+                    var method = MiCSManager.SemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
                     var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
-                    var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+                    var ssReturnType = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
                     var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
 
-                    var ssVariableType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(objectReference).Type.Map();
+                    var ssVariableType = MiCSManager.SemanticModel.GetTypeInfo(objectReference).Type.Map();
                     var ssObjectReference = new SS.VariableSymbol(objectReferenceName, ssParentMethod, ssVariableType);
 
                     var ssLocalExpression = new SS.LocalExpression(ssObjectReference);
@@ -257,9 +257,9 @@ namespace MiCS.Mappers
                 else if (memberAccess.Expression is ThisExpressionSyntax)
                 {
                     var methodName = memberAccess.Name.Identifier.ValueText;
-                    var method = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
+                    var method = MiCSManager.SemanticModel.GetSymbolInfo(memberAccess.Name).Symbol;
                     var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
-                    var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
+                    var ssReturnType = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
                     var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
 
                     var ssThisExpression = new SS.ThisExpression(ssParentClass, true);

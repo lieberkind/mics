@@ -35,7 +35,7 @@ namespace MiCSTests
             }";
 
             MiCSManager.Initiate(source);
-            Assert.IsTrue(((NamespaceDeclarationSyntax)MiCSManager.MixedSideCompilationUnit.Members[0]).Members.Count == 1);
+            Assert.IsTrue(((NamespaceDeclarationSyntax)MiCSManager.CompilationUnit.Members[0]).Members.Count == 1);
         }
 
         [TestMethod]
@@ -255,7 +255,6 @@ namespace MiCSTests
             }
 
             ";
-            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
@@ -283,11 +282,10 @@ namespace MiCSTests
             }
 
             ";
-            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
 
             MiCSManager.Initiate(source);
 
-            var c = new Collector(MiCSManager.MixedSideCompilationUnit);
+            var c = new Collector(MiCSManager.CompilationUnit);
             c.Collect();
 
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
@@ -307,10 +305,8 @@ namespace MiCSTests
                     void f() { Element e = new Element(); var e2 = Document.GetElementById(""ewjde""); }
                 }
             }";
-            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
-
         }
 
         [TestMethod]
@@ -318,9 +314,30 @@ namespace MiCSTests
         {
 
             var source = @"Element e = new Element(); var e2 = Document.GetElementById(""ewjde"");";
-            MiCSManager.IncludeBuiltInScriptTypes(builtInTypesRootPath);
             var ssStatement = Parse.StatementsToSS(source);
 
+        }
+
+        [TestMethod]
+        public void RegExCanBeMapped()
+        {
+            var source = @"
+                using System.Text.RegularExpressions;
+                
+                namespace TestNamespace {
+                    class TestClass {
+                
+                        [MixedSide]
+                        public void ImARegEx() {
+                            RegExp regEx = new RegExp(""imapattern""); 
+                        }
+                    }
+                }
+
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
         }
 
         [TestMethod]
@@ -341,11 +358,11 @@ namespace MiCSTests
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
             var invocation = (InvocationExpressionSyntax)@namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.InvocationExpression).First();
-            var invokedSymbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
+            var invokedSymbol = MiCSManager.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
 
             var methodDeclaration = (MethodDeclarationSyntax)invokedSymbol.DeclaringSyntaxNodes[0];
 
-            var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
+            var @type = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
 
             Assert.AreEqual(@type.Name, "Int32");
 
@@ -387,7 +404,7 @@ namespace MiCSTests
             var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementsToSS(source).First();
             var statement = (LocalDeclarationStatementSyntax)Parse.Statement(source);
 
-            var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(statement.Declaration.Type).Type;
+            var @type = MiCSManager.SemanticModel.GetTypeInfo(statement.Declaration.Type).Type;
             Assert.IsTrue(@type is NamedTypeSymbol);
             Assert.IsTrue(@type.Name.Equals("Int32"));
 
@@ -414,11 +431,11 @@ namespace MiCSTests
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
             var invocation = (InvocationExpressionSyntax)@namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.InvocationExpression).First();
-            var invokedSymbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
+            var invokedSymbol = MiCSManager.SemanticModel.GetSymbolInfo(invocation.Expression).Symbol;
 
             var methodDeclaration = (MethodDeclarationSyntax)invokedSymbol.DeclaringSyntaxNodes[0];
 
-            var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
+            var @type = MiCSManager.SemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type;
           
             Assert.AreEqual(@type.Name, "Int32");
 

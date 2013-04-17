@@ -90,7 +90,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.MixedSideCompilationUnit);
+            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
             mixedSideValidator.Validate();
 
             Assert.IsTrue(mixedSideValidator.IsValid);
@@ -131,7 +131,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.MixedSideCompilationUnit);
+            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
             mixedSideValidator.Validate();
 
             Assert.IsFalse(mixedSideValidator.IsValid);
@@ -178,7 +178,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new ClientSideValidator(MiCSManager.ClientSideCompilationUnit);
+            var clientSideValidator = new ClientSideValidator(MiCSManager.CompilationUnit);
             clientSideValidator.Validate();
 
             Assert.IsTrue(clientSideValidator.IsValid);

@@ -23,15 +23,22 @@ namespace MiCS.Builders
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax method)
         {
-            var ssMethod = method.Map(ssParentClass, ssParentNamespace);
+            var isClientSide =
+                MiCSManager.ClientSideMembers.ContainsKey(ssParentNamespace.Name) &&
+                MiCSManager.ClientSideMembers[ssParentNamespace.Name].ContainsKey(ssParentClass.Name) &&
+                MiCSManager.ClientSideMembers[ssParentNamespace.Name][ssParentClass.Name].Contains(method.Identifier.ValueText);
 
-            //var ssMethodImplementation = new SS.SymbolImplementation(
-            //ssMethod.AddImplementation(
-            //var statementBuilder = new StatementBuilder(
+            var isMixedSide =
+                MiCSManager.MixedSideMembers.ContainsKey(ssParentNamespace.Name) &&
+                MiCSManager.MixedSideMembers[ssParentNamespace.Name].ContainsKey(ssParentClass.Name) &&
+                MiCSManager.MixedSideMembers[ssParentNamespace.Name][ssParentClass.Name].Contains(method.Identifier.ValueText);
 
-            ssMethods.Add(ssMethod);
+            if (isClientSide || isMixedSide)
+            {
+                var ssMethod = method.Map(ssParentClass, ssParentNamespace);
+                ssMethods.Add(ssMethod);
+            }
 
-            //base.VisitMethodDeclaration(node);
         }
 
         public static SS.MethodSymbol Build(SyntaxNode node, SS.ClassSymbol ssClass, SS.NamespaceSymbol ssNamespace)

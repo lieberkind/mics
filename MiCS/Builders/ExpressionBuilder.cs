@@ -70,7 +70,9 @@ namespace MiCS.Builders
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax objectCreationExpression)
         {
             // Todo: This type might have been mapped already...
-            var ssTargetType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(objectCreationExpression.Type).Type.Map();
+            var type = TypeSymbolGetter.GetTypeSymbol(objectCreationExpression);
+
+            var ssTargetType = type.Map();
             var ssNewExpression = objectCreationExpression.Map(ssTargetType);
 
             foreach (var argument in objectCreationExpression.ArgumentList.Arguments)
@@ -97,8 +99,8 @@ namespace MiCS.Builders
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax memberAccess)
         {
             var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression);
-            var ssParentType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(memberAccess.Expression).Type.Map();
-            var ssType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(memberAccess.Name).Type.Map();
+            var ssParentType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Expression).Map();
+            var ssType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Name).Map();
             var ssFieldName = memberAccess.Name.Identifier.ValueText;
             
             var ssField = new SS.FieldSymbol(ssFieldName, ssParentType, ssType); 
