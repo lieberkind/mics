@@ -42,10 +42,10 @@ namespace MiCSTests
         {
             var namespaces = Parse.Namespaces(@"namespace TestNameSpace{ class TestClass { [MixedSide]
                                                 void f() { } } }");
-            Assert.IsTrue(namespaces.Count() == 1);
+            Assert.IsTrue(namespaces.Count() > 0);
 
-            var ns = (NamespaceDeclarationSyntax)namespaces.First();
-            Assert.IsTrue(((IdentifierNameSyntax)ns.Name).Identifier.Value.Equals("TestNameSpace"));
+            var @namespace = (NamespaceDeclarationSyntax)namespaces.First();
+            Assert.IsTrue(((IdentifierNameSyntax)@namespace.Name).Identifier.ValueText.Equals("TestNameSpace"));
         }
 
         [TestMethod]
