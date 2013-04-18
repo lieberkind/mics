@@ -44,7 +44,7 @@ namespace MiCS
         public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {
             var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(expression).Type;
-
+            
             if (type is ErrorTypeSymbol)
                 type = MiCSManager.CoreTypeSemanticModel.GetTypeInfo(expression).Type;
 
@@ -63,17 +63,30 @@ namespace MiCS
 
         public static TypeSymbol GetReturnType(SimpleNameSyntax node)
         {
-            var method = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(node).Symbol;
+            var symbol = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(node).Symbol;
+            if (symbol is MethodSymbol)
+            {
+                return ((MethodSymbol)symbol).ReturnType;
+            }
+            else if (symbol == null)
+            {
+                throw new Exception("Symbol is null. Can be caused by invalid C# syntax.");
+            }
+            else
+                throw new NotSupportedException();
 
-            var validMethodDeclaration =
-                method.DeclaringSyntaxNodes.Count == 1 &&
-                (method.DeclaringSyntaxNodes[0] is MethodDeclarationSyntax);
+            // Todo: Remove old code.
+            //var validMethodDeclaration =
+            //    symbol.DeclaringSyntaxNodes.Count == 1 &&
+            //    (symbol.DeclaringSyntaxNodes[0] is MethodDeclarationSyntax);
 
-            if(!validMethodDeclaration)
-                throw new NotSupportedException(); // Todo: Check for supported core type methods.
+            //if(!validMethodDeclaration)
+            //    throw new NotSupportedException(); // Todo: Check for supported core type methods.
 
-            var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
-            return TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType);
+            //var methodDeclaration = (MethodDeclarationSyntax)symbol.DeclaringSyntaxNodes[0];
+            //return TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType);
         }
+
+
     }
 }

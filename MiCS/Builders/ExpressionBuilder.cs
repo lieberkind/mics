@@ -46,8 +46,8 @@ namespace MiCS.Builders
 
         public override void VisitBinaryExpression(BinaryExpressionSyntax binaryExpression)
         {
-            var ssLeftExpression = ExpressionBuilder.Build(binaryExpression.Left);
-            var ssRightExpression = ExpressionBuilder.Build(binaryExpression.Right);
+            var ssLeftExpression = ExpressionBuilder.Build(binaryExpression.Left, associatedType, associatedParent);
+            var ssRightExpression = ExpressionBuilder.Build(binaryExpression.Right, associatedType, associatedParent);
             
             ssExpressions.Add(binaryExpression.Map(ssLeftExpression, ssRightExpression));
 
@@ -99,11 +99,16 @@ namespace MiCS.Builders
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax memberAccess)
         {
             var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression);
-            var ssParentType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Expression).Map();
+            var memberParentType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Expression);
+
+            var ssMemberParentType = memberParentType.Map();
             var ssType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Name).Map();
-            var ssFieldName = memberAccess.Name.Identifier.ValueText;
-            
-            var ssField = new SS.FieldSymbol(ssFieldName, ssParentType, ssType); 
+            var ssFieldName = memberAccess.Name.Identifier.ValueText; // Todo: If core type this name might be different.
+            if (CoreTypeManager.IsCoreType(memberParentType))
+                ssFieldName = CoreTypeManager.GetCoreTypeMemberScriptName(memberParentType, ssFieldName);
+
+
+            var ssField = new SS.FieldSymbol(ssFieldName, ssMemberParentType, ssType); 
             var ssFieldExpression = new SS.FieldExpression(ssObjectReference, ssField);
 
             ssExpressions.Add(ssFieldExpression);

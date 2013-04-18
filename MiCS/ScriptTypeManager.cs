@@ -59,7 +59,7 @@ namespace MiCS
             var rx = new System.Text.RegularExpressions.Regex("owdjwo");
 
             // Todo: Write about references in report maybe... how to handle references in a more generic manner.
-            var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
+            var mscorlib = new MetadataFileReference(typeof(String).Assembly.Location);
             var systemTextRegularExpression = new MetadataFileReference(typeof(System.Text.RegularExpressions.Regex).Assembly.Location);
 
             var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree }, references: new[] { mscorlib, systemTextRegularExpression });

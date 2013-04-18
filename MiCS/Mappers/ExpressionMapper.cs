@@ -45,17 +45,7 @@ namespace MiCS.Mappers
             switch (op)
             {
                 case SyntaxKind.EqualsToken:
-                    if (expr.Left is IdentifierNameSyntax)
-                    {
-                        if (expr.Right is LiteralExpressionSyntax)
-                            return new SS.BinaryExpression(SS.Operator.Equals, ssLeftExpression, ssRightExpression);
-                        else if (expr.Right is IdentifierNameSyntax)
-                            return new SS.BinaryExpression(SS.Operator.Equals, ssLeftExpression, ssRightExpression);
-                        else
-                            throw new NotSupportedException("The right side of this binary is not supported with a IdentifierNameSyntax right side.");
-                    }
-                    else
-                        throw new NotSupportedException("Left operator of binary expression is not supported!");
+                    return new SS.BinaryExpression(SS.Operator.Equals, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.PlusToken:
                     return new SS.BinaryExpression(SS.Operator.Plus, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.MinusToken:
@@ -92,64 +82,6 @@ namespace MiCS.Mappers
                 default:
                     throw new NotSupportedException("Binary expression operator not supported!");
             }
-
-            // OLD VERSION WITHOUT WALKERS
-            //var op = expr.OperatorToken.Kind;
-            ///*
-            // * C# operators
-            // * http://msdn.microsoft.com/en-us/library/6a71f45d(v=vs.80).aspx
-            // */
-            //switch (op)
-            //{
-            //    case SyntaxKind.EqualsToken:
-            //        if (expr.Left is IdentifierNameSyntax)
-            //        {
-            //            if (expr.Right is LiteralExpressionSyntax)
-            //                return new BinaryExpression(Operator.Equals, expr.Left.Map(), expr.Right.Map());
-            //            else if (expr.Right is IdentifierNameSyntax)
-            //                return new BinaryExpression(Operator.Equals, expr.Left.Map(), expr.Right.Map());
-            //            else
-            //                throw new NotSupportedException("The right side of this binary is not supported with a IdentifierNameSyntax right side.");
-            //        }
-            //        else
-            //            throw new NotSupportedException("Left operator of binary expression is not supported!");
-            //    case SyntaxKind.PlusToken:
-            //        return new BinaryExpression(Operator.Plus, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.MinusToken:
-            //        return new BinaryExpression(Operator.Minus, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.AsteriskToken:
-            //        return new BinaryExpression(Operator.Multiply, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.SlashToken:
-            //        return new BinaryExpression(Operator.Divide, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.PercentToken:
-            //        return new BinaryExpression(Operator.Mod, expr.Left.Map(), expr.Right.Map());
-
-            //        // Todo: consider use of strict operators such as "===".
-            //        // Relational expressions (C# "is" and "as" operators are not currently supported).
-            //    case SyntaxKind.EqualsEqualsToken:
-            //        return new BinaryExpression(Operator.EqualEqual, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.ExclamationEqualsToken:
-            //        return new BinaryExpression(Operator.NotEqual, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.GreaterThanToken:
-            //        return new BinaryExpression(Operator.Greater, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.LessThanToken:
-            //        return new BinaryExpression(Operator.Less, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.GreaterThanEqualsToken:
-            //        return new BinaryExpression(Operator.GreaterEqual, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.LessThanEqualsToken:
-            //        return new BinaryExpression(Operator.LessEqual, expr.Left.Map(), expr.Right.Map());
-
-            //        // Logical expressions
-            //        // C# "conditional and" and "conditional or" 
-            //    case SyntaxKind.AmpersandAmpersandToken:
-            //        return new BinaryExpression(Operator.LogicalAnd, expr.Left.Map(), expr.Right.Map());
-            //    case SyntaxKind.BarBarToken:
-            //        return new BinaryExpression(Operator.LogicalOr, expr.Left.Map(), expr.Right.Map());
-
-            //    default:
-            //        throw new NotSupportedException("Binary expression operator not supported!");
-            //}
-
 
         }
 
@@ -213,7 +145,7 @@ namespace MiCS.Mappers
             if (!(ssParentClass.Parent is SS.NamespaceSymbol)) 
                 throw new Exception("The parent class namespace is currently required.");
 
-            var ssParentNamespace = (SS.NamespaceSymbol)ssParentClass.Parent;
+            var ssParentNamespace = (SS.NamespaceSymbol)ssParentClass.Parent; // Todo: Make parentNamespace method.
 
             // Todo: This check is probably unneeded. It has already been checked.
             if (expr.Expression is IdentifierNameSyntax)
@@ -238,6 +170,8 @@ namespace MiCS.Mappers
                     var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
                     var objectReferenceName = objectReference.ScriptName();
                     var methodName = memberAccess.Name.Identifier.ValueText;
+                    if (CoreTypeManager.IsCoreType(objectReference))
+                        methodName = CoreTypeManager.GetCoreTypeMemberScriptName(objectReference, methodName);
 
                     var ssReturnType = TypeSymbolGetter.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);

@@ -47,13 +47,16 @@ namespace MiCSCaseStudy
         bool isNameValid(string name)
         {
             Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
-            //return rx.IsMatch(name);
-            return false;
+            return rx.IsMatch(name);
+            //return false;
         }
 
         [MixedSide]
         bool isNameInvalid(string name)
         {
+            String s = "foo";
+            int i = s.Length;
+            i = s.IndexOf('o');
             Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
             User usr = new User();
             Validator v = new Validator();

@@ -320,7 +320,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void RegexCanBeMapped()
+        public void CoreTypeTestRegexCanBeMapped()
         {
             var source = @"
                 using System.Text.RegularExpressions;
@@ -342,15 +342,105 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void DateCanBeMapped()
+        public void CoreTypeTestRegexMethodCanBeMapped()
         {
             var source = @"
+                using System.Text.RegularExpressions;
+                
                 namespace TestNamespace {
                     class TestClass {
                 
                         [MixedSide]
                         public void ImARegEx() {
-                            Date d = new Date(); 
+                            Regex rx = new Regex(""regexpattern""); 
+                            var b = rx.IsMatch(""targetstring"");
+                        }
+                    }
+                }
+
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+        }
+
+        [TestMethod]
+        public void CoreTypeTestStringCanBeMapped()
+        {
+            var source = @"
+                using System;
+                namespace TestNamespace {
+                    class TestClass {
+                
+                        [MixedSide]
+                        public void ImARegEx() {
+                            String s = ""foo"";
+                        }
+                    }
+                }
+
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+        }
+
+        [TestMethod]
+        public void CoreTypeTestStringPropertyCanBeMapped()
+        {
+            var source = @"
+                using System;
+                namespace TestNamespace {
+                    class TestClass {
+                
+                        [MixedSide]
+                        public void ImARegEx() {
+                            String s = ""foo"";
+                            int i = s.Length;
+                        }
+                    }
+                }
+
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+        }
+
+        [TestMethod]
+        public void CoreTypeTestStringMethodCanBeMapped()
+        {
+            var source = @"
+                using System;
+                namespace TestNamespace {
+                    class TestClass {
+                
+                        [MixedSide]
+                        public void f() {
+                            String s = ""foo"";
+                            int j = s.IndexOf('o');
+                        }
+                    }
+                }
+
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CoreTypeTestDateCannotBeMapped()
+        {
+            var source = @"
+                using System;
+                namespace TestNamespace {
+                    class TestClass {
+                
+                        [MixedSide]
+                        public void ImARegEx() {
+                           System.Date d = new System.Date(); 
                         }
                     }
                 }

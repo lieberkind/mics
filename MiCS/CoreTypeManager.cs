@@ -57,7 +57,7 @@ namespace MiCS
         }
         private static CoreTypeManager instance;
 
-        public static TypeSymbol GetTypeByName(string namespaceName, string typeName)
+        public static TypeSymbol GetTypeByName(string namespaceName, string typeName, bool throwExceptionOnError = true)
         {
             var namespaces = Instance.CompilationUnit.DescendantNodes().Where(n => n.Kind == SyntaxKind.NamespaceDeclaration);
             foreach (var @namespace in namespaces)
@@ -75,20 +75,98 @@ namespace MiCS
                         return Instance.SemanticModel.GetDeclaredSymbol(@class);
                     }
                 }
-
-
-
             }
 
-            throw new NotSupportedException("Core Type does not exist");
+            if (throwExceptionOnError)
+                throw new NotSupportedException("Core Type does not exist");
+            else
+                return null;
         }
-
         public static TypeSymbol GetTypeByName(string typeName)
         {
             /*
              * Assumes primary ScriptSharp core type namespace.
              */
             return GetTypeByName("System", typeName);
+        }
+
+
+
+        public static bool IsCoreType(string namespaceName, string typeName)
+        {
+            var foundInScriptSharpCoreSource = GetTypeByName(namespaceName, typeName, false) != null;
+            if (foundInScriptSharpCoreSource)
+            {
+                return true;
+            }
+            else
+            {
+                // Manually supported core types.
+                if (namespaceName.Equals("System.Text.RegularExpressions"))
+                {
+                    if (typeName.Equals("Regex"))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+
+            }
+        }
+        public static bool IsCoreType(TypeSymbol typeSymbol)
+        {
+            var namespaceName = typeSymbol.ContainingNamespace.FullName();
+            var typeName = typeSymbol.Name;
+            return IsCoreType(namespaceName, typeName);
+        }
+        public static bool IsCoreType(IdentifierNameSyntax identifierName)
+        {
+            return IsCoreType(TypeSymbolGetter.GetTypeSymbol(identifierName));
+        }
+
+        // Todo: Remember to check for correct type, order and number of arguments.
+        public static string GetCoreTypeMemberScriptName(string namespaceName, string typeName, string memberName, bool throwExceptionOnUnsupported = true)
+        {
+            if (namespaceName.Equals("System"))
+            {
+                if (typeName.Equals("String"))
+                {
+                    if (memberName.Equals("Length"))
+                    {
+                        return "length";
+                    }
+                    if (memberName.Equals("IndexOf"))
+                    {
+                        return "indexOf";
+                    }
+                }
+
+            }
+            if (namespaceName.Equals("System.Text.RegularExpressions"))
+            {
+                if (typeName.Equals("Regex"))
+                {
+                    if (memberName.Equals("IsMatch"))
+                    {
+                        return "test";
+                    }
+                }
+
+            }
+            if (throwExceptionOnUnsupported)
+                throw new NotSupportedException("Unsupported use of core type.");
+            else
+                return memberName;
+        }
+        public static string GetCoreTypeMemberScriptName(TypeSymbol coreType, string memberName)
+        {
+            var namespaceName = coreType.ContainingNamespace.FullName();
+            var typeName = coreType.Name;
+            return GetCoreTypeMemberScriptName(namespaceName, typeName, memberName);
+        }
+        public static string GetCoreTypeMemberScriptName(IdentifierNameSyntax identifierName, string memberName)
+        {
+            return GetCoreTypeMemberScriptName(TypeSymbolGetter.GetTypeSymbol(identifierName), memberName);
         }
     }
 }

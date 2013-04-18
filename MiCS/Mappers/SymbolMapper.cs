@@ -19,6 +19,7 @@ namespace MiCS.Mappers
 
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
+            // Todo: Parameters/arguments are not in JavaScript method declarations... needs to be implemented.
             var ssReturnType = TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType).Map();
             var methodName = methodDeclaration.Identifier.ValueText;
 
@@ -400,7 +401,6 @@ namespace MiCS.Mappers
             }
             return ssType;
         }
-
 
         public static bool IsCoreTypeSupported(string namespaceName, string typeName)
         {
