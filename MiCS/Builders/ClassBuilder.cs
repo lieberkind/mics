@@ -22,7 +22,7 @@ namespace MiCS.Builders
         public override void VisitClassDeclaration(ClassDeclarationSyntax @class)
         {
             // Ignore JavaScript/DOM built in types.
-            if (!@class.IsScriptType())
+            if (@class.IsUserType())
             {
                 var ssClass = @class.Map(ssParentNamespace);
 

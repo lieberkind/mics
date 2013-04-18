@@ -17,6 +17,27 @@ namespace MiCSTests
     {
 
         [TestMethod]
+        public void HasAttributeTest()
+        {
+            var namespaces = Parse.Namespaces(@"
+            namespace TestNameSpace
+            { 
+                [ScriptIgnoreNamespace]
+                [ScriptImport]
+                class TestClass 
+                { 
+                    [MixedSide]
+                    void f() { } 
+                } 
+            }");
+
+            var @namespace = (NamespaceDeclarationSyntax)namespaces.First();
+            var @class = (ClassDeclarationSyntax)@namespace.Members[0];
+
+            Assert.IsTrue(@class.HasAttribute("ScriptImport"));
+        }
+
+        [TestMethod]
         public void RoslynNamespaceTest()
         {
             var namespaces = Parse.Namespaces(@"namespace TestNameSpace{ class TestClass { [MixedSide]

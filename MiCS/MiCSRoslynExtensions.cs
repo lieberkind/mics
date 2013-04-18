@@ -34,7 +34,7 @@ namespace MiCS
             
         }
 
-        public static bool IsScriptType(this TypeSymbol typeSymbol)
+        public static bool IsUserType(this TypeSymbol typeSymbol)
         {
             if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
                 throw new NotSupportedException();
@@ -43,7 +43,7 @@ namespace MiCS
             if (declaration is ClassDeclarationSyntax)
             {
                 var @class = (ClassDeclarationSyntax)declaration;
-                return @class.IsScriptType();
+                return @class.IsUserType();
             }
 
             return false;
@@ -108,7 +108,7 @@ namespace MiCS
             if (declaration is ClassDeclarationSyntax)
             {
                 var @class = (ClassDeclarationSyntax)declaration;
-                if (@class.IsScriptType())
+                if (!@class.IsUserType())
                 {
                     // Check if static reference to type.
                     if (@class.Identifier.ValueText.Equals(nameText))
@@ -127,7 +127,7 @@ namespace MiCS
         /// </summary>
         public static string ScriptName(this TypeSymbol typeSymbol)
         {
-            if (typeSymbol.IsScriptType())
+            if (!typeSymbol.IsUserType())
             {
                 var declaration = typeSymbol.DeclaringSyntaxNodes[0];
                 if (declaration is ClassDeclarationSyntax)
@@ -144,6 +144,10 @@ namespace MiCS
                             throw new NotSupportedException();
 
                         return ((LiteralExpressionSyntax)argExpression).Token.ValueText;
+                    }
+                    else if(@class.HasAttribute("ScriptImport"))
+                    {
+                        return @class.Identifier.ValueText;
                     }
                     else
                         throw new NotSupportedException();
@@ -162,9 +166,21 @@ namespace MiCS
             return attribute.Name.GetName();
         }
 
-        public static bool IsScriptType(this ClassDeclarationSyntax classDeclaration)
+        public static bool IsUserType(this ClassDeclarationSyntax classDeclaration)
         {
-            return classDeclaration.HasAttribute("ScriptImport");
+            foreach (var member in classDeclaration.Members)
+            {
+                if (member is MethodDeclarationSyntax)
+                {
+                    var declaration = ((MethodDeclarationSyntax)member);
+                    if (declaration.HasAttribute("MixedSide") ||
+                        declaration.HasAttribute("ClientSide"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public static bool HasAttribute(this MethodDeclarationSyntax methodDeclaration, string attributeName)

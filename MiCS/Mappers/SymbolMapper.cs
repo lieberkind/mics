@@ -376,7 +376,7 @@ namespace MiCS.Mappers
 
                     ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
 
-                    if (typeSymbol.IsScriptType())
+                    if (!typeSymbol.IsUserType())
                         ssType.SetIgnoreNamespace();
 
                     break;
