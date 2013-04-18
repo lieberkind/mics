@@ -44,8 +44,8 @@ namespace MiCS
 
             CompilationUnit = tree.GetRoot();
 
-            var mixedSideCollector = new Collector(CompilationUnit, "MixedSide");
-            var clientSideCollector = new Collector(CompilationUnit, "ClientSide");
+            var mixedSideCollector = new Collector(CompilationUnit, new List<string>() { "MixedSide" });
+            var clientSideCollector = new Collector(CompilationUnit, new List<string> { "ClientSide" });
 
             builtInCollector.Collect();
             mixedSideCollector.Collect();
