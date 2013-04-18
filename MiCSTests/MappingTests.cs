@@ -360,9 +360,10 @@ namespace MiCSTests
 
             var invocation = (InvocationExpressionSyntax)@namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.InvocationExpression).First();
 
-            var @type = TypeSymbolGetter.GetReturnType((SimpleNameSyntax)invocation.Expression);
+            var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+            var returnType = TypeSymbolGetter.GetReturnType((SimpleNameSyntax)memberAccess.Name);
 
-            Assert.AreEqual(@type.Name, "Int32");
+            Assert.AreEqual(returnType.Name, "Int32");
 
         }
 
