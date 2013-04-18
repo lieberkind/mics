@@ -224,10 +224,8 @@
     <Compile Include="ScriptSharp\Web\Html\WindowInstance.cs" />
     <Compile Include="ScriptSharp\TextSources\Web.cs" />
     <Compile Include="ScriptTypeManager.cs" />
-    <Compile Include="TypeGetter.cs" />
-    <Compile Include="Validators\ClientSideValidator.cs" />
+    <Compile Include="TypeSymbolGetter.cs" />
     <Compile Include="Validators\Collector.cs" />
-    <Compile Include="Validators\MixedSideValidator.cs" />
     <Compile Include="Validators\SyntaxTreeValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptSharp\CodeModel\Names\AtomicNameNode.cs" />

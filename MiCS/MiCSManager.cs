@@ -65,13 +65,6 @@ namespace MiCS
             }
         }
 
-
-        //public static SemanticModel SemanticModel
-        //{
-        //    get { return Instance.scriptTypeManager.SemanticModel; }
-        //}
-
-
         public static void Initiate(string source)
         {
             var micsManager = new MiCSManager(source);
@@ -84,16 +77,19 @@ namespace MiCS
 
 
         public MiCSManager(string source) : this(SyntaxTree.ParseText(source))
-        { 
-            
+        {
+
         }
 
         public MiCSManager(SyntaxTree userTree)
         {
+            if (!Syntax.IsCompleteSubmission(userTree))
+                throw new Exception("Source submission failed!");
+
             this.scriptTypeManager = new ScriptTypeManager(userTree);
             this.coreTypeManager = new CoreTypeManager();
 
-            this.typeSymbolGetter = new TypeSymbolGetter(scriptTypeManager, coreTypeManager);
+            this.typeSymbolGetter = new TypeSymbolGetter();
 
             MiCSManager.instance = this;
         }
@@ -104,7 +100,7 @@ namespace MiCS
             /*
              * Map from Roslyn (C#) to ScriptSharp (JavaScript) AST.
              */
-            var scriptSharpAST = Instance.MapCompilationUnit(CompilationUnit);
+            var scriptSharpAST = Instance.MapCompilationUnit(Instance.scriptTypeManager.CompilationUnit);
             // Todo: Maybe wrap MiCS code in its own namespace.
 
             /*

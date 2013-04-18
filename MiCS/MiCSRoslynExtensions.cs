@@ -100,7 +100,8 @@ namespace MiCS
         {
             var nameText = identifierName.Identifier.ValueText;
 
-            var symbol = MiCSManager.SemanticModel.GetSymbolInfo(identifierName).Symbol;
+            // Todo: Check if both core types and script types has special script names
+            var symbol = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(identifierName).Symbol;
             if (symbol == null)
                 throw new Exception();
             var declaration = symbol.DeclaringSyntaxNodes[0];
@@ -112,7 +113,7 @@ namespace MiCS
                     // Check if static reference to type.
                     if (@class.Identifier.ValueText.Equals(nameText))
                     {
-                        var @type = MiCSManager.SemanticModel.GetTypeInfo(identifierName).Type;
+                        var @type = TypeSymbolGetter.GetTypeSymbol(identifierName);
                         return @type.ScriptName();
                     }
                 }

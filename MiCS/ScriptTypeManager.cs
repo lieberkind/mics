@@ -29,15 +29,23 @@ namespace MiCS
             private set;
         }
 
+        public CompilationUnitSyntax CompilationUnit
+        {
+            get;
+            private set;
+        }
+
         public ScriptTypeManager(SyntaxTree userTree)
         {
             var tree = SyntaxTree.ParseText(userTree.GetText() + ScriptSharp.TextSources.Web.Text);
 
             // Collects all members from ScriptSharp.Web
             var builtInCollector = new Collector(SyntaxTree.ParseText(ScriptSharp.TextSources.Web.Text).GetRoot());
-            
-            var mixedSideCollector = new Collector(tree.GetRoot(), "MixedSide");
-            var clientSideCollector = new Collector(tree.GetRoot(), "ClientSide");
+
+            CompilationUnit = tree.GetRoot();
+
+            var mixedSideCollector = new Collector(CompilationUnit, "MixedSide");
+            var clientSideCollector = new Collector(CompilationUnit, "ClientSide");
 
             builtInCollector.Collect();
             mixedSideCollector.Collect();
@@ -51,6 +59,14 @@ namespace MiCS
 
             var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree }, references: new[] { mscorlib });
             SemanticModel = compilation.GetSemanticModel(tree);
+
+            Instance = this;
+        }
+
+        public static ScriptTypeManager Instance
+        {
+            get;
+            private set;
         }
     }
 }

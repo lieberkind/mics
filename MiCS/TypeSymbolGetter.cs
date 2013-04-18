@@ -43,6 +43,7 @@ namespace MiCS
 
         public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {
+            // Todo: Look in CoreTypeManager if not found
             return MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(expression).Type;
         }
 
@@ -51,6 +52,21 @@ namespace MiCS
             var typeSymbolGetter = new TypeSymbolGetter();
             typeSymbolGetter.Visit(node);
             return typeSymbolGetter.TypeSymbol;
+        }
+
+        public static TypeSymbol GetReturnType(SimpleNameSyntax node)
+        {
+            var method = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(node).Symbol;
+
+            var validMethodDeclaration =
+                method.DeclaringSyntaxNodes.Count != 1 &&
+                (method.DeclaringSyntaxNodes[0] is MethodDeclarationSyntax);
+
+            if(!validMethodDeclaration)
+                throw new NotSupportedException();
+
+            var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
+            return TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType);
         }
     }
 }

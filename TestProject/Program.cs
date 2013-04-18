@@ -27,17 +27,17 @@ namespace TestProject
             //var namespaceWalker = new NamespaceBuilder();
             //namespaceWalker.Visit(st.GetRoot());
 
-            var root = MiCSManager.CompilationUnit;
+            //var root = MiCSManager.CompilationUnit;
 
-            Collector c = new Collector(root, "MixedSide");
+            //Collector c = new Collector(root, "MixedSide");
 
-            var namespaceBuilder = new NamespaceBuilder();
-            namespaceBuilder.Visit(root);
+            //var namespaceBuilder = new NamespaceBuilder();
+            //namespaceBuilder.Visit(root);
 
-            var re = new RegExp("hello");
+            //var re = new RegExp("hello");
             
 
-            Console.Read();
+            //Console.Read();
         }
     }
 }

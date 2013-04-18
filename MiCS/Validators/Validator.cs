@@ -31,13 +31,12 @@ namespace MiCS.Validators
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
-            var model = MiCSManager.SemanticModel;
-            var info = model.GetTypeInfo(node.Expression);
+            var type = TypeSymbolGetter.GetTypeSymbol(node.Expression);
 
-            var @namespace = info.Type.ParentNamespace();
+            var @namespace = type.ParentNamespace();
             var namespaceName = @namespace.GetFullName();
 
-            var typeName = info.Type.Name;
+            var typeName = type.Name;
             var methodName = node.Name.Identifier.ValueText;
 
             IsValid =

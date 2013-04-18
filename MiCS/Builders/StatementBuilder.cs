@@ -93,14 +93,14 @@ namespace MiCS.Builders
                 throw new NotSupportedException(); // Todo: Maybe not a necesary check...
  
 
-            var typeInfo = MiCSManager.SemanticModel.GetTypeInfo(localDeclarationStatement.Declaration.Type);
-            var type = typeInfo.Type;
+            var type = TypeSymbolGetter.GetTypeSymbol(localDeclarationStatement.Declaration.Type);
 
-            if (type is ErrorTypeSymbol)
-            {
-                var coreTypeName = ((IdentifierNameSyntax)localDeclarationStatement.Declaration.Type).Identifier.ValueText;
-                type  = CoreTypeManager.GetTypeByName(coreTypeName);
-            }
+            // Todo: Delete this
+            //if (type is ErrorTypeSymbol)
+            //{
+            //    var coreTypeName = ((IdentifierNameSyntax)localDeclarationStatement.Declaration.Type).Identifier.ValueText;
+            //    type  = CoreTypeManager.GetTypeByName(coreTypeName);
+            //}
 
             var ssVariable = variable.Map(ssParentMember, type.Map());
 
