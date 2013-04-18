@@ -59,7 +59,7 @@ namespace MiCS
             var method = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(node).Symbol;
 
             var validMethodDeclaration =
-                method.DeclaringSyntaxNodes.Count != 1 &&
+                method.DeclaringSyntaxNodes.Count == 1 &&
                 (method.DeclaringSyntaxNodes[0] is MethodDeclarationSyntax);
 
             if(!validMethodDeclaration)
