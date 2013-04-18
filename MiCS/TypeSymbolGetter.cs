@@ -43,8 +43,15 @@ namespace MiCS
 
         public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {
-            // Todo: Look in CoreTypeManager if not found
-            return MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(expression).Type;
+            var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(expression).Type;
+
+            if (type is ErrorTypeSymbol)
+                type = MiCSManager.CoreTypeSemanticModel.GetTypeInfo(expression).Type;
+
+            if (type is ErrorTypeSymbol)
+                throw new NotSupportedException("Specified expression type was not found in ScriptTypes or CoreTypes.");
+
+            return type;
         }
 
         public static TypeSymbol GetTypeSymbol(SyntaxNode node)
@@ -63,7 +70,7 @@ namespace MiCS
                 (method.DeclaringSyntaxNodes[0] is MethodDeclarationSyntax);
 
             if(!validMethodDeclaration)
-                throw new NotSupportedException();
+                throw new NotSupportedException(); // Todo: Check for supported core type methods.
 
             var methodDeclaration = (MethodDeclarationSyntax)method.DeclaringSyntaxNodes[0];
             return TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType);

@@ -7,6 +7,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Html;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace MiCSCaseStudy
 {
@@ -17,7 +18,7 @@ namespace MiCSCaseStudy
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
 
-            var filePath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
+            var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
             var source = File.ReadAllText(filePath);
 
             MiCSManager.Initiate(source);
@@ -45,14 +46,15 @@ namespace MiCSCaseStudy
         [MixedSide]
         bool isNameValid(string name)
         {
-            RegExp rx = new RegExp(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
-            return rx.Test(name);
+            Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
+            //return rx.IsMatch(name);
+            return false;
         }
 
         [MixedSide]
         bool isNameInvalid(string name)
         {
-            RegExp rx = new RegExp(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
+            Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
             User usr = new User();
             Validator v = new Validator();
             v.isNameValid("tomas");

@@ -55,9 +55,14 @@ namespace MiCS
             ClientSideMembers = clientSideCollector.Members;
             ClientSideMembers.AddRange(builtInCollector.Members);
 
-            var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
+            Date d = new Date();
+            var rx = new System.Text.RegularExpressions.Regex("owdjwo");
 
-            var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree }, references: new[] { mscorlib });
+            // Todo: Write about references in report maybe... how to handle references in a more generic manner.
+            var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
+            var systemTextRegularExpression = new MetadataFileReference(typeof(System.Text.RegularExpressions.Regex).Assembly.Location);
+
+            var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree }, references: new[] { mscorlib, systemTextRegularExpression });
             SemanticModel = compilation.GetSemanticModel(tree);
 
             Instance = this;

@@ -346,21 +346,30 @@ namespace MiCS.Mappers
                 default:
                     // Todo: Test if there will be a problem with custom and unsupported built-in types?
 
-                    // Todo: This is a bit of an assumption. Can probably not be sure that containingSymbol is always a namespace
-                    //var namespaceName = typeSymbol.ContainingSymbol.Name;
                     var namespaceName = typeSymbol.ContainingNamespace.FullName();
+                    var typeName = typeSymbol.Name;
 
                     var isSupportedClientSideType =
                         MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
-                        MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
+                        MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeName);
 
                     var isSupportedMixedSideType =
                         MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
-                        MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
+                        MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeName);
+
+                    // Todo: Translate/map CSharp core types to ScriptSharp core types.
+                    if (!isSupportedClientSideType && !isSupportedMixedSideType)
+                    {
+                        var mappedCoreType = mapCoreType(ref namespaceName, ref typeName);
+                        if (mappedCoreType != null)
+                        {
+                            typeSymbol = mappedCoreType;
+                        }
+                    }
 
                     var isSupportedCoreType =
                         CoreTypeManager.Instance.CoreTypeMembers.ContainsKey(namespaceName) &&
-                        CoreTypeManager.Instance.CoreTypeMembers[namespaceName].ContainsKey(typeSymbol.Name);
+                        CoreTypeManager.Instance.CoreTypeMembers[namespaceName].ContainsKey(typeName);
 
                     var isSupportedType = 
                         isSupportedClientSideType || 
@@ -392,5 +401,26 @@ namespace MiCS.Mappers
             return ssType;
         }
 
+
+        public static bool IsCoreTypeSupported(string namespaceName, string typeName)
+        {
+            return mapCoreType(ref namespaceName, ref typeName) == null;
+        }
+
+        private static TypeSymbol mapCoreType(ref string namespaceName, ref string typeName)
+        {
+            // Todo: MAke proper mapping code...
+            if (namespaceName.Equals("System.Text.RegularExpressions") &&
+                typeName.Equals("Regex"))
+            {
+                namespaceName = "System";
+                typeName = "RegExp";
+                return CoreTypeManager.GetTypeByName("System", "RegExp");
+            }
+
+            return null;
+        }
     }
+
+
 }

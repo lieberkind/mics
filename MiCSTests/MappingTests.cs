@@ -320,7 +320,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void RegExCanBeMapped()
+        public void RegexCanBeMapped()
         {
             var source = @"
                 using System.Text.RegularExpressions;
@@ -330,7 +330,27 @@ namespace MiCSTests
                 
                         [MixedSide]
                         public void ImARegEx() {
-                            RegExp regEx = new RegExp(""imapattern""); 
+                            Regex rx = new Regex(""imapattern""); 
+                        }
+                    }
+                }
+
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+        }
+
+        [TestMethod]
+        public void DateCanBeMapped()
+        {
+            var source = @"
+                namespace TestNamespace {
+                    class TestClass {
+                
+                        [MixedSide]
+                        public void ImARegEx() {
+                            Date d = new Date(); 
                         }
                     }
                 }

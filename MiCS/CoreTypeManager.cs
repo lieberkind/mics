@@ -57,22 +57,38 @@ namespace MiCS
         }
         private static CoreTypeManager instance;
 
-        public static TypeSymbol GetTypeByName(string name)
+        public static TypeSymbol GetTypeByName(string namespaceName, string typeName)
         {
-            var classes = Instance.CompilationUnit.DescendantNodes().Where(n => n.Kind == SyntaxKind.ClassDeclaration);
-
-            foreach (var node in classes)
+            var namespaces = Instance.CompilationUnit.DescendantNodes().Where(n => n.Kind == SyntaxKind.NamespaceDeclaration);
+            foreach (var @namespace in namespaces)
             {
-                var @class = ((ClassDeclarationSyntax)node);
-                var className = @class.Identifier.ValueText;
 
-                if (className.Equals(name))
+                var classes = @namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.ClassDeclaration);
+
+                foreach (var node in classes)
                 {
-                    return Instance.SemanticModel.GetDeclaredSymbol(@class);
+                    var @class = ((ClassDeclarationSyntax)node);
+                    var className = @class.Identifier.ValueText;
+
+                    if (className.Equals(typeName))
+                    {
+                        return Instance.SemanticModel.GetDeclaredSymbol(@class);
+                    }
                 }
+
+
+
             }
 
             throw new NotSupportedException("Core Type does not exist");
+        }
+
+        public static TypeSymbol GetTypeByName(string typeName)
+        {
+            /*
+             * Assumes primary ScriptSharp core type namespace.
+             */
+            return GetTypeByName("System", typeName);
         }
     }
 }
