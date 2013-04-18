@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MiCS.Validators;
 using Roslyn.Compilers.CSharp;
 using MiCS;
+using System.Collections.Generic;
 
 namespace MiCSTests
 {
@@ -47,7 +48,7 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var collector = new Collector(st.GetRoot(), "MixedSide");
+            var collector = new Collector(st.GetRoot(), new List<string>() { "MixedSide" });
             collector.Collect();
 
             Assert.AreEqual(collector.Members["ScriptLibrary1"]["Person"].Count, 2);
@@ -89,7 +90,7 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
             var root = st.GetRoot();
 
-            var collector = new Collector(root, "MixedSide");
+            var collector = new Collector(root, new List<string>() { "MixedSide" });
             collector.Collect();
 
             MiCSManager.Initiate(st);
@@ -134,7 +135,7 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
             var root = st.GetRoot();
 
-            var collector = new Collector(root, "MixedSide");
+            var collector = new Collector(root, new List<string>() { "MixedSide"});
             collector.Collect();
 
             MiCSManager.Initiate(st);
@@ -185,7 +186,7 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
             var root = st.GetRoot();
 
-            var collector = new Collector(root, "ClientSide");
+            var collector = new Collector(root, new List<string>() { "ClientSide" });
             collector.Collect();
 
             MiCSManager.Initiate(st);
@@ -235,7 +236,7 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
             var root = st.GetRoot();
 
-            var collector = new Collector(root, "ClientSide");
+            var collector = new Collector(root, new List<string>() { "ClientSide" });
             collector.Collect();
 
             MiCSManager.Initiate(st);
@@ -279,7 +280,7 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
             var root = st.GetRoot();
 
-            var collector = new Collector(root, "MixedSide");
+            var collector = new Collector(root, new List<string> { "MixedSide" });
             collector.Collect();
 
             MiCSManager.Initiate(st);
@@ -326,7 +327,7 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
             var root = st.GetRoot();
 
-            var collector = new Collector(root, "MixedSide");
+            var collector = new Collector(root, new List<string> { "MixedSide" });
             collector.Collect();
 
             MiCSManager.Initiate(st);
@@ -373,7 +374,7 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
             var root = st.GetRoot();
 
-            var collector = new Collector(root, "ClientSide");
+            var collector = new Collector(root, new List<string>() { "MixedSide", "ClientSide"} );
             collector.Collect();
 
             MiCSManager.Initiate(st);

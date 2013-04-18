@@ -9,7 +9,7 @@ namespace MiCS.Validators
 {
     public class Collector : SyntaxWalker
     {
-        string attributeName;
+        List<string> attributeNames;
         Dictionary<string, List<string>> currentNamespaceMembers;
         List<string> currentMethods;
         CompilationUnitSyntax compilationUnit;
@@ -20,10 +20,14 @@ namespace MiCS.Validators
             private set;
         }
 
-        public Collector(CompilationUnitSyntax compilationUnit, string attributeName = null)
+        public Collector(CompilationUnitSyntax compilationUnit, List<string> attributeNames = null)
         {
             this.compilationUnit = compilationUnit;
-            this.attributeName = attributeName;
+
+            if (attributeNames == null)
+                this.attributeNames = new List<string>();
+            else
+                this.attributeNames = attributeNames;
 
             currentMethods = new List<string>();
             currentNamespaceMembers = new Dictionary<string, List<string>>();
@@ -71,7 +75,17 @@ namespace MiCS.Validators
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            if (String.IsNullOrEmpty(attributeName) || node.HasAttribute(attributeName))
+            var hasAttributeName = false;
+            foreach (var attributeName in attributeNames)
+            {
+                if (node.HasAttribute(attributeName))
+                {
+                    hasAttributeName = true;
+                    break;
+                }
+            }
+
+            if ((attributeNames.Count == 0) || hasAttributeName)
                 currentMethods.Add(node.Identifier.ValueText);
 
             base.VisitMethodDeclaration(node);
