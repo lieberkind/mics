@@ -19,98 +19,51 @@ namespace MiCS
 {
     public class MiCSManager
     {
+        private ScriptTypeManager scriptTypeManager;
+        private CoreTypeManager coreTypeManager;
+        private TypeSymbolGetter typeSymbolGetter;
+        private static MiCSManager instance;
+
+
+        public static TypeSymbolGetter TypeSymbolGetter 
+        {
+            get { return Instance.typeSymbolGetter; } 
+        }
 
         public static Dictionary<string, Dictionary<string, List<string>>> MixedSideMembers
         {
-            get;
-            private set;
+            get { return Instance.scriptTypeManager.MixedSideMembers; }
         }
 
         public static Dictionary<string, Dictionary<string, List<string>>> ClientSideMembers
         {
-            get;
-            private set;
+            get { return Instance.scriptTypeManager.ClientSideMembers; }
         }
 
-        //public static bool IsMixedSide(TypeSymbol typeSymbol)
-        //{
-
-        //}
-        
-        public static SyntaxTree Tree
+        public static Dictionary<string, Dictionary<string, List<string>>> CoreTypeMembers
         {
-            get { return Instance._tree; }
+            get { return Instance.coreTypeManager.CoreTypeMembers;  }
         }
-        private SyntaxTree _tree;
 
-        public static SyntaxTree MixedSideTree
+        public static SemanticModel ScriptTypeSemanticModel
         {
-            get
-            {
-                if (Instance._mixedSideTree == null)
-                    throw new Exception("MixedSide tree is null!");
-                return Instance._mixedSideTree;
-            }
+            get { return Instance.scriptTypeManager.SemanticModel; }
         }
-        private SyntaxTree _mixedSideTree;
 
-        private SyntaxTree _clientSideTree;
-        public static SyntaxTree ClientSideTree
+        public static SemanticModel CoreTypeSemanticModel
         {
-            get 
-            {
-                if (Instance._clientSideTree == null)
-                    throw new Exception("ClientSide tree is null");
-                return Instance._clientSideTree;
-            }
+            get { return Instance.coreTypeManager.SemanticModel; }
         }
 
-
-        private Compilation _mixedSideCompilation;
-        private Compilation _compilation;
-
-        public static CompilationUnitSyntax MixedSideCompilationUnit
+        // Todo: Should probably ensure that Instance is singleton!
+        private static MiCSManager Instance
         {
             get
             {
-                return Instance._mixedSideCompilationUnit;
+                if (MiCSManager.instance == null) throw new Exception("MiCSManager is not instantiated!");
+                return instance;
             }
         }
-        private CompilationUnitSyntax _mixedSideCompilationUnit;
-
-        public static CompilationUnitSyntax ClientSideCompilationUnit
-        {
-            get;
-            private set;
-        }
-
-        public static SemanticModel MixedSideSemanticModel
-        {
-            get
-            {
-                return Instance._mixedSideSemanticModel;
-            }
-        }
-        private SemanticModel _mixedSideSemanticModel;
-
-        public static SemanticModel SemanticModel
-        {
-            get
-            {
-                return Instance._semanticModel;
-            }
-        }
-        private SemanticModel _semanticModel;
-
-
-        public static CompilationUnitSyntax CompilationUnit
-        {
-            get
-            {
-                return Instance._compilationUnit;
-            }
-        }
-        private CompilationUnitSyntax _compilationUnit;
 
         public static void Initiate(string source)
         {
@@ -122,115 +75,32 @@ namespace MiCS
             var micsManager = new MiCSManager(tree);
         }
 
+
         public MiCSManager(string source) : this(SyntaxTree.ParseText(source))
-        { 
-            
-        }
-
-
-        public MiCSManager(SyntaxTree tree)
         {
-            if (!String.IsNullOrEmpty(_builtInScriptTypesSource))
-            {
-                _tree = SyntaxTree.ParseText(tree.GetText() + _builtInScriptTypesSource);
-                _builtInScriptTypesSource = "";
-            }
-            else
-            {
-                _tree = tree;
-            }
 
-            _compilationUnit = _tree.GetRoot();
-            
-            _mixedSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "MixedSide");
-            // Todo: built in script types should be added to client side.
-            _mixedSideTree = SyntaxTree.ParseText(_mixedSideCompilationUnit.GetText());
-            _mixedSideCompilationUnit = _mixedSideTree.GetRoot(); // Ensure compatible compilation unit and tree.
-
-            ClientSideCompilationUnit = GetCompilationUnitWithAttribute(_compilationUnit, "ClientSide");
-
-            var mixedSideCollector = new Collector(_compilationUnit, "MixedSide");
-            var clientSideCollector = new Collector(_compilationUnit, "ClientSide");
-
-            mixedSideCollector.Collect();
-            clientSideCollector.Collect();
-
-            MixedSideMembers = mixedSideCollector.Members;
-            ClientSideMembers = clientSideCollector.Members;
-
-
-
-            // Todo: Investigate maybe...
-            /*
-             * Building the semantic model...
-             * Not sure MetadataFileReference is the correct MetadataReference to use.
-             * See "Roslyn Overview section 4" and (deprecated example) http://social.msdn.microsoft.com/Forums/en-US/roslyn/thread/d82de2da-50eb-4701-b806-aa3ee24f74c2/
-             * 
-             * Not sure if any other assemblies (other than mscorlib) are required?
-             */
-            var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
-
-            _compilation = Compilation.Create("Compilation", syntaxTrees: new[] { _tree }, references: new[] { mscorlib });
-            _semanticModel = _compilation.GetSemanticModel(_tree);
-
-            _mixedSideCompilation = Compilation.Create("MixedSideCompilation", syntaxTrees: new[] { _mixedSideTree }, references: new[] { mscorlib });
-            _mixedSideSemanticModel = _mixedSideCompilation.GetSemanticModel(_mixedSideTree);
-
-            MiCSManager._Instance = this;
         }
 
-        // Todo: Should probably ensure that Instance is singleton!
-        private static MiCSManager Instance
+        public MiCSManager(SyntaxTree userTree)
         {
-            get
-            {
-                if (MiCSManager._Instance == null) throw new Exception("MiCSManager is not instantiated!");
-                return _Instance;
-            }
+            if (!Syntax.IsCompleteSubmission(userTree))
+                throw new Exception("Source submission failed!");
+
+            this.scriptTypeManager = new ScriptTypeManager(userTree);
+            this.coreTypeManager = new CoreTypeManager();
+
+            this.typeSymbolGetter = new TypeSymbolGetter();
+
+            MiCSManager.instance = this;
         }
-        private static MiCSManager _Instance;
-
-
-        public static void IncludeBuiltInScriptTypes(string rootPath)
-        {
-            // Code to read the built in source files.
-            //foreach (string filePath in Directory.EnumerateFiles(rootPath + @"MiCS\ScriptSharp\Web\Html\", "*.*", SearchOption.AllDirectories))
-            //{
-            //    using (StreamWriter w = File.AppendText("TestSourceFile.txt"))
-            //    {
-            //        var str = File.ReadAllText(filePath).Replace("\"", "\"\"");
-            //        w.Write(File.ReadAllText(filePath).Replace("\"", "\"\""));
-            //    }
-            //}
-
-            _builtInScriptTypesSource = ScriptSharp.TextSources.Web.Text;
-            _builtInCSharpTypesSource = ScriptSharp.TextSources.CoreLib.Text;
-
-
-            //_builtInScriptTypesSource = File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Element.cs");
-            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\Web\Html\Document.cs");
-            //_builtInScriptTypesSource += File.ReadAllText(rootPath + @"MiCS\ScriptSharp\CoreLib\RegExp.cs");
-        }
-        private static string _builtInScriptTypesSource;
-        private static string _builtInCSharpTypesSource;
-
 
         // Todo: Script should be build from more than one file.
         public static void BuildScript(ScriptManager scriptManager, Page page)
         {
             /*
-             * Roslyn AST creation, manipulation and validation.
-             */
-            //var source = File.ReadAllText(filePath);
-            //_tree = SyntaxTree.ParseText(source);
-            //var mixedSideCompilationUnit = _Instance._tree.GetRoot();
-            
-            // Todo: Ensure that no mixed side (or client side) code makes calls to (or utilize) server side code only.
-
-            /*
              * Map from Roslyn (C#) to ScriptSharp (JavaScript) AST.
              */
-            var scriptSharpAST = Instance.MapCompilationUnit(MixedSideCompilationUnit);
+            var scriptSharpAST = Instance.MapCompilationUnit(Instance.scriptTypeManager.CompilationUnit);
             // Todo: Maybe wrap MiCS code in its own namespace.
 
             /*
@@ -238,48 +108,6 @@ namespace MiCS
              */
             var scriptText = Instance.GenerateScriptText(scriptSharpAST);
             ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "MiCSGeneratedScript", scriptText, true);
-        }
-
-
-        /// <summary>
-        /// Returns a new compilation unit that only contains
-        /// the mixed side syntax nodes (e.i. the mixed side AST).
-        /// </summary>
-        public static CompilationUnitSyntax GetCompilationUnitWithAttribute(CompilationUnitSyntax root, string attributeName)
-        {
-            // Todo: Not sure nested namespaces are supported currently!
-
-            CompilationUnitSyntax compilationUnit = null;
-            var mappedNamespaces = new List<MemberDeclarationSyntax>();
-            foreach (NamespaceDeclarationSyntax rootMember in root.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration))
-            {
-                var namespaceDeclaration = (NamespaceDeclarationSyntax)rootMember;
-                var mappedClasses = new List<MemberDeclarationSyntax>();
-                foreach (var namespaceMember in namespaceDeclaration.DescendantNodes().Where(m => m.Kind == SyntaxKind.ClassDeclaration))
-                {
-                    var classDeclaration = (ClassDeclarationSyntax)namespaceMember;
-                    var mappedMethods = new List<MemberDeclarationSyntax>();
-                    foreach (var methodMember in classDeclaration.Members.Where(m => m.Kind == SyntaxKind.MethodDeclaration))
-                    {
-                        var methodDeclaration = (MethodDeclarationSyntax)methodMember;
-                        if (methodDeclaration.HasAttribute(attributeName))
-                            mappedMethods.Add(methodDeclaration);
-                    }
-
-                    if (mappedMethods.Count > 0)
-                        mappedClasses.Add(classDeclaration.WithMembers(Syntax.List(mappedMethods.ToArray())));
-                }
-                if (mappedClasses.Count > 0)
-                    mappedNamespaces.Add(namespaceDeclaration.WithMembers(Syntax.List(mappedClasses.ToArray())));
-            }
-            if (mappedNamespaces.Count > 0)
-                compilationUnit = root.WithMembers(Syntax.List(mappedNamespaces.ToArray()));
-
-            // Todo: Find out what to do with this
-            //if (compilationUnit == null)
-            //    throw new NoMixedOrClientSideException("No MixedSide or ClientSide attributed code was found!");
-
-            return compilationUnit;
         }
 
         /// <summary>
@@ -296,17 +124,6 @@ namespace MiCS
                 }
             }
             return scriptSharpAST;
-
-            
-
-            //var namespaces = root.Members.Where(m => m.Kind == SyntaxKind.NamespaceDeclaration);
-
-            //var ssSymbolSet = new SS.SymbolSet();
-            //foreach (var @namespace in namespaces)
-            //    ssSymbolSet.Namespaces.Add(NamespaceBuilder.Build((NamespaceDeclarationSyntax)@namespace));
-
-            //return ssSymbolSet;
-  
         }
 
         /// <summary>
@@ -344,17 +161,5 @@ namespace MiCS
         {
             return "alert('Not Implemented!');";
         }
-    }
-
-    [Serializable]
-    public class NoMixedOrClientSideException : Exception
-    {
-        public NoMixedOrClientSideException() { }
-        public NoMixedOrClientSideException(string message) : base(message) { }
-        public NoMixedOrClientSideException(string message, Exception inner) : base(message, inner) { }
-        protected NoMixedOrClientSideException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
     }
 }

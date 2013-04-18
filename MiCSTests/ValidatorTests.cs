@@ -87,10 +87,14 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
+            var root = st.GetRoot();
+
+            var collector = new Collector(root, "MixedSide");
+            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.MixedSideCompilationUnit);
+            var mixedSideValidator = new Validator(root, collector.Members);
             mixedSideValidator.Validate();
 
             Assert.IsTrue(mixedSideValidator.IsValid);
@@ -128,10 +132,14 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
+            var root = st.GetRoot();
+
+            var collector = new Collector(root, "MixedSide");
+            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.MixedSideCompilationUnit);
+            var mixedSideValidator = new Validator(root, collector.Members);
             mixedSideValidator.Validate();
 
             Assert.IsFalse(mixedSideValidator.IsValid);
@@ -175,10 +183,14 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
+            var root = st.GetRoot();
+
+            var collector = new Collector(root, "ClientSide");
+            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new ClientSideValidator(MiCSManager.ClientSideCompilationUnit);
+            var clientSideValidator = new Validator(root, collector.Members);
             clientSideValidator.Validate();
 
             Assert.IsTrue(clientSideValidator.IsValid);
@@ -221,10 +233,14 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
+            var root = st.GetRoot();
+
+            var collector = new Collector(root, "ClientSide");
+            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new ClientSideValidator(MiCSManager.CompilationUnit);
+            var clientSideValidator = new Validator(root, collector.Members);
             clientSideValidator.Validate();
 
             Assert.IsFalse(clientSideValidator.IsValid);
@@ -261,10 +277,14 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
+            var root = st.GetRoot();
+
+            var collector = new Collector(root, "MixedSide");
+            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
+            var mixedSideValidator = new Validator(root, collector.Members);
             mixedSideValidator.Validate();
 
             Assert.IsFalse(mixedSideValidator.IsValid);
@@ -304,10 +324,14 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
+            var root = st.GetRoot();
+
+            var collector = new Collector(root, "MixedSide");
+            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new MixedSideValidator(MiCSManager.CompilationUnit);
+            var mixedSideValidator = new Validator(root, collector.Members);
             mixedSideValidator.Validate();
 
             Assert.IsTrue(mixedSideValidator.IsValid);
@@ -347,10 +371,14 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
+            var root = st.GetRoot();
+
+            var collector = new Collector(root, "ClientSide");
+            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new ClientSideValidator(MiCSManager.CompilationUnit);
+            var clientSideValidator = new Validator(root, collector.Members);
             clientSideValidator.Validate();
 
             Assert.IsTrue(clientSideValidator.IsValid);

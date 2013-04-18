@@ -100,7 +100,8 @@ namespace MiCS
         {
             var nameText = identifierName.Identifier.ValueText;
 
-            var symbol = MiCSManager.MixedSideSemanticModel.GetSymbolInfo(identifierName).Symbol;
+            // Todo: Check if both core types and script types has special script names
+            var symbol = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(identifierName).Symbol;
             if (symbol == null)
                 throw new Exception();
             var declaration = symbol.DeclaringSyntaxNodes[0];
@@ -112,7 +113,7 @@ namespace MiCS
                     // Check if static reference to type.
                     if (@class.Identifier.ValueText.Equals(nameText))
                     {
-                        var @type = MiCSManager.MixedSideSemanticModel.GetTypeInfo(identifierName).Type;
+                        var @type = TypeSymbolGetter.GetTypeSymbol(identifierName);
                         return @type.ScriptName();
                     }
                 }
@@ -156,9 +157,9 @@ namespace MiCS
             }
         }
 
-        public static string NameText(this AttributeSyntax attribute)
+        public static string GetName(this AttributeSyntax attribute)
         {
-            return ((IdentifierNameSyntax)attribute.Name).Identifier.ValueText;
+            return attribute.Name.GetName();
         }
 
         public static bool IsScriptType(this ClassDeclarationSyntax classDeclaration)
@@ -200,7 +201,7 @@ namespace MiCS
                 {
                     foreach (AttributeSyntax att in attList.Attributes)
                     {
-                        if (att.NameText().Equals(attributeName))
+                        if (att.GetName().Equals(attributeName))
                         {
                             return att;
                         }
@@ -212,35 +213,32 @@ namespace MiCS
 
         public static string GetFullName(this NamespaceDeclarationSyntax @namespace)
         {
+            return @namespace.Name.GetName();
+        }
 
-            // Forward declaring lambda - this makes it possible for a lambda to call itself recursively
-            Func<NameSyntax, string> getName = null;
-                
-            getName = name => {
-                if (name is IdentifierNameSyntax)
-                {
-                    return ((IdentifierNameSyntax)name).Identifier.ValueText;
-                }
-                else if (name is QualifiedNameSyntax)
-                {
-                    var qualifiedName = (QualifiedNameSyntax)name;
+        public static string GetName(this NameSyntax nameSyntax)
+        {
+            if (nameSyntax is IdentifierNameSyntax)
+            {
+                return ((IdentifierNameSyntax)nameSyntax).Identifier.ValueText;
+            }
+            else if (nameSyntax is QualifiedNameSyntax)
+            {
+                var qualifiedName = (QualifiedNameSyntax)nameSyntax;
 
-                    return getName.Invoke(qualifiedName.Left) + qualifiedName.DotToken.ValueText + getName(qualifiedName.Right);
-                }
-                else
-                {
-                    throw new NotSupportedException("The namesyntax on the provided namespace is not supported");
-                }
-            };
-
-            return getName(@namespace.Name);
+                return GetName(qualifiedName.Left) + qualifiedName.DotToken.ValueText + GetName(qualifiedName.Right);
+            }
+            else
+            {
+                throw new NotSupportedException("The namesyntax is not supported");
+            }
         }
 
         public static bool HasAttribute(this AttributeListSyntax attributeList, string attributeName)
         {
             foreach (AttributeSyntax att in attributeList.Attributes)
             {
-                if (att.NameText().Equals(attributeName))
+                if (att.GetName().Equals(attributeName))
                 {
                     return true;
                 }

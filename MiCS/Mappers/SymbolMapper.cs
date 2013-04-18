@@ -19,19 +19,7 @@ namespace MiCS.Mappers
 
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
-            // Todo: Remove
-            //var returnTypeStr = "";
-
-            //if (methodDeclaration.ReturnType is IdentifierNameSyntax)      // Custom complex types.
-            //    returnTypeStr = ((IdentifierNameSyntax)methodDeclaration.ReturnType).Identifier.ValueText;
-            //else if (methodDeclaration.ReturnType is PredefinedTypeSyntax) // Predefined types like void and string
-            //    returnTypeStr = ((PredefinedTypeSyntax)methodDeclaration.ReturnType).Keyword.ValueText;
-            //else
-            //    throw new NotSupportedException("Method declaration return type is currently not supported.");
-
-            // Todo: Consider how return type and returnType's namespace can be referenced in a nice way.
-            var ssReturnType = MiCSManager.MixedSideSemanticModel.GetTypeInfo(methodDeclaration.ReturnType).Type.Map();
-            //var ssReturnType = new SS.ClassSymbol(returnTypeStr, ssParentNamespace);
+            var ssReturnType = TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType).Map();
             var methodName = methodDeclaration.Identifier.ValueText;
 
             var ssMethod = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
@@ -41,10 +29,12 @@ namespace MiCS.Mappers
             {
                 implementationStatements.Add(StatementBuilder.Build(statement, ssParentClass, ssMethod));
             }
+
+            // Todo: Consider if this is done right...
             var sI = new SS.SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + ssMethod.GeneratedName);
             ssMethod.AddImplementation(sI);
+            
             return ssMethod;
-
         }
 
         /// <summary>
@@ -368,7 +358,14 @@ namespace MiCS.Mappers
                         MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
                         MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
-                    var isSupportedType = isSupportedClientSideType || isSupportedMixedSideType;
+                    var isSupportedCoreType =
+                        CoreTypeManager.Instance.CoreTypeMembers.ContainsKey(namespaceName) &&
+                        CoreTypeManager.Instance.CoreTypeMembers[namespaceName].ContainsKey(typeSymbol.Name);
+
+                    var isSupportedType = 
+                        isSupportedClientSideType || 
+                        isSupportedMixedSideType || 
+                        isSupportedCoreType;
 
                     if(!isSupportedType)
                         throw new NotSupportedException("TypeSymbol type is currently not supported.");

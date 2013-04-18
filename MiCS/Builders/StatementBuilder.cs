@@ -81,7 +81,6 @@ namespace MiCS.Builders
 
         public override void VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax localDeclarationStatement)
         {
-
             var variable = localDeclarationStatement.Declaration.Variables[0];
 
             if (!(localDeclarationStatement.Declaration is VariableDeclarationSyntax))
@@ -94,8 +93,16 @@ namespace MiCS.Builders
                 throw new NotSupportedException(); // Todo: Maybe not a necesary check...
  
 
-            var typeInfo = MiCSManager.MixedSideSemanticModel.GetTypeInfo(localDeclarationStatement.Declaration.Type);
-            var ssVariable = variable.Map(ssParentMember, typeInfo.Type.Map());
+            var type = TypeSymbolGetter.GetTypeSymbol(localDeclarationStatement.Declaration.Type);
+
+            // Todo: Delete this
+            //if (type is ErrorTypeSymbol)
+            //{
+            //    var coreTypeName = ((IdentifierNameSyntax)localDeclarationStatement.Declaration.Type).Identifier.ValueText;
+            //    type  = CoreTypeManager.GetTypeByName(coreTypeName);
+            //}
+
+            var ssVariable = variable.Map(ssParentMember, type.Map());
 
             var initializer = variable.Initializer;
             if (initializer != null)

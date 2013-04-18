@@ -65,9 +65,7 @@ namespace MiCSTests.TestUtils
         {
             //var syntaxTree = SyntaxTree.ParseText(source);
             MiCSManager.Initiate(source);
-            if (!Syntax.IsCompleteSubmission(MiCSManager.MixedSideTree))
-                throw new Exception("Source submission failed!");
-            return MiCSManager.MixedSideCompilationUnit;
+            return ScriptTypeManager.Instance.CompilationUnit;
         }
 
         public static IEnumerable<SyntaxNode> Namespaces(string source)

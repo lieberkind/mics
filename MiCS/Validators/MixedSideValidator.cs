@@ -34,7 +34,7 @@ namespace MiCS.Validators
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
-            var model = MiCSManager.MixedSideSemanticModel;
+            var model = MiCSManager.SemanticModel;
             var info = model.GetTypeInfo(node.Expression);
 
             var @namespace = info.Type.ParentNamespace();

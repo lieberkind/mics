@@ -17,10 +17,9 @@ namespace MiCSCaseStudy
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
 
-            var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
+            var filePath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
             var source = File.ReadAllText(filePath);
 
-            MiCSManager.IncludeBuiltInScriptTypes(@"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\");
             MiCSManager.Initiate(source);
             MiCSManager.BuildScript(scriptManager, this);
 
@@ -46,23 +45,20 @@ namespace MiCSCaseStudy
         [MixedSide]
         bool isNameValid(string name)
         {
-            //var child = Document.GetElementById("hdjwhd").ChildNodes[0];
-
-            return false;
+            RegExp rx = new RegExp(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
+            return rx.Test(name);
         }
 
         [MixedSide]
         bool isNameInvalid(string name)
         {
-
-            var rx = new RegExp(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
-            var usr = new User();
-            var v = new Validator();
+            RegExp rx = new RegExp(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
+            User usr = new User();
+            Validator v = new Validator();
             v.isNameValid("tomas");
 
             Document.HasFocus();
             bool b = Document.HasFocus();
-            var b2 = Document.HasFocus();
             Element e = Document.GetElementById("test");
 
             if (2 < 3)
@@ -86,3 +82,13 @@ namespace MiCSCaseStudy
         }
     }
 }
+
+//using System.Text.RegularExpressions;
+//namespace TestNamespace {
+//class TestClass {
+//[MixedSide]
+//public void ImARegEx() {
+//RegExp regEx = new RegExp("imapattern"); 
+//}
+//}
+//}
