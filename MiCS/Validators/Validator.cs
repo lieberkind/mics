@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MiCS.Validators
 {
-    class Validator : SyntaxWalker
+    public class Validator : SyntaxWalker
     {
         Dictionary<string, Dictionary<string, List<string>>> members;
         CompilationUnitSyntax root;
@@ -29,6 +29,31 @@ namespace MiCS.Validators
             Visit(root);
         }
 
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            var methods = node.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
+
+            var visit = false;
+
+            foreach (var method in methods)
+            {
+                var m = ((MethodDeclarationSyntax)method);
+                visit = m.HasAttribute("MixedSide") || m.HasAttribute("ClientSide");
+
+                if (visit)
+                    break;
+            }
+
+            if(visit)
+                base.VisitClassDeclaration(node);
+        }
+
+        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            if (node.HasAttribute("MixedSide") || node.HasAttribute("ClientSide"))
+                base.VisitMethodDeclaration(node);
+        }
+
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
             var type = TypeSymbolGetter.GetTypeSymbol(node.Expression);
@@ -41,7 +66,7 @@ namespace MiCS.Validators
 
             IsValid =
                 members.ContainsKey(namespaceName) &&
-                members[namespaceName].ContainsKey(methodName) &&
+                members[namespaceName].ContainsKey(typeName) &&
                 members[namespaceName][typeName].Contains(methodName);
 
             if (IsValid)

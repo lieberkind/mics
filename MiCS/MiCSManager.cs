@@ -22,6 +22,7 @@ namespace MiCS
         private ScriptTypeManager scriptTypeManager;
         private CoreTypeManager coreTypeManager;
         private TypeSymbolGetter typeSymbolGetter;
+        private Validator validator;
         private static MiCSManager instance;
 
 
@@ -53,6 +54,11 @@ namespace MiCS
         public static SemanticModel CoreTypeSemanticModel
         {
             get { return Instance.coreTypeManager.SemanticModel; }
+        }
+
+        public static Validator Validator
+        {
+            get { return Instance.validator; }
         }
 
         // Todo: Should probably ensure that Instance is singleton!
@@ -90,6 +96,39 @@ namespace MiCS
             this.coreTypeManager = new CoreTypeManager();
 
             this.typeSymbolGetter = new TypeSymbolGetter();
+
+            var members = scriptTypeManager.MixedSideMembers;
+
+            foreach (var @namespace in scriptTypeManager.ClientSideMembers)
+            {
+                var namespaceName = @namespace.Key;
+                var namespaceClasses = @namespace.Value;
+                if (!members.ContainsKey(namespaceName))
+                {
+                    members.Add(namespaceName, new Dictionary<string, List<string>>(namespaceClasses));
+                }
+                else
+                {
+                    foreach (var @class in namespaceClasses.Keys)
+                    {
+                        if (!members[namespaceName].ContainsKey(@class))
+                        {
+                            members[namespaceName].Add(@class, namespaceClasses[@class]);
+                        }
+                        else
+                        {
+                            var methods = @namespace.Value[@class];
+                            foreach (var method in methods)
+                            {
+                                if (!members[namespaceName][@class].Contains(method))
+                                    members[namespaceName][@class].Add(method);
+                            }
+                        }
+                    }
+                }
+            }
+
+            validator = new Validator(scriptTypeManager.CompilationUnit, members);
 
             MiCSManager.instance = this;
         }

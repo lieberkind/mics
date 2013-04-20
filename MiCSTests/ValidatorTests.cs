@@ -88,17 +88,11 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "MixedSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
+            MiCSManager.Validator.Validate();
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
-
-            Assert.IsTrue(mixedSideValidator.IsValid);
+            Assert.IsTrue(MiCSManager.Validator.IsValid);
         }
 
         [TestMethod]
@@ -133,17 +127,12 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "MixedSide"});
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
+            MiCSManager.Validator.Validate();
 
-            Assert.IsFalse(mixedSideValidator.IsValid);
+            Assert.IsFalse(MiCSManager.Validator.IsValid);
         }
 
         [TestMethod]
@@ -184,21 +173,15 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "ClientSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
+            MiCSManager.Validator.Validate();
 
-            var clientSideValidator = new Validator(root, collector.Members);
-            clientSideValidator.Validate();
-
-            Assert.IsTrue(clientSideValidator.IsValid);
+            Assert.IsTrue(MiCSManager.Validator.IsValid);
         }
 
         [TestMethod]
-        public void ClientSideValidationFailWhenMixedSideCallsNonMixedOrClientSide()
+        public void ClientSideValidationFailsWhenMixedSideCallsNonMixedOrClientSide()
         {
             string treeText = @"
                 using MiCS;
@@ -224,7 +207,7 @@ namespace MiCSTests
                         {
                         }
 
-                        [ClientSide]
+                        [MixedSide]
                         public void TestFunction(string name, string name2, string name3)
                         {
                             Person p = new Person(""Tomas"");
@@ -234,17 +217,12 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "ClientSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new Validator(root, collector.Members);
-            clientSideValidator.Validate();
+            MiCSManager.Validator.Validate();
 
-            Assert.IsFalse(clientSideValidator.IsValid);
+            Assert.IsFalse(MiCSManager.Validator.IsValid);
         }
 
 
@@ -278,17 +256,11 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string> { "MixedSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
+            MiCSManager.Validator.Validate();
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
-
-            Assert.IsFalse(mixedSideValidator.IsValid);
+            Assert.IsFalse(MiCSManager.Validator.IsValid);
         }
 
         [TestMethod]
@@ -325,17 +297,53 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string> { "MixedSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
+            MiCSManager.Validator.Validate();
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
+            Assert.IsTrue(MiCSManager.Validator.IsValid);
+        }
 
-            Assert.IsTrue(mixedSideValidator.IsValid);
+        [TestMethod]
+        public void MixedSideCodeCantCallClientSideCode()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class ClientSideClass
+                    {
+                        public ClientSideClass()
+                        {
+                        }
+
+                        [ClientSide]
+                        public void SomeClientSideMethod() 
+                        {
+                        }
+                    }
+
+                    public class SomeClass
+                    {
+                        [MixedSide]
+                        public void SomeMethod()
+                        {
+                            var clientSideClass = new ClientSideClass();
+                            clientSideClass.SomeClientSideMethod();
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+            MiCSManager.Validator.Validate();
+
+            Assert.IsFalse(MiCSManager.Validator.IsValid);
         }
 
         [TestMethod]
@@ -372,17 +380,11 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "MixedSide", "ClientSide"} );
-            collector.Collect();
 
             MiCSManager.Initiate(st);
+            MiCSManager.Validator.Validate();
 
-            var clientSideValidator = new Validator(root, collector.Members);
-            clientSideValidator.Validate();
-
-            Assert.IsTrue(clientSideValidator.IsValid);
+            Assert.IsTrue(MiCSManager.Validator.IsValid);
         }
     }
 }
