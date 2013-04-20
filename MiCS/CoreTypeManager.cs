@@ -132,7 +132,7 @@ namespace MiCS
         /// to the specified C# type (if it is a core type and
         /// it is supported by the mapping specification).
         /// </summary>
-        public static TypeSymbol ToCoreScriptType(string namespaceName, string typeName)
+        private static TypeSymbol ToCoreScriptType(string namespaceName, string typeName)
         {
             var typeMappings = Instance.coreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
 
