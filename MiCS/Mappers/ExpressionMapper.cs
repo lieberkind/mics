@@ -168,16 +168,17 @@ namespace MiCS.Mappers
                 if (memberAccess.Expression is IdentifierNameSyntax)
                 {
                     var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
-                    var objectReferenceName = objectReference.ScriptName();
-                    var methodName = memberAccess.Name.Identifier.ValueText;
-                    if (CoreTypeManager.IsCoreType(objectReference))
-                        methodName = CoreTypeManager.GetCoreTypeMemberScriptName(objectReference, methodName);
+
+                    var ssObjectReferenceName = objectReference.ScriptName();
+                    var ssMethodName = memberAccess.Name.ScriptName();
+                    //if (CoreTypeManager.IsCoreType(objectReference))
+                    //    methodName = CoreTypeManager.GetCoreTypeMemberScriptName(objectReference, methodName);
 
                     var ssReturnType = TypeSymbolGetter.GetReturnType(memberAccess.Name).Map();
-                    var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+                    var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
                     var ssVariableType = TypeSymbolGetter.GetTypeSymbol(objectReference).Map();
-                    var ssObjectReference = new SS.VariableSymbol(objectReferenceName, ssParentMethod, ssVariableType);
+                    var ssObjectReference = new SS.VariableSymbol(ssObjectReferenceName, ssParentMethod, ssVariableType);
 
                     var ssLocalExpression = new SS.LocalExpression(ssObjectReference);
                     var ssMethodExpression = new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssLocalExpression, ssMethodSymbol, ssParameters);

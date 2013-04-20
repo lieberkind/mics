@@ -98,14 +98,14 @@ namespace MiCS.Builders
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax memberAccess)
         {
-            var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression);
             var memberParentType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Expression);
 
+            var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression);
             var ssMemberParentType = memberParentType.Map();
             var ssType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Name).Map();
-            var ssFieldName = memberAccess.Name.Identifier.ValueText; // Todo: If core type this name might be different.
-            if (CoreTypeManager.IsCoreType(memberParentType))
-                ssFieldName = CoreTypeManager.GetCoreTypeMemberScriptName(memberParentType, ssFieldName);
+            var ssFieldName = memberAccess.Name.ScriptName(); // Todo: If core type this name might be different.
+            //if (CoreTypeManager.IsCoreType(memberParentType))
+            //    ssFieldName = CoreTypeManager.GetCoreTypeMemberScriptName(memberParentType, ssFieldName);
 
 
             var ssField = new SS.FieldSymbol(ssFieldName, ssMemberParentType, ssType); 

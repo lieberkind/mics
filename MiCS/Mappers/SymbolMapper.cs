@@ -256,9 +256,9 @@ namespace MiCS.Mappers
                 case "Boolean":
                     mappedTypeName = "Boolean";
                     break;
-                case "String":
-                    mappedTypeName = "String";
-                    break;
+                //case "String":
+                //    mappedTypeName = "String";
+                //    break;
                 case "Int32":
                     mappedTypeName = "Int32";
                     break;
@@ -359,18 +359,23 @@ namespace MiCS.Mappers
                         MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeName);
 
                     // Todo: Translate/map CSharp core types to ScriptSharp core types.
-                    if (!isSupportedClientSideType && !isSupportedMixedSideType)
-                    {
-                        var mappedCoreType = mapCoreType(ref namespaceName, ref typeName);
-                        if (mappedCoreType != null)
-                        {
-                            typeSymbol = mappedCoreType;
-                        }
-                    }
+                    //if (!isSupportedClientSideType && !isSupportedMixedSideType)
+                    //{
 
-                    var isSupportedCoreType =
-                        CoreTypeManager.Instance.CoreTypeMembers.ContainsKey(namespaceName) &&
-                        CoreTypeManager.Instance.CoreTypeMembers[namespaceName].ContainsKey(typeName);
+                        //var mappedCoreType = CoreTypeManager.ToCoreScriptType(namespaceName, typeName);
+                        //if (mappedCoreType != null)
+                        //{
+                        //    typeSymbol = mappedCoreType;
+                        //}
+                    //}
+
+                    var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
+
+                    // Todo: Think this logical expression is wrong as it asks it checks against the ScriptSharp core types. These types should never be supported but only used when mapping.
+                    //var isSupportedCoreType =
+                    //    CoreTypeManager.Instance.CoreTypeMembers.ContainsKey(namespaceName) &&
+                    //    CoreTypeManager.Instance.CoreTypeMembers[namespaceName].ContainsKey(typeName);
+
 
                     var isSupportedType = 
                         isSupportedClientSideType || 
@@ -402,24 +407,7 @@ namespace MiCS.Mappers
             return ssType;
         }
 
-        public static bool IsCoreTypeSupported(string namespaceName, string typeName)
-        {
-            return mapCoreType(ref namespaceName, ref typeName) == null;
-        }
 
-        private static TypeSymbol mapCoreType(ref string namespaceName, ref string typeName)
-        {
-            // Todo: MAke proper mapping code...
-            if (namespaceName.Equals("System.Text.RegularExpressions") &&
-                typeName.Equals("Regex"))
-            {
-                namespaceName = "System";
-                typeName = "RegExp";
-                return CoreTypeManager.GetTypeByName("System", "RegExp");
-            }
-
-            return null;
-        }
     }
 
 

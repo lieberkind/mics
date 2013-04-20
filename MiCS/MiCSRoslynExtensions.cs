@@ -34,21 +34,6 @@ namespace MiCS
             
         }
 
-        public static bool IsUserType(this TypeSymbol typeSymbol)
-        {
-            if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
-                throw new NotSupportedException();
-
-            var declaration = typeSymbol.DeclaringSyntaxNodes[0];
-            if (declaration is ClassDeclarationSyntax)
-            {
-                var @class = (ClassDeclarationSyntax)declaration;
-                return @class.IsUserType();
-            }
-
-            return false;
-        }
-
         public static NamespaceDeclarationSyntax ParentNamespace(this TypeSymbol typeSymbol)
         {
             if (typeSymbol.ContainingNamespace.DeclaringSyntaxNodes.Count > 1)
@@ -80,12 +65,12 @@ namespace MiCS
                 return node.Parent.ParentNamespace();
         }
 
+
         public static string FullName(this NamespaceSymbol @namespace)
         {
             var fullName = @namespace.FullNameRecursive();
             return fullName; // Remove leading dot.
         }
-
         private static string FullNameRecursive(this NamespaceSymbol @namespace)
         {
             // Containing namespace name is empty string when it is the global namespace.
@@ -95,100 +80,88 @@ namespace MiCS
                 return @namespace.ContainingNamespace.FullNameRecursive() + "." + @namespace.Name;
         }
 
-        /// <summary>
-        /// Returns the script name defined by ScriptSharp if the type is a built
-        /// in JavaScript/DOM type. Otherwise the original type name is return.
-        /// IdentifierNameSyntax script name can be different from the defined name
-        /// e.g. in the Document.HasFocus() call where Document is translated to 
-        /// document.HasFocus() (lower case "d"). The method name (HasFocus) is 
-        /// translated internally by ScriptSharp (to hasFocus).
-        /// </summary>
-        public static string ScriptName(this IdentifierNameSyntax identifierName)
+        public static string GetFullName(this NamespaceDeclarationSyntax @namespace)
         {
-            var nameText = identifierName.Identifier.ValueText;
+            return @namespace.Name.GetName();
+        }
 
-            // Todo: Check if both core types and script types has special script names
-            var symbol = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(identifierName).Symbol;
-            if (symbol == null)
-                throw new Exception();
-            var declaration = symbol.DeclaringSyntaxNodes[0];
-            if (declaration is ClassDeclarationSyntax)
-            {
-                var @class = (ClassDeclarationSyntax)declaration;
-                if (!@class.IsUserType())
-                {
-                    // Check if static reference to type.
-                    if (@class.Identifier.ValueText.Equals(nameText))
-                    {
-                        var @type = TypeSymbolGetter.GetTypeSymbol(identifierName);
-                        return @type.ScriptName();
-                    }
-                }
-            }
-            return nameText;
+
+
+        /// <summary>
+        /// Returns true if the specified type declaration is
+        /// a user defined type.
+        /// </summary>
+        public static bool IsUserType(this ClassDeclarationSyntax classDeclaration)
+        {
+            return ScriptTypeManager.IsUserType(classDeclaration);
+        }
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a user defined type.
+        /// </summary>
+        public static bool IsUserType(this TypeSymbol typeSymbol)
+        {
+            return ScriptTypeManager.IsUserType(typeSymbol);
         }
 
         /// <summary>
-        /// Returns the script name defined by ScriptSharp if the type is a built
-        /// in JavaScript/DOM type. Otherwise the original type name is return.
+        /// Returns true if this is a core type that can be mapped
+        /// to a script core type.
+        /// </summary>
+        public static bool IsSupportedCoreType(this TypeSymbol typeSymbol)
+        {
+            return CoreTypeManager.IsSupportedCoreType(typeSymbol);
+        }
+        /// <summary>
+        /// Returns true if this is a core type that can be mapped
+        /// to a script core type.
+        /// </summary>
+        public static bool IsSupportedCoreType(this SimpleNameSyntax simpleName)
+        {
+            return CoreTypeManager.IsSupportedCoreType(simpleName);
+        }
+
+        /// <summary>
+        /// Returns true if the specified type is a core script type..
+        /// </summary>
+        public static bool IsCoreScriptType(this TypeSymbol typeSymbol)
+        {
+            return CoreTypeManager.IsCoreScriptType(typeSymbol);
+        }
+        /// <summary>
+        /// Returns true if the specified type is a core script type..
+        /// </summary>
+        public static bool IsCoreScriptType(this SimpleNameSyntax simpleName)
+        {
+            return CoreTypeManager.IsCoreScriptType(simpleName);
+        }
+
+        /// <summary>
+        /// Returns the script name defined by ScriptSharp if the 
+        /// type is a built in JavaScript/DOM type (or a supported 
+        /// core type). Otherwise the original type name is return.
         /// </summary>
         public static string ScriptName(this TypeSymbol typeSymbol)
         {
-            if (!typeSymbol.IsUserType())
-            {
-                var declaration = typeSymbol.DeclaringSyntaxNodes[0];
-                if (declaration is ClassDeclarationSyntax)
-                {
-                    var @class = (ClassDeclarationSyntax)declaration;
-                    if (@class.HasAttribute("ScriptName"))
-                    {
-                        var argList = @class.GetAttribute("ScriptName").ArgumentList;
-                        if (argList.Arguments.Count != 1)
-                            throw new NotSupportedException();
-
-                        var argExpression = argList.Arguments[0].Expression;
-                        if (!(argExpression is LiteralExpressionSyntax))
-                            throw new NotSupportedException();
-
-                        return ((LiteralExpressionSyntax)argExpression).Token.ValueText;
-                    }
-                    else if(@class.HasAttribute("ScriptImport"))
-                    {
-                        return @class.Identifier.ValueText;
-                    }
-                    else
-                        throw new NotSupportedException();
-                }
-                else
-                    throw new NotSupportedException();
-            }
-            else
-            {
+            if (typeSymbol.IsUserType())
                 return typeSymbol.Name;
-            }
+
+            if (typeSymbol.IsSupportedCoreType())
+                return CoreTypeManager.ToCoreScriptType(typeSymbol).Name;
+
+            return typeSymbol.Name;
+        }
+        /// <summary>
+        /// Returns the script name defined by ScriptSharp if the 
+        /// type is a built in JavaScript/DOM type (or a supported 
+        /// core type). Otherwise the original type name is return.
+        /// </summary>
+        public static string ScriptName(this SimpleNameSyntax identifierName)
+        {
+            var type = TypeSymbolGetter.GetTypeSymbol(identifierName);
+            return type.ScriptName();
         }
 
-        public static string GetName(this AttributeSyntax attribute)
-        {
-            return attribute.Name.GetName();
-        }
-
-        public static bool IsUserType(this ClassDeclarationSyntax classDeclaration)
-        {
-            foreach (var member in classDeclaration.Members)
-            {
-                if (member is MethodDeclarationSyntax)
-                {
-                    var declaration = ((MethodDeclarationSyntax)member);
-                    if (declaration.HasAttribute("MixedSide") ||
-                        declaration.HasAttribute("ClientSide"))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
 
         public static bool HasAttribute(this MethodDeclarationSyntax methodDeclaration, string attributeName)
         {
@@ -202,7 +175,6 @@ namespace MiCS
             }
             return false;
         }
-
         public static bool HasAttribute(this ClassDeclarationSyntax classDeclaration, string attributeName)
         {
             if (classDeclaration.AttributeLists.Any())
@@ -215,31 +187,19 @@ namespace MiCS
             }
             return false;
         }
-
-        public static AttributeSyntax GetAttribute(this ClassDeclarationSyntax classDeclaration, string attributeName)
+        private static bool HasAttribute(this AttributeListSyntax attributeList, string attributeName)
         {
-            if (classDeclaration.AttributeLists.Any())
+            foreach (AttributeSyntax att in attributeList.Attributes)
             {
-                foreach (var attList in classDeclaration.AttributeLists)
+                if (att.GetName().Equals(attributeName))
                 {
-                    foreach (AttributeSyntax att in attList.Attributes)
-                    {
-                        if (att.GetName().Equals(attributeName))
-                        {
-                            return att;
-                        }
-                    }
+                    return true;
                 }
             }
-            return null;
+            return false;
         }
 
-        public static string GetFullName(this NamespaceDeclarationSyntax @namespace)
-        {
-            return @namespace.Name.GetName();
-        }
-
-        public static string GetName(this NameSyntax nameSyntax)
+        private static string GetName(this NameSyntax nameSyntax)
         {
             if (nameSyntax is IdentifierNameSyntax)
             {
@@ -256,17 +216,13 @@ namespace MiCS
                 throw new NotSupportedException("The namesyntax is not supported");
             }
         }
-
-        public static bool HasAttribute(this AttributeListSyntax attributeList, string attributeName)
+        private static string GetName(this AttributeSyntax attribute)
         {
-            foreach (AttributeSyntax att in attributeList.Attributes)
-            {
-                if (att.GetName().Equals(attributeName))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return attribute.Name.GetName();
         }
+
+
+
+
     }
 }
