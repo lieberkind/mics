@@ -22,8 +22,8 @@ namespace MiCS
         private ScriptTypeManager scriptTypeManager;
         private CoreTypeManager coreTypeManager;
         private TypeSymbolGetter typeSymbolGetter;
-        private Validator validator;
         private static MiCSManager instance;
+        private bool userTreeIsValid;
 
 
         public static TypeSymbolGetter TypeSymbolGetter 
@@ -56,9 +56,9 @@ namespace MiCS
             get { return Instance.coreTypeManager.SemanticModel; }
         }
 
-        public static Validator Validator
+        public static bool UserTreeIsValid
         {
-            get { return Instance.validator; }
+            get { return Instance.userTreeIsValid; }
         }
 
         // Todo: Should probably ensure that Instance is singleton!
@@ -97,40 +97,25 @@ namespace MiCS
 
             this.typeSymbolGetter = new TypeSymbolGetter();
 
-            var members = scriptTypeManager.MixedSideMembers;
-
-            foreach (var @namespace in scriptTypeManager.ClientSideMembers)
-            {
-                var namespaceName = @namespace.Key;
-                var namespaceClasses = @namespace.Value;
-                if (!members.ContainsKey(namespaceName))
-                {
-                    members.Add(namespaceName, new Dictionary<string, List<string>>(namespaceClasses));
-                }
-                else
-                {
-                    foreach (var @class in namespaceClasses.Keys)
-                    {
-                        if (!members[namespaceName].ContainsKey(@class))
-                        {
-                            members[namespaceName].Add(@class, namespaceClasses[@class]);
-                        }
-                        else
-                        {
-                            var methods = @namespace.Value[@class];
-                            foreach (var method in methods)
-                            {
-                                if (!members[namespaceName][@class].Contains(method))
-                                    members[namespaceName][@class].Add(method);
-                            }
-                        }
-                    }
-                }
-            }
-
-            validator = new Validator(scriptTypeManager.CompilationUnit, members);
-
+            userTreeIsValid = this.validate();
             MiCSManager.instance = this;
+        }
+
+        
+        private bool validate()
+        {
+            var mixedSideMembers = scriptTypeManager.MixedSideMembers;
+            var clientSideMembers = scriptTypeManager.ClientSideMembers;
+
+            var mixedSideValidator = new Validator(scriptTypeManager.CompilationUnit, mixedSideMembers, "MixedSide");
+            
+            var clientSideValidator = new Validator(scriptTypeManager.CompilationUnit, clientSideMembers, "ClientSide");
+            clientSideValidator.AddToMembers(mixedSideMembers);
+
+            mixedSideValidator.Validate();
+            clientSideValidator.Validate();
+
+            return mixedSideValidator.IsValid && clientSideValidator.IsValid;
         }
 
         // Todo: Script should be build from more than one file.

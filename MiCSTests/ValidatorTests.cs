@@ -11,6 +11,49 @@ namespace MiCSTests
     public class ValidatorTests
     {
         [TestMethod]
+        public void CollectorCollectsAllMixedSideClassesInNamespace()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+                        }
+
+                        [MixedSide]
+                        public void SomeMethod() 
+                        {
+                        }
+                    }
+
+                    public class SomeClass
+                    {
+                        [MixedSide]
+                        public void SomeOtherMethod()
+                        {
+                            var p = new Person(""Person Name"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            var collector = new Collector(st.GetRoot(), new List<string>() { "MixedSide" });
+            collector.Collect();
+
+            Assert.IsTrue(collector.Members["ScriptLibrary1"].Count == 2);
+            Assert.IsTrue(collector.Members["ScriptLibrary1"]["Person"].Contains("SomeMethod"));
+            Assert.IsTrue(collector.Members["ScriptLibrary1"]["SomeClass"].Contains("SomeOtherMethod"));
+        }
+
+        [TestMethod]
         public void CollectorCollectsWhenThereAreMethodsToCollect()
         {
             string treeText = @"
@@ -90,9 +133,8 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-            MiCSManager.Validator.Validate();
 
-            Assert.IsTrue(MiCSManager.Validator.IsValid);
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -130,9 +172,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            MiCSManager.Validator.Validate();
-
-            Assert.IsFalse(MiCSManager.Validator.IsValid);
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -159,7 +199,7 @@ namespace MiCSTests
                         }
 
                         [ClientSide]
-                        public void MethodWithMixedSideAttribute()
+                        public void MethodWithClientSideAttribute()
                         {
                         }
 
@@ -167,7 +207,7 @@ namespace MiCSTests
                         public void TestFunction(string name, string name2, string name3)
                         {
                             Person p = new Person(""Tomas"");
-                            p.MethodWithMixedSideAttribute();
+                            p.MethodWithClientSideAttribute();
                         }
                     }
                 }";
@@ -175,9 +215,8 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-            MiCSManager.Validator.Validate();
 
-            Assert.IsTrue(MiCSManager.Validator.IsValid);
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -220,9 +259,7 @@ namespace MiCSTests
 
             MiCSManager.Initiate(st);
 
-            MiCSManager.Validator.Validate();
-
-            Assert.IsFalse(MiCSManager.Validator.IsValid);
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
 
@@ -258,9 +295,8 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-            MiCSManager.Validator.Validate();
 
-            Assert.IsFalse(MiCSManager.Validator.IsValid);
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -289,7 +325,7 @@ namespace MiCSTests
                     public class SomeClass
                     {
                         [MixedSide]
-                        public void SomeMethod()
+                        public void SomeOtherMethod()
                         {
                             var p = new Person(""Person Name"");
                         }
@@ -299,9 +335,8 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-            MiCSManager.Validator.Validate();
 
-            Assert.IsTrue(MiCSManager.Validator.IsValid);
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -341,9 +376,8 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-            MiCSManager.Validator.Validate();
 
-            Assert.IsFalse(MiCSManager.Validator.IsValid);
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -382,9 +416,8 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-            MiCSManager.Validator.Validate();
 
-            Assert.IsTrue(MiCSManager.Validator.IsValid);
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
     }
 }

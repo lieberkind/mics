@@ -36,23 +36,23 @@ namespace MiCS
 
         public static NamespaceDeclarationSyntax ParentNamespace(this TypeSymbol typeSymbol)
         {
-            if (typeSymbol.ContainingNamespace.DeclaringSyntaxNodes.Count > 1)
+            //if (typeSymbol.ContainingNamespace.DeclaringSyntaxNodes.Count > 1)
+            //    throw new NotSupportedException();
+
+            //return (NamespaceDeclarationSyntax)typeSymbol.ContainingNamespace.DeclaringSyntaxNodes[0];
+
+
+            if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
                 throw new NotSupportedException();
 
-            return (NamespaceDeclarationSyntax)typeSymbol.ContainingNamespace.DeclaringSyntaxNodes[0];
-
-
-            //if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
-            //    throw new NotSupportedException();
-
-            //var declaration = typeSymbol.DeclaringSyntaxNodes[0];
-            //if (declaration is ClassDeclarationSyntax)
-            //{
-            //    var @class = (ClassDeclarationSyntax)declaration;
-            //    return @class.ParentNamespace();
-            //}
-            //else
-            //    throw new NotSupportedException();
+            var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+            if (declaration is ClassDeclarationSyntax)
+            {
+                var @class = (ClassDeclarationSyntax)declaration;
+                return @class.ParentNamespace();
+            }
+            else
+                throw new NotSupportedException();
         }
 
         public static NamespaceDeclarationSyntax ParentNamespace(this SyntaxNode node)
