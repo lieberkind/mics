@@ -87,9 +87,13 @@ namespace MiCS.Validators
             var @namespace = node.Type.ParentNamespace();
             var namespaceName = @namespace.GetFullName();
 
-            IsValid =
+            var isUserMember = // Very lame name. This means; ClientSide, MixedSide or DOM type (i think)
                 members.ContainsKey(namespaceName) &&
                 members[namespaceName].ContainsKey(typeName);
+
+            var isCoreType = IsCoreTypeMember(node.Type);
+
+            IsValid = isUserMember || isCoreType;
 
             if (IsValid)
                 base.VisitObjectCreationExpression(node);
@@ -125,6 +129,19 @@ namespace MiCS.Validators
                     }
                 }
             }
+        }
+
+        private bool IsCoreTypeMember(TypeSyntax node)
+        {
+            var typeSymbol = TypeSymbolGetter.GetTypeSymbol(node);
+
+            var typeName = typeSymbol.Name;
+            var namespaceName = typeSymbol.OriginalDefinition.ContainingNamespace.ToString();
+
+            var coreTypes = CoreTypeManager.Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
+            var isCoreType = coreTypes.Count() > 0;
+
+            return isCoreType;
         }
 
 

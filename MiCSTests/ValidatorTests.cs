@@ -220,6 +220,64 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        public void ValidatorAllowsCreationOfRegex()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Text.RegularExpressions;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        [MixedSide]
+                        public bool CallToRegex()
+                        {
+                            Regex regEx = new Regex(""somepattern"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
+        }
+
+        [TestMethod]
+        public void ValidatorAllowsRegexsIsMatchMethodToBeCalled()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Text.RegularExpressions;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        [MixedSide]
+                        public bool isValid()
+                        {
+                            Regex regEx = new Regex(""somepattern"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
+        }
+
+        [TestMethod]
         public void ClientSideValidationFailsWhenMixedSideCallsNonMixedOrClientSide()
         {
             string treeText = @"
