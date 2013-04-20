@@ -147,19 +147,17 @@ namespace MiCS.Mappers
 
             var ssParentNamespace = (SS.NamespaceSymbol)ssParentClass.Parent; // Todo: Make parentNamespace method.
 
-            // Todo: This check is probably unneeded. It has already been checked.
             if (expr.Expression is IdentifierNameSyntax)
             {
-                // Todo: Check if theres an easier way to obtain return type
                 var identifierName = (IdentifierNameSyntax)expr.Expression;
 
                 var ssReturnType = TypeSymbolGetter.GetReturnType(identifierName).Map();
-                var methodName = identifierName.Identifier.ValueText;
+                var ssMethodName = identifierName.ScriptName();
 
-                var methodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+                var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
                 var ssThisExpr = new SS.ThisExpression(ssParentClass, false);
-                return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssThisExpr, methodSymbol, ssParameters);
+                return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssThisExpr, ssMethodSymbol, ssParameters);
 
             }
             else if (expr.Expression is MemberAccessExpressionSyntax)
@@ -171,8 +169,6 @@ namespace MiCS.Mappers
 
                     var ssObjectReferenceName = objectReference.ScriptName();
                     var ssMethodName = memberAccess.Name.ScriptName();
-                    //if (CoreTypeManager.IsCoreType(objectReference))
-                    //    methodName = CoreTypeManager.GetCoreTypeMemberScriptName(objectReference, methodName);
 
                     var ssReturnType = TypeSymbolGetter.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
@@ -187,9 +183,9 @@ namespace MiCS.Mappers
                 }
                 else if (memberAccess.Expression is ThisExpressionSyntax)
                 {
-                    var methodName = memberAccess.Name.Identifier.ValueText;
+                    var ssMethodName = memberAccess.Name.ScriptName();
                     var ssReturnType = TypeSymbolGetter.GetReturnType(memberAccess.Name).Map();
-                    var ssMethodSymbol = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+                    var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
                     var ssThisExpression = new SS.ThisExpression(ssParentClass, true);
                     var ssMethodExpression = new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssThisExpression, ssMethodSymbol, ssParameters);

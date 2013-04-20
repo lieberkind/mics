@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace MiCS
 {
-    // Todo: Add return type specification to mapping.
 
     /// <summary>
     /// MiCS core type mapping specification. Details which C#
@@ -45,6 +44,7 @@ namespace MiCS
                     {
                         Name = "IsMatch",
                         NameScript = "test",
+                        ReturnType = typeof(bool),
                         Arguments = new List<Type>()
                         {
                             typeof(String)
@@ -65,6 +65,7 @@ namespace MiCS
                     {
                         Name = "Length",
                         NameScript = "length",
+                        ReturnType = typeof(int),
                         Arguments = new List<Type>()
                     }
                 }
