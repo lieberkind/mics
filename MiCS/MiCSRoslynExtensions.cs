@@ -97,6 +97,24 @@ namespace MiCS
             return ScriptTypeManager.IsUserType(typeSymbol);
         }
 
+
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a DOM type from the ScriptSharp namespace System.Html.
+        /// </summary>
+        public static bool IsDOMType(this ClassDeclarationSyntax classDeclaration)
+        {
+            return ScriptTypeManager.IsDOMType(classDeclaration);
+        }
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a DOM type from the ScriptSharp namespace System.Html.
+        /// </summary>
+        public static bool IsDOMType(this TypeSymbol typeSymbol)
+        {
+            return ScriptTypeManager.IsDOMType(typeSymbol);
+        }
+
         /// <summary>
         /// Returns true if this is a core type that can be mapped
         /// to a script core type.
@@ -119,7 +137,7 @@ namespace MiCS
         /// type is a built in JavaScript/DOM type (or a supported 
         /// core type). Otherwise the original type name is return.
         /// </summary>
-        public static string ScriptName(this TypeSymbol typeSymbol)
+        public static string TypeScriptName(this TypeSymbol typeSymbol)
         {
             if (typeSymbol.IsUserType())
                 return typeSymbol.Name;
@@ -134,10 +152,37 @@ namespace MiCS
         /// type is a built in JavaScript/DOM type (or a supported 
         /// core type). Otherwise the original type name is return.
         /// </summary>
-        public static string ScriptName(this SimpleNameSyntax identifierName)
+        public static string TypeScriptName(this SimpleNameSyntax simpleName)
         {
-            var type = TypeSymbolGetter.GetTypeSymbol(identifierName);
-            return type.ScriptName();
+            var type = TypeSymbolGetter.GetTypeSymbol(simpleName);
+            return type.TypeScriptName();
+        }
+
+        /// <summary>
+        /// Returns the script name of a SimpleNameSyntax. Checks
+        /// if the SimpleNameSyntax is static reference to a DOM
+        /// type and if it is returns the DOM type's script name.
+        /// </summary>
+        public static string ScriptName(this SimpleNameSyntax simpleName)
+        {
+
+            var symbol = TypeSymbolGetter.GetTypeSymbol(simpleName);
+            if (symbol.IsDOMType())
+            {
+                var typeName = symbol.Name;
+                var referenceName = simpleName.Identifier.ValueText;
+
+                // Check if simpleName is static reference to DOM type.
+                if (referenceName.Equals(typeName))
+                {
+                    // Is static reference (e.g. Document.GetElementById(...)).
+                    return symbol.GetScriptNameAttributeValue();
+                }
+
+            }
+
+            // Script and server side name are the same.
+            return simpleName.Identifier.ValueText;
         }
 
 
@@ -167,15 +212,56 @@ namespace MiCS
         }
         private static bool HasAttribute(this AttributeListSyntax attributeList, string attributeName)
         {
-            foreach (AttributeSyntax att in attributeList.Attributes)
+            return attributeList.GetAttributesWithName(attributeName).Count() > 0;
+        }
+
+        private static IEnumerable<AttributeSyntax> GetAttributesWithName(this AttributeListSyntax attributeList, string attributeName)
+        {
+            return attributeList.Attributes.Where(a => a.GetName().Equals(attributeName));
+        }
+        private static AttributeSyntax GetAttribute(this TypeSymbol typeSymbol, string attributeName)
+        {
+            if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
+                throw new NotSupportedException();
+
+            if (!(typeSymbol.DeclaringSyntaxNodes[0] is ClassDeclarationSyntax))
+                throw new NotSupportedException();
+
+            var @class = ((ClassDeclarationSyntax)typeSymbol.DeclaringSyntaxNodes[0]);
+            foreach (var attList in @class.AttributeLists)
             {
-                if (att.GetName().Equals(attributeName))
+                var attributes = attList.GetAttributesWithName(attributeName);
+                if (attributes.Count() > 0)
                 {
-                    return true;
+                    return attributes.First();
                 }
             }
-            return false;
+
+            return null;
         }
+        /// <summary>
+        /// Retrieve the ScriptSharp defined script name from class attribute
+        /// if any exist (otherwise original TypeSymbol name is returned).
+        /// </summary>
+        private static string GetScriptNameAttributeValue(this TypeSymbol typeSymbol)
+        {
+            if (!typeSymbol.IsDOMType())
+                throw new Exception("It is only possible to get the attribute ScriptName value from a DOM type.");
+
+            var attribute = typeSymbol.GetAttribute("ScriptName");
+            if (attribute != null)
+            {
+                var @value = attribute.ArgumentList.Arguments.First().Expression;
+                if (@value is LiteralExpressionSyntax)
+                    return ((LiteralExpressionSyntax)@value).Token.ValueText;
+                else
+                    throw new Exception();
+            }
+
+            return typeSymbol.Name;
+        }
+
+
 
         private static string GetName(this NameSyntax nameSyntax)
         {

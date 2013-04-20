@@ -14,6 +14,8 @@ namespace MiCS
 
         public List<Type> Arguments { get; set; }
 
+        public Type ReturnType { get; set; }
+
         public MiCSCoreMemberMapping()
         {
 

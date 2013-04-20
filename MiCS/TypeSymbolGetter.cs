@@ -52,11 +52,10 @@ namespace MiCS
             var type = ScriptTypeManager.Instance.SemanticModel.GetTypeInfo(expression).Type;
             if (type == null)
             {
-                // Todo: handle in a cleaner way maybe.
+                // Todo: When does this happen?
                 /*
-                 * Happens on static method calls e.g. 
-                 * Document.GetElementById(...) or
-                 * MyTestType.StaticFunction(...)
+                 * Happens on static and none static references
+                 * to DOM types.
                  */
                 if (expression is IdentifierNameSyntax)
                 {
@@ -71,10 +70,8 @@ namespace MiCS
                     throw new NotImplementedException();
             }
 
-
-            // Todo: Not sure that this is needed any more? when is type ErrorTypeSymbol?
             if (type is ErrorTypeSymbol)
-                throw new NotSupportedException("Specified expression type was not found in ScriptTypes or CoreTypes.");
+                throw new NotSupportedException("Specified expression type was not found in ScriptTypes or CoreTypes. Remember to import required namespaces (e.g. 'using System.Html;').");
 
             return type;
         }

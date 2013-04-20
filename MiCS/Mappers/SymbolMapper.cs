@@ -358,17 +358,6 @@ namespace MiCS.Mappers
                         MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
                         MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeName);
 
-                    // Todo: Translate/map CSharp core types to ScriptSharp core types.
-                    //if (!isSupportedClientSideType && !isSupportedMixedSideType)
-                    //{
-
-                        //var mappedCoreType = CoreTypeManager.ToCoreScriptType(namespaceName, typeName);
-                        //if (mappedCoreType != null)
-                        //{
-                        //    typeSymbol = mappedCoreType;
-                        //}
-                    //}
-
                     var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
 
                     // Todo: Think this logical expression is wrong as it asks it checks against the ScriptSharp core types. These types should never be supported but only used when mapping.
@@ -385,9 +374,7 @@ namespace MiCS.Mappers
                     if(!isSupportedType)
                         throw new NotSupportedException("TypeSymbol type is currently not supported.");
 
-                    mappedTypeName = typeSymbol.ScriptName();
-                    // Todo: Parent namespace should probably not be a dummy namspace.
-                    //ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
+                    mappedTypeName = typeSymbol.TypeScriptName();
 
                     ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
 

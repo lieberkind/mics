@@ -3,6 +3,7 @@ using Roslyn.Compilers;
 using Roslyn.Compilers.CSharp;
 using System;
 using System.Collections.Generic;
+using System.Html;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,6 +115,33 @@ namespace MiCS
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a DOM type from the ScriptSharp namespace System.Html.
+        /// </summary>
+        public static bool IsDOMType(ClassDeclarationSyntax classDeclaration)
+        {
+            return classDeclaration.HasAttribute("ScriptImport");
+        }
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a DOM type from the ScriptSharp namespace System.Html.
+        /// </summary>
+        public static bool IsDOMType(TypeSymbol typeSymbol)
+        {
+            if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
+                return false;
+
+            var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+            if (declaration is ClassDeclarationSyntax)
+            {
+                var @class = (ClassDeclarationSyntax)declaration;
+                return @class.IsDOMType();
+            }
+            else
+                throw new NotSupportedException();
         }
     }
 }
