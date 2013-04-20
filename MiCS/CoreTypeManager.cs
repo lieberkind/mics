@@ -11,7 +11,12 @@ namespace MiCS
 {
     class CoreTypeManager
     {
+        #region Region: Construction and Properties
+
         public Dictionary<string, Dictionary<string, List<string>>> CoreTypeMembers;
+
+        private MiCSCoreMapping coreMapping;
+
 
         public CoreTypeManager()
         {
@@ -19,13 +24,13 @@ namespace MiCS
             CompilationUnit = tree.GetRoot();
 
             var coreTypeCollector = new Collector(CompilationUnit);
-            
+
             coreTypeCollector.Collect();
             CoreTypeMembers = coreTypeCollector.Members;
-            
-            var mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
 
-            var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree }, references: new[] { mscorlib });
+            coreMapping = MiCSCoreMapping.Instance;
+
+            var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree });
             SemanticModel = compilation.GetSemanticModel(tree);
         }
 
@@ -45,32 +50,123 @@ namespace MiCS
         {
             get
             {
-                if (instance == null) 
+                if (instance == null)
                     instance = new CoreTypeManager();
 
                 return instance;
             }
-            private set 
-            { 
+            private set
+            {
                 instance = value;
             }
         }
         private static CoreTypeManager instance;
 
-        public static TypeSymbol GetTypeByName(string namespaceName, string typeName, bool throwExceptionOnError = true)
+        #endregion
+
+        /// <summary>
+        /// Returns true if this is a core type that can be mapped
+        /// to a script core type.
+        /// </summary>
+        public static bool IsSupportedCoreType(string namespaceName, string typeName)
+        {
+            return ToCoreScriptType(namespaceName, typeName) != null;
+        }
+        /// <summary>
+        /// Returns true if this is a core type that can be mapped
+        /// to a script core type.
+        /// </summary>
+        public static bool IsSupportedCoreType(TypeSymbol typeSymbol)
+        {
+            return IsSupportedCoreType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
+        }
+        /// <summary>
+        /// Returns true if this is a core type that can be mapped
+        /// to a script core type.
+        /// </summary>
+        public static bool IsSupportedCoreType(SimpleNameSyntax simpleName)
+        {
+            return IsSupportedCoreType(TypeSymbolGetter.GetTypeSymbol(simpleName));
+        }
+
+
+        /// <summary>
+        /// Returns true if the specified type is a core script type.
+        /// </summary>
+        public static bool IsCoreScriptType(string namespaceName, string typeName)
+        {
+            return ToCoreScriptType(namespaceName, typeName) != null;
+        }
+        /// <summary>
+        /// Returns true if the specified type is a core script type..
+        /// </summary>
+        public static bool IsCoreScriptType(TypeSymbol typeSymbol)
+        {
+            var namespaceName = typeSymbol.ContainingNamespace.FullName();
+            var typeName = typeSymbol.Name;
+            return IsCoreScriptType(namespaceName, typeName);
+        }
+        /// <summary>
+        /// Returns true if the specified type is a core script type..
+        /// </summary>
+        public static bool IsCoreScriptType(SimpleNameSyntax simpleName)
+        {
+            
+            return IsCoreScriptType((ExpressionSyntax)simpleName);
+        }
+        /// <summary>
+        /// Returns true if the specified expression is of core script type..
+        /// </summary>
+        private static bool IsCoreScriptType(ExpressionSyntax expression)
+        {
+            var coreType = Instance.SemanticModel.GetTypeInfo(expression).Type;
+            if (coreType.IsSupportedCoreType())
+                return true;
+            else
+                return false;
+        }
+
+
+        /// <summary>
+        /// Returns the equivalent script core type according
+        /// to the specified C# type (if it is a core type and
+        /// it is supported by the mapping specification).
+        /// </summary>
+        public static TypeSymbol ToCoreScriptType(string namespaceName, string typeName)
+        {
+            var typeMappings = Instance.coreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
+
+            if (typeMappings.Count() == 0)
+                return null;
+
+            return GetCoreScriptTypeFromModel(typeMappings.First());
+        }
+        /// <summary>
+        /// Returns the equivalent script core type according
+        /// to the specified C# type (if it is a core type and
+        /// it is supported by the mapping specification).
+        /// </summary>
+        public static TypeSymbol ToCoreScriptType(TypeSymbol typeSymbol)
+        {
+            return ToCoreScriptType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
+        }
+
+        /// <summary>
+        /// Retrieves the specified script core type symbol from the 
+        /// ScriptSharp core types semantic model.
+        /// </summary>
+        private static TypeSymbol GetCoreScriptTypeFromModel(string namespaceName, string name, bool throwExceptionOnError = true)
         {
             var namespaces = Instance.CompilationUnit.DescendantNodes().Where(n => n.Kind == SyntaxKind.NamespaceDeclaration);
             foreach (var @namespace in namespaces)
             {
-
                 var classes = @namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.ClassDeclaration);
-
                 foreach (var node in classes)
                 {
                     var @class = ((ClassDeclarationSyntax)node);
                     var className = @class.Identifier.ValueText;
 
-                    if (className.Equals(typeName))
+                    if (className.Equals(name))
                     {
                         return Instance.SemanticModel.GetDeclaredSymbol(@class);
                     }
@@ -82,91 +178,14 @@ namespace MiCS
             else
                 return null;
         }
-        public static TypeSymbol GetTypeByName(string typeName)
+        /// <summary>
+        /// Retrieves the specified script core type symbol from the 
+        /// ScriptSharp core types semantic model.
+        /// </summary>
+        private static TypeSymbol GetCoreScriptTypeFromModel(MiCSCoreTypeMapping typeMapping)
         {
-            /*
-             * Assumes primary ScriptSharp core type namespace.
-             */
-            return GetTypeByName("System", typeName);
+            return GetCoreScriptTypeFromModel(typeMapping.NamespaceNameScript, typeMapping.NameScript);
         }
 
-
-
-        public static bool IsCoreType(string namespaceName, string typeName)
-        {
-            var foundInScriptSharpCoreSource = GetTypeByName(namespaceName, typeName, false) != null;
-            if (foundInScriptSharpCoreSource)
-            {
-                return true;
-            }
-            else
-            {
-                // Manually supported core types.
-                if (namespaceName.Equals("System.Text.RegularExpressions"))
-                {
-                    if (typeName.Equals("Regex"))
-                    {
-                        return true;
-                    }
-                }
-                return false;
-
-            }
-        }
-        public static bool IsCoreType(TypeSymbol typeSymbol)
-        {
-            var namespaceName = typeSymbol.ContainingNamespace.FullName();
-            var typeName = typeSymbol.Name;
-            return IsCoreType(namespaceName, typeName);
-        }
-        public static bool IsCoreType(IdentifierNameSyntax identifierName)
-        {
-            return IsCoreType(TypeSymbolGetter.GetTypeSymbol(identifierName));
-        }
-
-        // Todo: Remember to check for correct type, order and number of arguments.
-        public static string GetCoreTypeMemberScriptName(string namespaceName, string typeName, string memberName, bool throwExceptionOnUnsupported = true)
-        {
-            if (namespaceName.Equals("System"))
-            {
-                if (typeName.Equals("String"))
-                {
-                    if (memberName.Equals("Length"))
-                    {
-                        return "length";
-                    }
-                    if (memberName.Equals("IndexOf"))
-                    {
-                        return "indexOf";
-                    }
-                }
-
-            }
-            if (namespaceName.Equals("System.Text.RegularExpressions"))
-            {
-                if (typeName.Equals("Regex"))
-                {
-                    if (memberName.Equals("IsMatch"))
-                    {
-                        return "test";
-                    }
-                }
-
-            }
-            if (throwExceptionOnUnsupported)
-                throw new NotSupportedException("Unsupported use of core type.");
-            else
-                return memberName;
-        }
-        public static string GetCoreTypeMemberScriptName(TypeSymbol coreType, string memberName)
-        {
-            var namespaceName = coreType.ContainingNamespace.FullName();
-            var typeName = coreType.Name;
-            return GetCoreTypeMemberScriptName(namespaceName, typeName, memberName);
-        }
-        public static string GetCoreTypeMemberScriptName(IdentifierNameSyntax identifierName, string memberName)
-        {
-            return GetCoreTypeMemberScriptName(TypeSymbolGetter.GetTypeSymbol(identifierName), memberName);
-        }
     }
 }

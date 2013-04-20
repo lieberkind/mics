@@ -23,31 +23,56 @@ namespace MiCS
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax objectCreationExpression)
         {
-            var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(objectCreationExpression.Type).Type;
+            //var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(objectCreationExpression.Type).Type;
 
-            if (type is ErrorTypeSymbol)
-                type = TypeSymbolGetter.GetTypeSymbol(objectCreationExpression.Type);
+            //if (type is ErrorTypeSymbol)
+            //    type = TypeSymbolGetter.GetTypeSymbol(objectCreationExpression.Type);
 
-            TypeSymbol = type;
+            //TypeSymbol = type;
+
+            TypeSymbol = TypeSymbolGetter.GetTypeSymbol(objectCreationExpression.Type);
         }
 
         public override void VisitIdentifierName(IdentifierNameSyntax node)
         {
-            var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(node).Type;
+            //var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(node).Type;
 
-            if (type is ErrorTypeSymbol)
-                type = CoreTypeManager.GetTypeByName(node.Identifier.ValueText);
+            //if (type is ErrorTypeSymbol)
+            //    throw new Exception("Type should be found in ScriptTypeSemanticModel.");
+            ////type = CoreTypeManager.GetTypeByName(node.Identifier.ValueText);
 
-            TypeSymbol = type;
+            //TypeSymbol = type;
+
+            TypeSymbol = TypeSymbolGetter.GetTypeSymbol(node);
         }
+
 
         public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {
-            var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(expression).Type;
-            
-            if (type is ErrorTypeSymbol)
-                type = MiCSManager.CoreTypeSemanticModel.GetTypeInfo(expression).Type;
+            var type = ScriptTypeManager.Instance.SemanticModel.GetTypeInfo(expression).Type;
+            if (type == null)
+            {
+                // Todo: handle in a cleaner way maybe.
+                /*
+                 * Happens on static method calls e.g. 
+                 * Document.GetElementById(...) or
+                 * MyTestType.StaticFunction(...)
+                 */
+                if (expression is IdentifierNameSyntax)
+                {
+                    var symbol = ScriptTypeManager.Instance.SemanticModel.GetSymbolInfo((IdentifierNameSyntax)expression).Symbol;
+                    if (symbol is MethodSymbol)
+                    {
+                        var method = (MethodSymbol)symbol;
+                        type = method.ReturnType;
+                    }
+                }
+                else
+                    throw new NotImplementedException();
+            }
 
+
+            // Todo: Not sure that this is needed any more? when is type ErrorTypeSymbol?
             if (type is ErrorTypeSymbol)
                 throw new NotSupportedException("Specified expression type was not found in ScriptTypes or CoreTypes.");
 

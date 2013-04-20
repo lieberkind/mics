@@ -73,5 +73,47 @@ namespace MiCS
             get;
             private set;
         }
+
+
+
+
+        /// <summary>
+        /// Returns true if the specified type declaration is
+        /// a user defined type.
+        /// </summary>
+        public static bool IsUserType(ClassDeclarationSyntax classDeclaration)
+        {
+            foreach (var member in classDeclaration.Members)
+            {
+                if (member is MethodDeclarationSyntax)
+                {
+                    var declaration = ((MethodDeclarationSyntax)member);
+                    if (declaration.HasAttribute("MixedSide") ||
+                        declaration.HasAttribute("ClientSide"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a user defined type.
+        /// </summary>
+        public static bool IsUserType(TypeSymbol typeSymbol)
+        {
+            if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
+                return false;
+
+            var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+            if (declaration is ClassDeclarationSyntax)
+            {
+                var @class = (ClassDeclarationSyntax)declaration;
+                return @class.IsUserType();
+            }
+
+            return false;
+        }
     }
 }

@@ -303,7 +303,15 @@ namespace MiCSTests
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
-                    void f() { Element e = new Element(); var e2 = Document.GetElementById(""ewjde""); }
+                    public void f() { Element e = new Element(); var e2 = Document.GetElementById(""ewjde""); }
+                }
+
+                class Person
+                {
+                    TestClass g()
+                    {
+                    
+                    }
                 }
             }";
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
@@ -313,10 +321,8 @@ namespace MiCSTests
         [TestMethod]
         public void BuiltInTestTranslationTest()
         {
-
             var source = @"Element e = new Element(); var e2 = Document.GetElementById(""ewjde"");";
             var ssStatement = Parse.StatementsToSS(source);
-
         }
 
         [TestMethod]
@@ -430,7 +436,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [ExpectedException(typeof(NotSupportedException))]
         public void CoreTypeTestDateCannotBeMapped()
         {
             var source = @"
@@ -475,6 +481,25 @@ namespace MiCSTests
 
             Assert.AreEqual(returnType.Name, "Int32");
 
+        }
+
+        [TestMethod]
+        public void InvocationCustomStaticTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() { MyType.f(); }
+                } 
+
+                class MyType { 
+                    [MixedSide]
+                    public static void f() { int i; }
+                } 
+            }";
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
         }
 
 
