@@ -115,21 +115,6 @@ namespace MiCS
         }
 
         /// <summary>
-        /// Returns true if the specified type is a core script type..
-        /// </summary>
-        public static bool IsCoreScriptType(this TypeSymbol typeSymbol)
-        {
-            return CoreTypeManager.IsCoreScriptType(typeSymbol);
-        }
-        /// <summary>
-        /// Returns true if the specified type is a core script type..
-        /// </summary>
-        public static bool IsCoreScriptType(this SimpleNameSyntax simpleName)
-        {
-            return CoreTypeManager.IsCoreScriptType(simpleName);
-        }
-
-        /// <summary>
         /// Returns the script name defined by ScriptSharp if the 
         /// type is a built in JavaScript/DOM type (or a supported 
         /// core type). Otherwise the original type name is return.

@@ -47,7 +47,7 @@ namespace MiCS
                         NameScript = "test",
                         Arguments = new List<Type>()
                         {
-                            typeof(string)
+                            typeof(String)
                         }
                     }
                 }
