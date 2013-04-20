@@ -11,6 +11,49 @@ namespace MiCSTests
     public class ValidatorTests
     {
         [TestMethod]
+        public void CollectorCollectsAllMixedSideClassesInNamespace()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        public Person(string name)
+                        {
+                        }
+
+                        [MixedSide]
+                        public void SomeMethod() 
+                        {
+                        }
+                    }
+
+                    public class SomeClass
+                    {
+                        [MixedSide]
+                        public void SomeOtherMethod()
+                        {
+                            var p = new Person(""Person Name"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            var collector = new Collector(st.GetRoot(), new List<string>() { "MixedSide" });
+            collector.Collect();
+
+            Assert.IsTrue(collector.Members["ScriptLibrary1"].Count == 2);
+            Assert.IsTrue(collector.Members["ScriptLibrary1"]["Person"].Contains("SomeMethod"));
+            Assert.IsTrue(collector.Members["ScriptLibrary1"]["SomeClass"].Contains("SomeOtherMethod"));
+        }
+
+        [TestMethod]
         public void CollectorCollectsWhenThereAreMethodsToCollect()
         {
             string treeText = @"
@@ -88,17 +131,10 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "MixedSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
-
-            Assert.IsTrue(mixedSideValidator.IsValid);
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -133,17 +169,10 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "MixedSide"});
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
-
-            Assert.IsFalse(mixedSideValidator.IsValid);
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -170,7 +199,7 @@ namespace MiCSTests
                         }
 
                         [ClientSide]
-                        public void MethodWithMixedSideAttribute()
+                        public void MethodWithClientSideAttribute()
                         {
                         }
 
@@ -178,27 +207,20 @@ namespace MiCSTests
                         public void TestFunction(string name, string name2, string name3)
                         {
                             Person p = new Person(""Tomas"");
-                            p.MethodWithMixedSideAttribute();
+                            p.MethodWithClientSideAttribute();
                         }
                     }
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "ClientSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new Validator(root, collector.Members);
-            clientSideValidator.Validate();
-
-            Assert.IsTrue(clientSideValidator.IsValid);
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
-        public void ClientSideValidationFailWhenMixedSideCallsNonMixedOrClientSide()
+        public void ClientSideValidationFailsWhenMixedSideCallsNonMixedOrClientSide()
         {
             string treeText = @"
                 using MiCS;
@@ -224,7 +246,7 @@ namespace MiCSTests
                         {
                         }
 
-                        [ClientSide]
+                        [MixedSide]
                         public void TestFunction(string name, string name2, string name3)
                         {
                             Person p = new Person(""Tomas"");
@@ -234,17 +256,10 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "ClientSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new Validator(root, collector.Members);
-            clientSideValidator.Validate();
-
-            Assert.IsFalse(clientSideValidator.IsValid);
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
 
@@ -278,17 +293,10 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string> { "MixedSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
-
-            Assert.IsFalse(mixedSideValidator.IsValid);
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -317,7 +325,7 @@ namespace MiCSTests
                     public class SomeClass
                     {
                         [MixedSide]
-                        public void SomeMethod()
+                        public void SomeOtherMethod()
                         {
                             var p = new Person(""Person Name"");
                         }
@@ -325,17 +333,51 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string> { "MixedSide" });
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var mixedSideValidator = new Validator(root, collector.Members);
-            mixedSideValidator.Validate();
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
+        }
 
-            Assert.IsTrue(mixedSideValidator.IsValid);
+        [TestMethod]
+        public void MixedSideCodeCantCallClientSideCode()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class ClientSideClass
+                    {
+                        public ClientSideClass()
+                        {
+                        }
+
+                        [ClientSide]
+                        public void SomeClientSideMethod() 
+                        {
+                        }
+                    }
+
+                    public class SomeClass
+                    {
+                        [MixedSide]
+                        public void SomeMethod()
+                        {
+                            var clientSideClass = new ClientSideClass();
+                            clientSideClass.SomeClientSideMethod();
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -372,17 +414,10 @@ namespace MiCSTests
                 }";
 
             var st = SyntaxTree.ParseText(treeText);
-            var root = st.GetRoot();
-
-            var collector = new Collector(root, new List<string>() { "MixedSide", "ClientSide"} );
-            collector.Collect();
 
             MiCSManager.Initiate(st);
 
-            var clientSideValidator = new Validator(root, collector.Members);
-            clientSideValidator.Validate();
-
-            Assert.IsTrue(clientSideValidator.IsValid);
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
     }
 }

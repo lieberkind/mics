@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace MiCS.Validators
 {
-    class Validator : SyntaxWalker
+    public class Validator : SyntaxWalker
     {
         Dictionary<string, Dictionary<string, List<string>>> members;
         CompilationUnitSyntax root;
+        string attribute;
 
         public bool IsValid
         {
@@ -18,15 +19,43 @@ namespace MiCS.Validators
             private set;
         }
 
-        public Validator(CompilationUnitSyntax root, Dictionary<string, Dictionary<string, List<string>>> members)
+        public Validator(CompilationUnitSyntax root, Dictionary<string, Dictionary<string, List<string>>> members, string attribute)
         {
             this.root = root;
             this.members = members;
+            this.attribute = attribute;
+            IsValid = true;
         }
 
         public void Validate()
         {
             Visit(root);
+        }
+
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            var methods = node.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
+
+            var visit = false;
+
+            foreach (var method in methods)
+            {
+                var m = ((MethodDeclarationSyntax)method);
+                //visit = m.HasAttribute("MixedSide") || m.HasAttribute("ClientSide");
+                visit = m.HasAttribute(attribute);
+
+                if (visit)
+                    break;
+            }
+
+            if (visit)
+                base.VisitClassDeclaration(node);
+        }
+
+        public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
+        {
+            if (node.HasAttribute(attribute)) //|| node.HasAttribute("ClientSide"))
+                base.VisitMethodDeclaration(node);
         }
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
@@ -41,7 +70,7 @@ namespace MiCS.Validators
 
             IsValid =
                 members.ContainsKey(namespaceName) &&
-                members[namespaceName].ContainsKey(methodName) &&
+                members[namespaceName].ContainsKey(typeName) &&
                 members[namespaceName][typeName].Contains(methodName);
 
             if (IsValid)
@@ -65,5 +94,39 @@ namespace MiCS.Validators
             if (IsValid)
                 base.VisitObjectCreationExpression(node);
         }
+
+        public void AddToMembers(Dictionary<string, Dictionary<string, List<string>>> newMembers)
+        {
+            foreach (var @namespace in newMembers)
+            {
+                var namespaceName = @namespace.Key;
+                var namespaceClasses = @namespace.Value;
+                if (!members.ContainsKey(namespaceName))
+                {
+                    members.Add(namespaceName, new Dictionary<string, List<string>>(namespaceClasses));
+                }
+                else
+                {
+                    foreach (var @class in namespaceClasses.Keys)
+                    {
+                        if (!members[namespaceName].ContainsKey(@class))
+                        {
+                            members[namespaceName].Add(@class, namespaceClasses[@class]);
+                        }
+                        else
+                        {
+                            var methods = @namespace.Value[@class];
+                            foreach (var method in methods)
+                            {
+                                if (!members[namespaceName][@class].Contains(method))
+                                    members[namespaceName][@class].Add(method);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
 }

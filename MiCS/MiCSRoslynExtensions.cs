@@ -36,6 +36,12 @@ namespace MiCS
 
         public static NamespaceDeclarationSyntax ParentNamespace(this TypeSymbol typeSymbol)
         {
+            //if (typeSymbol.ContainingNamespace.DeclaringSyntaxNodes.Count > 1)
+            //    throw new NotSupportedException();
+
+            //return (NamespaceDeclarationSyntax)typeSymbol.ContainingNamespace.DeclaringSyntaxNodes[0];
+
+
             if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
                 throw new NotSupportedException();
 
@@ -48,6 +54,7 @@ namespace MiCS
             else
                 throw new NotSupportedException();
         }
+
         public static NamespaceDeclarationSyntax ParentNamespace(this SyntaxNode node)
         {
             if (node is NamespaceDeclarationSyntax)

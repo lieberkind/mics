@@ -23,6 +23,7 @@ namespace MiCS
         private CoreTypeManager coreTypeManager;
         private TypeSymbolGetter typeSymbolGetter;
         private static MiCSManager instance;
+        private bool userTreeIsValid;
 
 
         public static TypeSymbolGetter TypeSymbolGetter 
@@ -53,6 +54,11 @@ namespace MiCS
         public static SemanticModel CoreTypeSemanticModel
         {
             get { return Instance.coreTypeManager.SemanticModel; }
+        }
+
+        public static bool UserTreeIsValid
+        {
+            get { return Instance.userTreeIsValid; }
         }
 
         // Todo: Should probably ensure that Instance is singleton!
@@ -91,7 +97,25 @@ namespace MiCS
 
             this.typeSymbolGetter = new TypeSymbolGetter();
 
+            userTreeIsValid = this.validate();
             MiCSManager.instance = this;
+        }
+
+        
+        private bool validate()
+        {
+            var mixedSideMembers = scriptTypeManager.MixedSideMembers;
+            var clientSideMembers = scriptTypeManager.ClientSideMembers;
+
+            var mixedSideValidator = new Validator(scriptTypeManager.CompilationUnit, mixedSideMembers, "MixedSide");
+            
+            var clientSideValidator = new Validator(scriptTypeManager.CompilationUnit, clientSideMembers, "ClientSide");
+            clientSideValidator.AddToMembers(mixedSideMembers);
+
+            mixedSideValidator.Validate();
+            clientSideValidator.Validate();
+
+            return mixedSideValidator.IsValid && clientSideValidator.IsValid;
         }
 
         // Todo: Script should be build from more than one file.

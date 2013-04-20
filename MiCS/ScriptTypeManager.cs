@@ -46,7 +46,7 @@ namespace MiCS
             CompilationUnit = tree.GetRoot();
 
             var mixedSideCollector = new Collector(CompilationUnit, new List<string>() { "MixedSide" });
-            var clientSideCollector = new Collector(CompilationUnit, new List<string> { "ClientSide" });
+            var clientSideCollector = new Collector(CompilationUnit, new List<string>() { "ClientSide" });
 
             builtInCollector.Collect();
             mixedSideCollector.Collect();
@@ -56,8 +56,8 @@ namespace MiCS
             ClientSideMembers = clientSideCollector.Members;
             ClientSideMembers.AddRange(builtInCollector.Members);
 
-            Date d = new Date();
-            var rx = new System.Text.RegularExpressions.Regex("owdjwo");
+            //Date d = new Date();
+            //var rx = new System.Text.RegularExpressions.Regex("owdjwo");
 
             // Todo: Write about references in report maybe... how to handle references in a more generic manner.
             var mscorlib = new MetadataFileReference(typeof(String).Assembly.Location);
