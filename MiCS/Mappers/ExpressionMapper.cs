@@ -133,10 +133,10 @@ namespace MiCS.Mappers
             }
         }
 
-        static internal SS.MethodExpression Map(this InvocationExpressionSyntax expr, SS.ClassSymbol ssParent, SS.MethodSymbol ssParentMethod, Collection<SS.Expression> ssParameters)
+        static internal SS.MethodExpression Map(this InvocationExpressionSyntax invocation, SS.ClassSymbol ssParent, SS.MethodSymbol ssParentMethod, Collection<SS.Expression> ssParameters)
         {
-            if (!(expr.Expression is IdentifierNameSyntax) && !(expr.Expression is MemberAccessExpressionSyntax))
-                throw new NotSupportedException("Currently only this/local invocations is supported!");
+            if (!(invocation.Expression is IdentifierNameSyntax) && !(invocation.Expression is MemberAccessExpressionSyntax))
+                throw new NotSupportedException();
 
             if (!(ssParent is SS.ClassSymbol)) 
                 throw new NotSupportedException("The parent class symbol (of the method that is the invocation target) is required.");
@@ -147,9 +147,9 @@ namespace MiCS.Mappers
 
             var ssParentNamespace = (SS.NamespaceSymbol)ssParentClass.Parent; // Todo: Make parentNamespace method.
 
-            if (expr.Expression is IdentifierNameSyntax)
+            if (invocation.Expression is IdentifierNameSyntax)
             {
-                var identifierName = (IdentifierNameSyntax)expr.Expression;
+                var identifierName = (IdentifierNameSyntax)invocation.Expression;
 
                 var ssReturnType = TypeSymbolGetter.GetReturnType(identifierName).Map();
                 var ssMethodName = identifierName.ScriptName();
@@ -160,12 +160,22 @@ namespace MiCS.Mappers
                 return new SS.MethodExpression(SS.ExpressionType.MethodInvoke, ssThisExpr, ssMethodSymbol, ssParameters);
 
             }
-            else if (expr.Expression is MemberAccessExpressionSyntax)
+            else if (invocation.Expression is MemberAccessExpressionSyntax)
             {
-                var memberAccess = (MemberAccessExpressionSyntax)expr.Expression;
+                var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
                 if (memberAccess.Expression is IdentifierNameSyntax)
                 {
                     var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
+
+                    /*
+                     * Verify correct use of supported core type (if
+                     * this member access is on a supported core type).
+                     */
+                    CoreTypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+                    // Todo: Consider writing for report issues with only verify correct use of core
+                    // types on 'foreign' member access. If you can inherit from a core type this
+                    // could maybe be problematic, but as inheritance is not within the scope of our
+                    // project it might not be a problem anyways?
 
                     var ssObjectReferenceName = objectReference.ScriptName();
                     var ssMethodName = memberAccess.Name.ScriptName();

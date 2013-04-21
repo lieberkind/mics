@@ -220,6 +220,7 @@ namespace MiCSTests
         public void MultipleNamespaceTest()
         {
             var source = @"
+            using System.Html;
             namespace TestNamespace1 { 
                 class TestClass1 { 
                     [MixedSide]
