@@ -151,6 +151,11 @@ namespace MiCS
             return ToCoreScriptType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
         }
 
+        public static NamespaceSymbol GetCoreScriptTypeNamespace(TypeSymbol typeSymbol)
+        {
+            return ToCoreScriptType(typeSymbol).ContainingNamespace;
+        }
+
         /// <summary>
         /// Retrieves the specified script core type symbol from the 
         /// ScriptSharp core types semantic model.

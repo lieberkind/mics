@@ -243,6 +243,8 @@ namespace MiCS.Mappers
 
 
             string mappedTypeName = null;
+            string namespaceName = typeSymbol.ContainingNamespace.FullName();
+            string mappedNamespaceName;
 
             SS.TypeSymbol ssType = null;
 
@@ -345,26 +347,17 @@ namespace MiCS.Mappers
                 //    mappedTypeName = "Nullable`1";
                 //    break;
                 default:
-                    // Todo: Test if there will be a problem with custom and unsupported built-in types?
-
-                    var namespaceName = typeSymbol.ContainingNamespace.FullName();
-                    var typeName = typeSymbol.Name;
+                    
 
                     var isSupportedClientSideType =
                         MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
-                        MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeName);
+                        MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
                     var isSupportedMixedSideType =
                         MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
-                        MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeName);
+                        MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
                     var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
-
-                    // Todo: Think this logical expression is wrong as it asks it checks against the ScriptSharp core types. These types should never be supported but only used when mapping.
-                    //var isSupportedCoreType =
-                    //    CoreTypeManager.Instance.CoreTypeMembers.ContainsKey(namespaceName) &&
-                    //    CoreTypeManager.Instance.CoreTypeMembers[namespaceName].ContainsKey(typeName);
-
 
                     var isSupportedType = 
                         isSupportedClientSideType || 
@@ -375,6 +368,9 @@ namespace MiCS.Mappers
                         throw new NotSupportedException("TypeSymbol type is currently not supported.");
 
                     mappedTypeName = typeSymbol.TypeScriptName();
+                    mappedNamespaceName = namespaceName;
+                    if (isSupportedCoreType)
+                        mappedNamespaceName = CoreTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
 
                     ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
 
@@ -388,8 +384,8 @@ namespace MiCS.Mappers
             
             if (ssType == null)
             {
-                // Todo: Parent namespace should probably not be a dummy namspace.
-                ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol("ns", null));
+                // Todo: Parent namespace should preferably not be a new namspace object.
+                ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
             }
             return ssType;
         }
