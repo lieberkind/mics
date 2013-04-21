@@ -4,6 +4,7 @@ using MiCS.Validators;
 using Roslyn.Compilers.CSharp;
 using MiCS;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace MiCSTests
 {
@@ -217,6 +218,95 @@ namespace MiCSTests
             MiCSManager.Initiate(st);
 
             Assert.IsTrue(MiCSManager.UserTreeIsValid);
+        }
+
+        [TestMethod]
+        public void ValidatorAllowsCreationOfRegex()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Text.RegularExpressions;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        [MixedSide]
+                        public bool CallToRegex()
+                        {
+                            Regex regEx = new Regex(""somepattern"");
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
+        }
+
+        [TestMethod]
+        public void ValidatorAllowsRegexsIsMatchMethodToBeCalled()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Text.RegularExpressions;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class Person
+                    {
+                        [MixedSide]
+                        public bool isValid(string s)
+                        {
+                            Regex regEx = new Regex(""somepattern"");
+                            return regEx.IsMatch(s);
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
+        }
+
+        [TestMethod]
+        public void ValidatorFailsWhenUnsupportedCoreMethodIsInvoked()
+        {
+            string treeText = @"
+                using MiCS;
+                using System;
+                using System.Text.RegularExpressions;
+                using System.Collections.Generic;
+                using System.Runtime.CompilerServices;
+
+                namespace ScriptLibrary1
+                {
+                    public class TestClass
+                    {
+                        [MixedSide]
+                        public void TestMethod()
+                        {
+                            Regex regEx = new Regex(""somepattern"");
+                            int hashCode = regEx.GetHashCode();
+                        }
+                    }
+                }";
+
+            var st = SyntaxTree.ParseText(treeText);
+
+            MiCSManager.Initiate(st);
+
+            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]

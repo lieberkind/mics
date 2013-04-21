@@ -232,8 +232,6 @@ namespace MiCSTests
 
         }
 
-        string builtInTypesRootPath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\";
-
         [TestMethod]
         public void BuiltInTranslationTest()
         {

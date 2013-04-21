@@ -62,16 +62,19 @@ namespace MiCS.Validators
         {
             var type = TypeSymbolGetter.GetTypeSymbol(node.Expression);
 
-            var @namespace = type.ParentNamespace();
-            var namespaceName = @namespace.GetFullName();
+            var namespaceName = type.OriginalDefinition.ContainingNamespace.ToString();
 
             var typeName = type.Name;
             var methodName = node.Name.Identifier.ValueText;
 
-            IsValid =
+            var isUserMember =
                 members.ContainsKey(namespaceName) &&
                 members[namespaceName].ContainsKey(typeName) &&
                 members[namespaceName][typeName].Contains(methodName);
+
+            var isCoreMember = IsCoreMember(namespaceName, typeName, methodName);
+
+            IsValid = isUserMember || isCoreMember;
 
             if (IsValid)
                 base.VisitMemberAccessExpression(node);
@@ -87,9 +90,13 @@ namespace MiCS.Validators
             var @namespace = node.Type.ParentNamespace();
             var namespaceName = @namespace.GetFullName();
 
-            IsValid =
+            var isUserType = // Very lame name. This means; ClientSide, MixedSide or DOM type (i think)
                 members.ContainsKey(namespaceName) &&
                 members[namespaceName].ContainsKey(typeName);
+
+            var isCoreType = IsCoreType(node.Type);
+
+            IsValid = isUserType || isCoreType;
 
             if (IsValid)
                 base.VisitObjectCreationExpression(node);
@@ -125,6 +132,27 @@ namespace MiCS.Validators
                     }
                 }
             }
+        }
+
+        private bool IsCoreType(TypeSyntax node)
+        {
+            var typeSymbol = TypeSymbolGetter.GetTypeSymbol(node);
+
+            var typeName = typeSymbol.Name;
+            var namespaceName = typeSymbol.OriginalDefinition.ContainingNamespace.ToString();
+
+            var coreTypes = CoreTypeManager.Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
+            var isCoreType = coreTypes.Count() > 0;
+
+            return isCoreType;
+        }
+
+        private bool IsCoreMember(string namespaceName, string typeName, string methodName)
+        {
+            var coreMembers = CoreTypeManager.Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName) && (t.Members.Where(m => m.Name.Equals(methodName)).Count() > 0));
+            var isCoreMember = coreMembers.Count() > 0;
+
+            return isCoreMember;
         }
 
 

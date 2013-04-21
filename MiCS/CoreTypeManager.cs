@@ -15,8 +15,12 @@ namespace MiCS
 
         public Dictionary<string, Dictionary<string, List<string>>> CoreTypeMembers;
 
-        private MiCSCoreMapping coreMapping;
-
+        //private MiCSCoreMapping coreMapping;
+        public MiCSCoreMapping CoreMapping
+        {
+            get;
+            private set;
+        }
 
         public CoreTypeManager()
         {
@@ -28,7 +32,7 @@ namespace MiCS
             coreTypeCollector.Collect();
             CoreTypeMembers = coreTypeCollector.Members;
 
-            coreMapping = MiCSCoreMapping.Instance;
+            CoreMapping = MiCSCoreMapping.Instance;
 
             var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree });
             SemanticModel = compilation.GetSemanticModel(tree);
@@ -134,7 +138,7 @@ namespace MiCS
         /// </summary>
         private static TypeSymbol ToCoreScriptType(string namespaceName, string typeName)
         {
-            var typeMappings = Instance.coreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
+            var typeMappings = Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
 
             if (typeMappings.Count() == 0)
                 return null;
