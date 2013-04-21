@@ -46,6 +46,12 @@ namespace MiCS
             TypeSymbol = TypeSymbolGetter.GetTypeSymbol(node);
         }
 
+        public override void VisitArgument(ArgumentSyntax node)
+        {
+            TypeSymbol = TypeSymbolGetter.GetTypeSymbol(node.Expression);
+
+            //base.VisitArgument(node);
+        }
 
         public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {

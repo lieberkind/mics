@@ -67,6 +67,16 @@ namespace MiCS
                         NameScript = "length",
                         ReturnType = typeof(int),
                         Arguments = new List<Type>()
+                    },
+                    new MiCSCoreMemberMapping()
+                    {
+                        Name = "IndexOf",
+                        NameScript = "indexOf",
+                        ReturnType = typeof(int),
+                        Arguments = new List<Type>()
+                        {
+                            typeof(char)
+                        }
                     }
                 }
             });

@@ -15,7 +15,6 @@ namespace MiCS
 
         public Dictionary<string, Dictionary<string, List<string>>> CoreTypeMembers;
 
-        //private MiCSCoreMapping coreMapping;
         public MiCSCoreMapping CoreMapping
         {
             get;
@@ -67,6 +66,55 @@ namespace MiCS
         private static CoreTypeManager instance;
 
         #endregion
+
+        public static void VerifyCorrectUseOfSupportedCoreType(InvocationExpressionSyntax invocation)
+        {
+            if (invocation.Expression is MemberAccessExpressionSyntax)
+            {
+                var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+                var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
+                var objectType = TypeSymbolGetter.GetTypeSymbol(objectReference);
+                var namespaceName = objectType.ContainingNamespace.FullName();
+
+                if (objectType.IsSupportedCoreType())
+                {
+                    var mappings = Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(objectType.Name));
+                    if (mappings.Count() == 1)
+                    {
+                        var typeMapping = mappings.First();
+                        var memberName = memberAccess.Name.Identifier.ValueText;
+                        var memberReturnType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Name);
+
+                        // Verify member use.
+                        var memberMappings = typeMapping.Members.Where(m => m.Name.Equals(memberName) && m.ReturnType.Name.Equals(memberReturnType.Name));
+                        if (memberMappings.Count() == 1)
+                        {
+                            // Verify arguments count and types.
+                            var memberMapping = memberMappings.First();
+                            var memberArguments = invocation.ArgumentList.Arguments;
+                            if (memberMapping.Arguments.Count == memberArguments.Count)
+                            {
+                                for (int i = 0; i < memberMapping.Arguments.Count; i++)
+			                    {
+			                        var argumentType = TypeSymbolGetter.GetTypeSymbol(memberArguments[i]);
+                                    var argumentTypeMapping = memberMapping.Arguments[i];
+
+                                    if (!argumentTypeMapping.Name.Equals(argumentType.Name))
+                                        throw new Exception("Argument with index '" + i + "' with type '" + argumentType.Name + "' on member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' is not correctly mapped.");
+			                    }
+                            }
+                            else
+                                throw new Exception("Arguments on member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' are not correctly mapped.");
+
+                        }
+                        else
+                            throw new Exception("Member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' is not currently (or correctly) mapped.");
+                    }
+                    else
+                        throw new Exception("Type: '" + namespaceName + "." + objectType.Name + "' is not currently (or correctly) mapped.");
+                }
+            }
+        }
 
         /// <summary>
         /// Returns true if this is a core type that can be mapped
