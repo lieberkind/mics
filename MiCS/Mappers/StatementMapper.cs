@@ -41,5 +41,10 @@ namespace MiCS.Mappers
             return new SS.VariableDeclarationStatement();
         }
 
+        static internal SS.ForStatement Map(this ForStatementSyntax forStatement)
+        {
+            return new SS.ForStatement();
+        }
+
     }
 }

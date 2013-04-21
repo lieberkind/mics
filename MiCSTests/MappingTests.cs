@@ -58,6 +58,57 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        public void VariableSyntaxCanBeMapped()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() 
+                    { 
+                        int count = 0;
+                        int i;
+                        for(i = 0; i < 10; i++)
+                        {
+                            count = count + i;
+                        }
+                    }
+                } 
+            }";
+        }
+
+        [TestMethod]
+        public void ForLoopCanBeMapped()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() 
+                    { 
+                        int count = 0;
+                        int i;
+                        for(i = 0; i < 10; i++)
+                        {
+                            count = count + i;
+                        }
+                    }
+                } 
+            }";
+
+            var st = SyntaxTree.ParseText(source);
+
+            var forStmt = (ForStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is ForStatementSyntax).First();
+
+            var ssForStmt = (SS.ForStatement)StatementBuilder.Build(forStmt, null, null);
+
+            Assert.IsNotNull(ssForStmt.Initializers);
+            Assert.IsNotNull(ssForStmt.Body);
+            Assert.IsNotNull(ssForStmt.Condition);
+            Assert.IsNotNull(ssForStmt.Increments);
+        }
+
+        [TestMethod]
         public void ClassMemberEmptyTest()
         {
             var source = @"

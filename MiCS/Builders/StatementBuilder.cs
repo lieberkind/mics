@@ -38,9 +38,29 @@ namespace MiCS.Builders
             var ssIfStatement = StatementBuilder.Build(ifStatement.Statement, ssTypeReference, ssParentMember);
             var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.Build(ifStatement.Else.Statement, ssTypeReference, ssParentMember);
 
-            ssStatements.Add(ifStatement.Map(ssCondition, ssIfStatement, ssElseStatement));
-            
-            //base.VisitIfStatement(ifStatement);
+            ssStatements.Add(ifStatement.Map(ssCondition, ssIfStatement, ssElseStatement));            
+        }
+
+        public override void VisitForStatement(ForStatementSyntax forStatement)
+        {
+            var ssForStatement = forStatement.Map();
+
+            // Todo: Implement mapping of VariablDeclarationSyntax and VariableDeclaratorSyntax
+            if (forStatement.Initializers == null)
+                throw new NotSupportedException("Initializers cannot be null. Hint: declare incrementors outside for statement.");
+
+            foreach (var initializer in forStatement.Initializers)
+                ssForStatement.AddInitializer(ExpressionBuilder.Build(initializer));
+
+            ssForStatement.AddCondition(ExpressionBuilder.Build(forStatement.Condition));
+
+            foreach (var incrementor in forStatement.Incrementors)
+                ssForStatement.AddIncrement(ExpressionBuilder.Build(incrementor));
+
+            ssForStatement.AddBody(StatementBuilder.Build(forStatement.Statement, ssTypeReference, ssParentMember));
+
+            ssStatements.Add(ssForStatement);
+            //base.VisitForStatement(node);
         }
 
         public override void VisitBlock(BlockSyntax block)
