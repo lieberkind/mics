@@ -58,23 +58,22 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void VariableSyntaxCanBeMapped()
+        public void ArrayCanBeMapped()
         {
             var source = @"
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
                     void f() 
-                    { 
-                        int count = 0;
-                        int i;
-                        for(i = 0; i < 10; i++)
-                        {
-                            count = count + i;
-                        }
+                    {
+                        string[] strings = { ""hej"", ""tomas"" };
                     }
                 } 
             }";
+
+            var st = SyntaxTree.ParseText(source);
+
+            throw new NotImplementedException();
         }
 
         [TestMethod]

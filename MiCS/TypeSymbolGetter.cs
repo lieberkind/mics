@@ -92,27 +92,13 @@ namespace MiCS
         public static TypeSymbol GetReturnType(SimpleNameSyntax node)
         {
             var symbol = MiCSManager.ScriptTypeSemanticModel.GetSymbolInfo(node).Symbol;
-            if (symbol is MethodSymbol)
-            {
-                return ((MethodSymbol)symbol).ReturnType;
-            }
-            else if (symbol == null)
-            {
+
+            if (symbol == null)
                 throw new Exception("Symbol is null. Can be caused by invalid C# syntax.");
-            }
-            else
+            else if(!(symbol is MethodSymbol))
                 throw new NotSupportedException();
 
-            // Todo: Remove old code.
-            //var validMethodDeclaration =
-            //    symbol.DeclaringSyntaxNodes.Count == 1 &&
-            //    (symbol.DeclaringSyntaxNodes[0] is MethodDeclarationSyntax);
-
-            //if(!validMethodDeclaration)
-            //    throw new NotSupportedException(); // Todo: Check for supported core type methods.
-
-            //var methodDeclaration = (MethodDeclarationSyntax)symbol.DeclaringSyntaxNodes[0];
-            //return TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType);
+            return ((MethodSymbol)symbol).ReturnType;
         }
 
 

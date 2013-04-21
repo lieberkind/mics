@@ -45,9 +45,10 @@ namespace MiCS.Builders
         {
             var ssForStatement = forStatement.Map();
 
-            // Todo: Implement mapping of VariablDeclarationSyntax and VariableDeclaratorSyntax
+            // Todo: Should forStatement.Declaration be checked and possibly mapped? Has todo with VariableDeclarationSyntax
+            // Todo: Implement mapping of VariablDeclarationSyntax
             if (forStatement.Initializers == null)
-                throw new NotSupportedException("Initializers cannot be null. Hint: declare incrementors outside for statement.");
+                throw new NotSupportedException("Initializers cannot be null. Hint: declare intcrementors outside for statement.");
 
             foreach (var initializer in forStatement.Initializers)
                 ssForStatement.AddInitializer(ExpressionBuilder.Build(initializer));
@@ -60,7 +61,6 @@ namespace MiCS.Builders
             ssForStatement.AddBody(StatementBuilder.Build(forStatement.Statement, ssTypeReference, ssParentMember));
 
             ssStatements.Add(ssForStatement);
-            //base.VisitForStatement(node);
         }
 
         public override void VisitBlock(BlockSyntax block)
@@ -76,9 +76,18 @@ namespace MiCS.Builders
 
             ssBlock.Statements.AddRange(ssChildStatements);
             ssStatements.Add(ssBlock);
-
-            //base.VisitBlock(block);
         }
+
+        //public override void VisitVariableDeclaration(VariableDeclarationSyntax variableDeclaration)
+        //{
+        //    var ssVariableDeclaration = variableDeclaration.Map();
+        //    var ssType = TypeSymbolGetter.GetTypeSymbol(variableDeclaration).Map();
+
+        //    foreach (var variableDeclarator in variableDeclaration.Variables)
+        //        ssVariableDeclaration.AddVariable(variableDeclarator.Map(ssParentMember, ssType));
+
+        //    ssStatements.Add(ssVariableDeclaration);
+        //}
 
         public override void VisitReturnStatement(ReturnStatementSyntax returnStatement)
         {
@@ -105,7 +114,7 @@ namespace MiCS.Builders
 
             if (!(localDeclarationStatement.Declaration is VariableDeclarationSyntax))
             {
-                throw new NotSupportedException("LocalDeclarationStatement has not supported declaration");
+                throw new NotSupportedException("LocalDeclarationStatement has unsupported declaration");
             }
 
             var identifier = variable.Identifier;
@@ -143,6 +152,12 @@ namespace MiCS.Builders
 
             //base.VisitLocalDeclarationStatement(localDeclarationStatement);
         }
+
+        //public static SS.Statement Build(VariableDeclarationSyntax node, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
+        //{
+        //    return StatementBuilder.BuildList(node, ssTypeReference, ssParentMember).First();
+        //}
+
 
         public static SS.Statement Build(StatementSyntax statement, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
         {

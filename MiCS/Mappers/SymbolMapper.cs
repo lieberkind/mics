@@ -68,6 +68,10 @@ namespace MiCS.Mappers
             return new SS.NamespaceSymbol(@namespace.NameText(), null);
         }
 
+        static internal void Map(this ArrayTypeSyntax array)
+        { 
+            
+        }
 
         static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable, SS.MemberSymbol ssParentMember, SS.TypeSymbol ssType)
         {
@@ -77,6 +81,11 @@ namespace MiCS.Mappers
             return new SS.VariableSymbol(variable.Identifier.ValueText, ssParentMember, ssType);
         }
 
+        // Todo: Is this the correct place to map VariableDeclarationSyntax?
+        static internal SS.VariableDeclarationStatement Map(this VariableDeclarationSyntax variableDeclaration)
+        {
+            return new SS.VariableDeclarationStatement();
+        }
 
         static internal SS.TypeSymbol Map(this TypeSymbol typeSymbol)
         {

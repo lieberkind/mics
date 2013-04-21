@@ -36,10 +36,10 @@ namespace MiCS.Mappers
             return new SS.ExpressionStatement(ssExpression);
         }
 
-        static internal SS.VariableDeclarationStatement Map(this LocalDeclarationStatementSyntax localDeclarationStatement)
-        {
-            return new SS.VariableDeclarationStatement();
-        }
+        //static internal SS.VariableDeclarationStatement Map(this LocalDeclarationStatementSyntax localDeclarationStatement)
+        //{
+        //    return new SS.VariableDeclarationStatement();
+        //}
 
         static internal SS.ForStatement Map(this ForStatementSyntax forStatement)
         {

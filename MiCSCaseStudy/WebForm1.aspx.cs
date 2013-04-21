@@ -18,7 +18,7 @@ namespace MiCSCaseStudy
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
 
-            var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\mics\MiCSCaseStudy\WebForm1.aspx.cs";
+            var filePath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
             var source = File.ReadAllText(filePath);
 
             MiCSManager.Initiate(source);
@@ -43,38 +43,55 @@ namespace MiCSCaseStudy
 
     class Validator
     {
+        //[MixedSide]
+        //bool isNameValid(string name)
+        //{
+        //    Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
+        //    return rx.IsMatch(name);
+        //    //return false;
+        //}
+
         [MixedSide]
-        bool isNameValid(string name)
+        int ForScience()
         {
-            Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
-            return rx.IsMatch(name);
-            //return false;
+            int count = 0;
+            for (int i = 0; i < 10; i = i + 1)
+            {
+                count = count + i;
+            }
+            return count;
         }
 
         [MixedSide]
-        bool isNameInvalid(string name)
-        {
-            String s = "foo";
-            int i = s.Length;
-            i = s.IndexOf('o');
-            Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
-            User usr = new User();
-            Validator v = new Validator();
-            v.isNameValid("tomas");
-
-            Document.HasFocus();
-            bool b = Document.HasFocus();
-            Element e = Document.GetElementById("test");
-
-            if (2 < 3)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+        void ForArrayScience()
+        { 
+            string[] strings = { "hej", "tomas" };
         }
+
+        //[MixedSide]
+        //bool isNameInvalid(string name)
+        //{
+        //    String s = "foo";
+        //    int i = s.Length;
+        //    i = s.IndexOf('o');
+        //    Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
+        //    User usr = new User();
+        //    Validator v = new Validator();
+        //    v.isNameValid("tomas");
+
+        //    Document.HasFocus();
+        //    bool b = Document.HasFocus();
+        //    Element e = Document.GetElementById("test");
+
+        //    if (2 < 3)
+        //    {
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
     }
 
     class User
