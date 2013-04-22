@@ -10,17 +10,14 @@ namespace MiCS
 {
     public static class MiCSWebControlExtensions
     {
-        public static void MiCSOnClientClick(this Button button, Action action)
+        public static void OnClientClick(this Button button, Action action)
         {
-            var scriptText = MiCSManager.GenerateScriptText(action);
-            button.OnClientClick = scriptText;
-        }
+            var methodName = action.Method.Name;
+            var className = action.Method.DeclaringType.Name;
+            var namespaceName = action.Method.DeclaringType.Namespace;
 
-        public static void MiCSOnLoad(this Page page, Action action)
-        {
-            var scriptText = MiCSManager.GenerateScriptText(action);
-            var uniqueScriptKey = Guid.NewGuid().ToString().Replace("-", "");
-            page.ClientScript.RegisterStartupScript(page.GetType(), uniqueScriptKey, scriptText); 
+            var scriptText = "var obj = new " + namespaceName + "$" + className + "(); obj." + methodName + "(); return false;";
+            button.OnClientClick = scriptText;
         }
     }
 }

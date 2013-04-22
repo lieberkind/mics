@@ -18,21 +18,23 @@ namespace MiCSCaseStudy
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
 
-            var filePath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
+            var filePath = @"C:\Users\L520\Documents\Visual Studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
             var source = File.ReadAllText(filePath);
 
             MiCSManager.Initiate(source);
             MiCSManager.BuildScript(scriptManager, this);
 
 
-            var message = "Implemented!";
             var button = new Button() { Text = "Test Button" };
             form1.Controls.Add(button);
 
-            button.MiCSOnClientClick(() =>
-            {
-                Window.Alert(MiCSValue.String(message));
-            });
+            button.OnClientClick(onClickAction);
+        }
+
+        [ClientSide]
+        private void onClickAction()
+        {
+            Window.Alert("hello world!");
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -62,11 +64,11 @@ namespace MiCSCaseStudy
             return count;
         }
 
-        [MixedSide]
-        void ForArrayScience()
-        { 
-            string[] strings = { "hej", "tomas" };
-        }
+        //[MixedSide]
+        //void ForArrayScience()
+        //{ 
+        //    string[] strings = { "hej", "tomas" };
+        //}
 
         //[MixedSide]
         //bool isNameInvalid(string name)

@@ -181,9 +181,5 @@ namespace MiCS
             return stringWriter.ToString();
         }
 
-        public static string GenerateScriptText(Action action)
-        {
-            return "alert('Not Implemented!');";
-        }
     }
 }
