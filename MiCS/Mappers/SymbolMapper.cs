@@ -19,11 +19,10 @@ namespace MiCS.Mappers
 
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
-            // Todo: Parameters/arguments are not in JavaScript method declarations... needs to be implemented.
             var ssReturnType = TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType).Map();
-            var methodName = methodDeclaration.Identifier.ValueText;
+            var ssMethodName = methodDeclaration.Identifier.ValueText;
 
-            var ssMethod = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+            var ssMethod = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
             foreach (var parameter in methodDeclaration.ParameterList.Parameters)
                 ssMethod.AddParameter(parameter.Map(ssMethod, TypeSymbolGetter.GetTypeSymbol(parameter.Type).Map()));

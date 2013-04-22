@@ -121,7 +121,7 @@ namespace MiCS
         /// </summary>
         public static bool IsDOMType(ClassDeclarationSyntax classDeclaration)
         {
-            return classDeclaration.HasAttribute("ScriptImport");
+            return classDeclaration.HasAttribute("ScriptName");
         }
         /// <summary>
         /// Returns true if the specified type is
