@@ -37,6 +37,12 @@ namespace MiCSCaseStudy
             Window.Alert("hello world!");
         }
 
+        [ClientSide]
+        private void OnClickAction()
+        {
+            Window.Alert("hello world!");
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
 
