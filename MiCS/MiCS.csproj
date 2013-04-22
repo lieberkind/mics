@@ -54,9 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreTypeManager.cs" />
-    <Compile Include="Mappers\Mapping\CoreTypes\MiCSCoreMapping.cs" />
-    <Compile Include="Mappers\Mapping\CoreTypes\MiCSCoreMemberMapping.cs" />
-    <Compile Include="Mappers\Mapping\CoreTypes\MiCSCoreTypeMapping.cs" />
+    <Compile Include="Mapping\CoreTypes\MiCSCoreMapping.cs" />
+    <Compile Include="Mapping\CoreTypes\MiCSCoreMemberMapping.cs" />
+    <Compile Include="Mapping\CoreTypes\MiCSCoreTypeMapping.cs" />
     <Compile Include="MiCSManager.cs" />
     <Compile Include="MiCSRoslynExtensions.cs" />
     <Compile Include="MiCSCSharpExtensions.cs" />
