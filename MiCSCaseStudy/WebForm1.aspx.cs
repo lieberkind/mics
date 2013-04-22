@@ -49,7 +49,9 @@ namespace MiCSCaseStudy
         [MixedSide]
         bool isNameValid(string name)
         {
-            String[] strings = new String[2] { "tomas", "asc" };
+            string asger = "Asger";
+            String[] strings = new String[2] { "tomas", asger };
+            var i = strings.Length;
             Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
             return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;
         }

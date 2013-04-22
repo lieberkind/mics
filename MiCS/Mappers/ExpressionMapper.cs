@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MiCS.Builders;
+using ScriptSharp.CodeModel;
 
 // Todo: DOM representation!
 // Todo: Check how is C# built in complex types (e.g. String & DateTime) supported?
@@ -70,21 +71,28 @@ namespace MiCS.Mappers
             else
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
-
-        static internal SS.NewExpression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType)
+        
+        // Todo: Prettify this shit!
+        static internal SS.Expression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType)
         {
             SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", new SS.NamespaceSymbol("System", null));
             arrayTypeSymbol.SetIgnoreNamespace();
             arrayTypeSymbol.SetArray();
-            //ExpressionListNode argsList = (SS.ExpressionListNode)node.ExpressionList;
-            //Debug.Assert(argsList.Expressions.Count == 1);
-            //SS.Expression sizeExpression = BuildExpression(argsList.Expressions[0]);
-            //if (sizeExpression is MemberExpression)
-            //{
-            //    sizeExpression = TransformMemberExpression((MemberExpression)sizeExpression);
-            //}
+
+            SS.Expression[] exprs = new SS.Expression[arrayCreationExpression.Initializer.Expressions.Count];
+
+            int i = 0;
+            foreach (var expr in arrayCreationExpression.Initializer.Expressions)
+            {
+                exprs[i] = ExpressionBuilder.Build(expr);
+                i++;
+            }
+
+            if (exprs.Length > 0)
+                return new SS.LiteralExpression(arrayTypeSymbol, exprs);
+
             SS.NewExpression newExpr = new SS.NewExpression(arrayTypeSymbol);
-            //newExpr.AddParameterValue();
+            
             return newExpr;
         }
 
