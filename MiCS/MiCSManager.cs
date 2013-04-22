@@ -66,11 +66,14 @@ namespace MiCS
         {
             get
             {
-                if (MiCSManager.instance == null) throw new Exception("MiCSManager is not instantiated!");
+                if (MiCSManager.instance == null) 
+                    throw new Exception("MiCSManager is not instantiated!");
+                
                 return instance;
             }
         }
 
+        // Todo: How do these work? This seems overly quirky...
         public static void Initiate(string source)
         {
             var micsManager = new MiCSManager(source);

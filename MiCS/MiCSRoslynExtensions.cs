@@ -28,7 +28,7 @@ namespace MiCS
             }
             catch (Exception)
             {
-                
+                // Todo: Wat?
                 throw;
             }
             
@@ -185,7 +185,27 @@ namespace MiCS
                     // Is static reference (e.g. Document.GetElementById(...)).
                     return symbol.GetScriptNameAttributeValue();
                 }
+            }
 
+            var ts = ScriptTypeManager.Instance.SemanticModel.GetSymbolInfo(simpleName).Symbol;
+            if (ts is MethodSymbol)
+            {
+                var method = (MethodSymbol)ts;
+                var methodName = method.Name;
+                var containingTypeName = method.ContainingType.Name;
+                var containingNamespaceName = method.ContainingNamespace.FullName();
+                if (method.ContainingType.IsSupportedCoreType())
+                {
+                    var coreMappings = CoreTypeManager.Instance.CoreMapping.Where(n => 
+                        n.NamespaceName.Equals(containingNamespaceName) &&
+                        n.Name.Equals(containingTypeName) &&
+                        (n.Members.Where(m => m.Name.Equals(methodName))).Count() > 0);
+
+                    if (coreMappings.Count() == 1)
+                    {
+                        return coreMappings.First().Members.Find(m => m.Name.Equals(methodName)).NameScript;
+                    }
+                }
             }
 
             // Script and server side name are the same.
