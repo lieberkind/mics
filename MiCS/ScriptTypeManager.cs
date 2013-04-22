@@ -76,8 +76,6 @@ namespace MiCS
         }
 
 
-
-
         /// <summary>
         /// Returns true if the specified type declaration is
         /// a user defined type.

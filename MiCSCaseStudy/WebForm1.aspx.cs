@@ -43,30 +43,30 @@ namespace MiCSCaseStudy
 
     class Validator
     {
-        //[MixedSide]
-        //bool isNameValid(string name)
-        //{
-        //    Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
-        //    return rx.IsMatch(name);
-        //    //return false;
-        //}
+        [MixedSide]
+        bool isNameValid(string name)
+        {
+            Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
+            return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;
+        }
 
         [MixedSide]
         int ForScience()
         {
             int count = 0;
-            for (int i = 0; i < 10; i = i + 1)
+            int i;
+            for (i = 0; i < 10; i = i + 1)
             {
                 count = count + i;
             }
             return count;
         }
 
-        [MixedSide]
-        void ForArrayScience()
-        { 
-            string[] strings = { "hej", "tomas" };
-        }
+        //[MixedSide]
+        //void ForArrayScience()
+        //{ 
+        //    string[] strings = { "hej", "tomas" };
+        //}
 
         //[MixedSide]
         //bool isNameInvalid(string name)

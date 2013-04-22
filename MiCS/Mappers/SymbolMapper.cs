@@ -12,9 +12,9 @@ namespace MiCS.Mappers
 
     public static class Symbols
     {
-        static internal SS.ParameterSymbol Map(this ParameterSyntax p)
+        static internal SS.ParameterSymbol Map(this ParameterSyntax p, SS.MemberSymbol ssParent, SS.TypeSymbol valueType)
         {
-            return new SS.ParameterSymbol(p.Identifier.ValueText, null, null, SS.ParameterMode.InOut);
+            return new SS.ParameterSymbol(p.Identifier.ValueText, ssParent, valueType, SS.ParameterMode.InOut);
         }
 
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
@@ -24,6 +24,9 @@ namespace MiCS.Mappers
             var methodName = methodDeclaration.Identifier.ValueText;
 
             var ssMethod = new SS.MethodSymbol(methodName, ssParentClass, ssReturnType);
+
+            foreach (var parameter in methodDeclaration.ParameterList.Parameters)
+                ssMethod.AddParameter(parameter.Map(ssMethod, TypeSymbolGetter.GetTypeSymbol(parameter.Type).Map()));
 
             var implementationStatements = new List<SS.Statement>();
             foreach (var statement in methodDeclaration.Body.Statements)

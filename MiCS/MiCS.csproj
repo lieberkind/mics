@@ -54,9 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreTypeManager.cs" />
-    <Compile Include="Mapping\CoreTypes\MiCSCoreMapping.cs" />
-    <Compile Include="Mapping\CoreTypes\MiCSCoreMemberMapping.cs" />
-    <Compile Include="Mapping\CoreTypes\MiCSCoreTypeMapping.cs" />
+    <Compile Include="Mappers\Mapping\CoreTypes\MiCSCoreMapping.cs" />
+    <Compile Include="Mappers\Mapping\CoreTypes\MiCSCoreMemberMapping.cs" />
+    <Compile Include="Mappers\Mapping\CoreTypes\MiCSCoreTypeMapping.cs" />
     <Compile Include="MiCSManager.cs" />
     <Compile Include="MiCSRoslynExtensions.cs" />
     <Compile Include="MiCSCSharpExtensions.cs" />
@@ -229,7 +229,6 @@
     <Compile Include="ScriptTypeManager.cs" />
     <Compile Include="TypeSymbolGetter.cs" />
     <Compile Include="Validators\Collector.cs" />
-    <Compile Include="Validators\SyntaxTreeValidator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptSharp\CodeModel\Names\AtomicNameNode.cs" />
     <Compile Include="ScriptSharp\CodeModel\Names\GenericNameNode.cs" />
