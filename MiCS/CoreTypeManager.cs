@@ -130,7 +130,10 @@ namespace MiCS
         /// </summary>
         public static bool IsSupportedCoreType(TypeSymbol typeSymbol)
         {
-            return IsSupportedCoreType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
+            if (typeSymbol is ArrayTypeSymbol)
+                return IsSupportedCoreType(typeSymbol.BaseType.ContainingNamespace.FullName(), "Array");
+            else
+                return IsSupportedCoreType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
         }
         /// <summary>
         /// Returns true if this is a core type that can be mapped
@@ -200,7 +203,10 @@ namespace MiCS
         /// </summary>
         public static TypeSymbol ToCoreScriptType(TypeSymbol typeSymbol)
         {
-            return ToCoreScriptType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
+            if (typeSymbol is ArrayTypeSymbol)
+                return ToCoreScriptType(typeSymbol.BaseType.ContainingNamespace.FullName(), "Array");
+            else
+                return ToCoreScriptType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
         }
 
         public static NamespaceSymbol GetCoreScriptTypeNamespace(TypeSymbol typeSymbol)

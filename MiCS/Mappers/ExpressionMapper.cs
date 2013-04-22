@@ -17,12 +17,75 @@ namespace MiCS.Mappers
     public static class Expressions
     {
 
+        //private Expression ProcessArrayNewNode(ArrayNewNode node)
+        //{
+        //    TypeSymbol itemTypeSymbol = _symbolSet.ResolveType(node.TypeReference, _symbolTable, _symbolContext);
+        //    Debug.Assert(itemTypeSymbol != null);
+        //    TypeSymbol arrayTypeSymbol = _symbolSet.CreateArrayTypeSymbol(itemTypeSymbol);
+        //    if (node.InitializerExpression == null)
+        //    {
+        //        if (node.ExpressionList == null)
+        //        {
+        //            return new LiteralExpression(arrayTypeSymbol, new Expression[0]);
+        //        }
+        //        else
+        //        {
+        //            Debug.Assert(node.ExpressionList.NodeType == ParseNodeType.ExpressionList);
+        //            ExpressionListNode argsList = (ExpressionListNode)node.ExpressionList;
+        //            Debug.Assert(argsList.Expressions.Count == 1);
+        //            Expression sizeExpression = BuildExpression(argsList.Expressions[0]);
+        //            if (sizeExpression is MemberExpression)
+        //            {
+        //                sizeExpression = TransformMemberExpression((MemberExpression)sizeExpression);
+        //            }
+        //            NewExpression newExpr = new NewExpression(arrayTypeSymbol);
+        //            newExpr.AddParameterValue(sizeExpression);
+        //            return newExpr;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        ArrayInitializerNode initializerNode = (ArrayInitializerNode)node.InitializerExpression;
+        //        Expression[] values = new Expression[initializerNode.Values.Count];
+        //        int i = 0;
+        //        foreach (ParseNode valueNode in initializerNode.Values)
+        //        {
+        //            values[i] = BuildExpression(valueNode);
+        //            if (values[i] is MemberExpression)
+        //            {
+        //                values[i] = TransformMemberExpression((MemberExpression)values[i]);
+        //            }
+        //            i++;
+        //        }
+        //        return new LiteralExpression(arrayTypeSymbol, values);
+        //    }
+        //}
+
+
+
         static internal SS.UnaryExpression Map(this PrefixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
         {
             if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
                 return new SS.UnaryExpression(SS.Operator.Minus, ssOperandExpression);
             else
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
+        }
+
+        static internal SS.NewExpression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType)
+        {
+            SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", new SS.NamespaceSymbol("System", null));
+            arrayTypeSymbol.SetIgnoreNamespace();
+            arrayTypeSymbol.SetArray();
+            //ExpressionListNode argsList = (SS.ExpressionListNode)node.ExpressionList;
+            //Debug.Assert(argsList.Expressions.Count == 1);
+            //SS.Expression sizeExpression = BuildExpression(argsList.Expressions[0]);
+            //if (sizeExpression is MemberExpression)
+            //{
+            //    sizeExpression = TransformMemberExpression((MemberExpression)sizeExpression);
+            //}
+            SS.NewExpression newExpr = new SS.NewExpression(arrayTypeSymbol);
+            //newExpr.AddParameterValue();
+            return newExpr;
         }
 
         static internal SS.NewExpression Map(this ObjectCreationExpressionSyntax objectCreationExpression, SS.TypeSymbol associatedType)
@@ -32,7 +95,9 @@ namespace MiCS.Mappers
             if (!(associatedType is SS.ClassSymbol))
                 throw new Exception("Only ClassSymbols as associated type is currently supported.");
 
-            return new SS.NewExpression(associatedType);
+            var newExpression = new SS.NewExpression(associatedType);
+
+            return newExpression;
         }
 
         static internal SS.BinaryExpression Map(this BinaryExpressionSyntax expr, SS.Expression ssLeftExpression, SS.Expression ssRightExpression)

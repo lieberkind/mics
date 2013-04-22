@@ -61,22 +61,23 @@ namespace MiCSTests
         public void ArrayCanBeMapped()
         {
             var source = @"
+            using System;
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
                     void f() 
                     {
-                        string[] strings = { ""hej"", ""tomas"" };
-                        string s = strings[0];
+                        string[] strings = new string[2];
                     }
                 } 
             }";
 
+            //Parse.NamespacesToSymbolSet(source);
             var st = SyntaxTree.ParseText(source);
 
             var m = (LocalDeclarationStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is LocalDeclarationStatementSyntax).First();
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         [TestMethod]
@@ -90,7 +91,7 @@ namespace MiCSTests
                     { 
                         int count = 0;
                         int i;
-                        for(i = 0; i < 10; i++)
+                        for(i = 0; i < 10; i = i + 1)
                         {
                             count = count + i;
                         }

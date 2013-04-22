@@ -135,8 +135,8 @@ namespace ScriptSharp.ScriptModel {
         }
 
         private TypeSymbol CreateArrayTypeCore(TypeSymbol itemTypeSymbol) {
-            TypeSymbol arrayTypeSymbol =
-                (TypeSymbol)((ISymbolTable)_systemNamespace).FindSymbol("Array", null, SymbolFilter.Types);
+            TypeSymbol arrayTypeSymbol = new ClassSymbol("Array", _systemNamespace);
+                //(TypeSymbol)((ISymbolTable)_systemNamespace).FindSymbol("Array", null, SymbolFilter.Types);
             Debug.Assert(arrayTypeSymbol != null);
 
             TypeSymbol specificArrayTypeSymbol = new ClassSymbol("Array", _systemNamespace);

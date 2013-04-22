@@ -82,7 +82,14 @@ namespace MiCS
             });
 
             // Todo: Add Array type mapping.
-
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Array",
+                NameScript = "Array",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
 
 
             return mapping;

@@ -22,6 +22,16 @@ namespace MiCS.Builders
             this.associatedParent = associatedParent;
 	    }
 
+        public override void DefaultVisit(SyntaxNode node)
+        {
+            throw new NotSupportedException("The Expression of kind " + node.Kind.ToString() + " cannot be mapped");
+        }
+
+        public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax arrayCreationExpression)
+        {
+            ssExpressions.Add(arrayCreationExpression.Map(associatedType));
+        }
+
         public override void VisitIdentifierName(IdentifierNameSyntax identifierName)
         {
             ssExpressions.Add(identifierName.Map());

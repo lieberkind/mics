@@ -254,10 +254,10 @@ namespace MiCS.Mappers
 
 
             string mappedTypeName = null;
-            string namespaceName = typeSymbol.ContainingNamespace.FullName();
+            string namespaceName = null;
             string mappedNamespaceName;
 
-            SS.TypeSymbol ssType = null;
+            SS.ClassSymbol ssType = null;
 
             // Todo: Not sure the typeSymbol.Name property is the right one to use? Thinking that using the fullname (System.String and not just String) would be better.
             switch (typeSymbol.Name)
@@ -290,36 +290,19 @@ namespace MiCS.Mappers
                 case "UInt16":
                     mappedTypeName = "UInt16";
                     break;
-                //case IntrinsicType.Byte:
-                //    mappedTypeName = "Byte";
-                //    break;
-                //case IntrinsicType.SignedByte:
-                //    mappedTypeName = "SByte";
-                //    break;
-                //case IntrinsicType.Single:
-                //    mappedTypeName = "Single";
-                //    break;
-                //case IntrinsicType.Date:
-                //    mappedTypeName = "Date";
-                //    break;
                 case "Decimal":
                     mappedTypeName = "Decimal";
                     break;
                 case "Double":
                     mappedTypeName = "Double";
                     break;
-                //case IntrinsicType.Delegate:
-                //    mappedTypeName = "Delegate";
-                //    break;
-                //case IntrinsicType.Function:
-                //    mappedTypeName = "Function";
-                //    break;
                 case "Void":
                     mappedTypeName = "Void";
                     break;
-                //case IntrinsicType.Array:
-                //    mappedTypeName = "Array";
-                //    break;
+                case "Array":
+                    mappedTypeName = "Array";
+                    namespaceName = typeSymbol.BaseType.ContainingNamespace.FullName();
+                    break;
                 //case IntrinsicType.Dictionary:
                 //    mappedTypeName = "Dictionary";
                 //    mappedNamespace = "System.Collections";
@@ -358,7 +341,17 @@ namespace MiCS.Mappers
                 //    mappedTypeName = "Nullable`1";
                 //    break;
                 default:
-                    
+                    var isArray = false;
+                    if (typeSymbol is ArrayTypeSymbol)
+                    {
+                        mappedTypeName = "Array";
+                        namespaceName = typeSymbol.BaseType.ContainingNamespace.FullName();
+                        isArray = true;
+                    }
+                    else
+                    {
+                        namespaceName = typeSymbol.ContainingNamespace.FullName();
+                    }
 
                     var isSupportedClientSideType =
                         MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
@@ -383,7 +376,46 @@ namespace MiCS.Mappers
                     if (isSupportedCoreType)
                         mappedNamespaceName = CoreTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
 
+                    
                     ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
+
+                    if (isArray)
+                    {
+                        SS.SymbolSet symbolSet = new SS.SymbolSet();
+
+                        var shit = symbolSet.CreateArrayTypeSymbol(((ArrayTypeSymbol)typeSymbol).ElementType.Map());
+
+                        return shit;
+                        //var lolarrayTypeSymbol = (ArrayTypeSymbol)typeSymbol;
+
+                        //var ssElementSymbel = lolarrayTypeSymbol.ElementType.Map();
+                            
+                        //var _systemNamespace = new SS.NamespaceSymbol("System", null);
+                        //SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", _systemNamespace);
+                        //    //(SS.TypeSymbol)((SS.ISymbolTable)_systemNamespace).FindSymbol("Array", null, SS.SymbolFilter.Types);                        //Debug.Assert(arrayTypeSymbol != null);
+
+                        //ssType = new SS.ClassSymbol("Array", _systemNamespace);
+                        //foreach (SS.MemberSymbol memberSymbol in arrayTypeSymbol.Members)
+                        //{
+                        //    ssType.AddMember(memberSymbol);
+                        //}
+
+                        //SS.IndexerSymbol indexerSymbol = new SS.IndexerSymbol(ssType, null,
+                        //                                                SS.MemberVisibility.Public);
+                        //indexerSymbol.SetScriptIndexer();
+                        //ssType.AddMember(indexerSymbol);
+                        //ssType.SetIgnoreNamespace();
+                        //ssType.SetArray();
+
+
+
+                        //var i = new SS.IndexerSymbol(ssType, null);
+                        //i.SetScriptIndexer();
+                        //ssType.AddMember(i);
+                        //ssType.SetIgnoreNamespace();
+                        //ssType.SetArray();
+                        
+                    }
 
                     if (!typeSymbol.IsUserType())
                         ssType.SetIgnoreNamespace();
@@ -400,7 +432,6 @@ namespace MiCS.Mappers
             }
             return ssType;
         }
-
 
     }
 
