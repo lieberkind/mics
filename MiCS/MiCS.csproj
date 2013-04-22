@@ -79,6 +79,7 @@
     <Compile Include="ScriptSharp\CoreLib\RegExp.cs" />
     <Compile Include="ScriptSharp\CoreLib\Runtime.cs" />
     <Compile Include="ScriptSharp\CoreLib\ScriptMetadata.cs" />
+    <Compile Include="ScriptSharp\CodeModel\ExpressionListNode.cs" />
     <Compile Include="ScriptSharp\TextSources\CoreLib.cs" />
     <Compile Include="ScriptSharp\CoreLib\Type.cs" />
     <Compile Include="MiCSValue.cs" />
