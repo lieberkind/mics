@@ -28,13 +28,7 @@ namespace MiCSCaseStudy
             var button = new Button() { Text = "Test Button" };
             form1.Controls.Add(button);
 
-            button.OnClientClick(onClickAction);
-        }
-
-        [ClientSide]
-        private void onClickAction()
-        {
-            Window.Alert("hello world!");
+            button.OnClientClick(OnClickAction);
         }
 
         [ClientSide]
@@ -42,6 +36,7 @@ namespace MiCSCaseStudy
         {
             Window.Alert("hello world!");
         }
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
