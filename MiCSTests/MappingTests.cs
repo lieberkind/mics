@@ -67,11 +67,14 @@ namespace MiCSTests
                     void f() 
                     {
                         string[] strings = { ""hej"", ""tomas"" };
+                        string s = strings[0];
                     }
                 } 
             }";
 
             var st = SyntaxTree.ParseText(source);
+
+            var m = (LocalDeclarationStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is LocalDeclarationStatementSyntax).First();
 
             throw new NotImplementedException();
         }

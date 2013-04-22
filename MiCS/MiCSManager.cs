@@ -68,7 +68,7 @@ namespace MiCS
             {
                 if (MiCSManager.instance == null) 
                     throw new Exception("MiCSManager is not instantiated!");
-                
+
                 return instance;
             }
         }
