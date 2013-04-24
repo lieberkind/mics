@@ -33,8 +33,8 @@ namespace MiCS.Mappers
                 implementationStatements.Add(StatementBuilder.Build(statement, ssParentClass, ssMethod));
             }
 
-            // Todo: Consider if this is done right...
-            var sI = new SS.SymbolImplementation(implementationStatements, null, "symbolImplementationThisIdentifier_" + ssMethod.GeneratedName);
+            // Todo: Consider if "this" is done right... Could probably also be static call (Math.sin(x))
+            var sI = new SS.SymbolImplementation(implementationStatements, null, "this");
             ssMethod.AddImplementation(sI);
             
             return ssMethod;
@@ -263,6 +263,7 @@ namespace MiCS.Mappers
                 //    break;
                 case "Boolean":
                     mappedTypeName = "Boolean";
+                    namespaceName = "System";
                     break;
                 //case "String":
                 //    mappedTypeName = "String";

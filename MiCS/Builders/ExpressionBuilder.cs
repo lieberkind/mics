@@ -29,7 +29,7 @@ namespace MiCS.Builders
 
         public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax arrayCreationExpression)
         {
-            ssExpressions.Add(arrayCreationExpression.Map(associatedType));
+            ssExpressions.Add(arrayCreationExpression.Map(associatedType, associatedParent));
         }
 
         public override void VisitElementAccessExpression(ElementAccessExpressionSyntax elementAccessExpression)
@@ -57,7 +57,7 @@ namespace MiCS.Builders
             if (elementAccessExpression.ArgumentList.Arguments.Count > 1)
                 throw new NotSupportedException("Only single dimension arrays are supported");
 
-            var ssArgument = ExpressionBuilder.Build(elementAccessExpression.ArgumentList.Arguments[0].Expression);
+            var ssArgument = ExpressionBuilder.Build(elementAccessExpression.ArgumentList.Arguments[0].Expression, associatedType, associatedParent);
 
             ssIndexerExpression.AddIndexParameterValue(ssArgument);
 
@@ -80,7 +80,7 @@ namespace MiCS.Builders
 
         public override void VisitPrefixUnaryExpression(PrefixUnaryExpressionSyntax prefixUnaryExpression)
         {
-            var ssOperand = ExpressionBuilder.Build(prefixUnaryExpression.Operand);
+            var ssOperand = ExpressionBuilder.Build(prefixUnaryExpression.Operand, associatedType, associatedParent);
             ssExpressions.Add(prefixUnaryExpression.Map(ssOperand));
             
             //base.VisitPrefixUnaryExpression(node);
@@ -101,12 +101,17 @@ namespace MiCS.Builders
             var ssParameters = new Collection<SS.Expression>();
             foreach (var arg in invocationExpression.ArgumentList.Arguments)
             {
-                ssParameters.Add(ExpressionBuilder.Build(arg.Expression));
+                ssParameters.Add(ExpressionBuilder.Build(arg.Expression, associatedType, associatedParent));
             }
 
             ssExpressions.Add(invocationExpression.Map((SS.ClassSymbol)associatedType, (SS.MethodSymbol)associatedParent, ssParameters));
             
             //base.VisitInvocationExpression(node);
+        }
+
+        public override void VisitCastExpression(CastExpressionSyntax node)
+        {
+            Visit(node.Expression);
         }
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax objectCreationExpression)
@@ -119,7 +124,7 @@ namespace MiCS.Builders
 
             foreach (var argument in objectCreationExpression.ArgumentList.Arguments)
             {
-                ssNewExpression.AddParameterValue(ExpressionBuilder.Build(argument.Expression));
+                ssNewExpression.AddParameterValue(ExpressionBuilder.Build(argument.Expression, associatedType, associatedParent));
             }
 
             ssExpressions.Add(ssNewExpression);
@@ -129,9 +134,9 @@ namespace MiCS.Builders
 
         public override void VisitConditionalExpression(ConditionalExpressionSyntax conditionalExpression)
         {
-            var ssCondition = ExpressionBuilder.Build(conditionalExpression.Condition);
-            var ssTrueExpression = ExpressionBuilder.Build(conditionalExpression.WhenTrue);
-            var ssFalseExpression = ExpressionBuilder.Build(conditionalExpression.WhenFalse);
+            var ssCondition = ExpressionBuilder.Build(conditionalExpression.Condition, associatedType, associatedParent);
+            var ssTrueExpression = ExpressionBuilder.Build(conditionalExpression.WhenTrue, associatedType, associatedParent);
+            var ssFalseExpression = ExpressionBuilder.Build(conditionalExpression.WhenFalse, associatedType, associatedParent);
 
             ssExpressions.Add(conditionalExpression.Map(ssCondition, ssTrueExpression, ssFalseExpression));
 
@@ -142,7 +147,7 @@ namespace MiCS.Builders
         {
             var memberParentType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Expression);
 
-            var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression);
+            var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression, associatedType, associatedParent);
             var ssMemberParentType = memberParentType.Map();
             var ssType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Name).Map();
             var ssFieldName = memberAccess.Name.ScriptName();

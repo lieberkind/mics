@@ -10,7 +10,7 @@ namespace MiCS
 {
     public static class MiCSWebControlExtensions
     {
-        public static void OnClientClick(this Button button, Action action)
+        public static void OnClientClick(this Button button, Func<bool> action)
         {
             var methodName = action.Method.Name;
             var className = action.Method.DeclaringType.Name;
@@ -31,7 +31,7 @@ namespace MiCS
              */
             methodName = Char.ToLower(methodName[0]).ToString() + methodName.Substring(1);
 
-            var scriptText = "var obj = new " + namespaceName + "$" + className + "(); obj." + methodName + "(); return false;";
+            var scriptText = "var obj = new " + namespaceName + "$" + className + "(); return obj." + methodName + "();";
             button.OnClientClick = scriptText;
         }
     }

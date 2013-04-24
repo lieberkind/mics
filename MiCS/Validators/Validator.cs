@@ -32,6 +32,12 @@ namespace MiCS.Validators
             Visit(root);
         }
 
+        // Todo: Maybe this should handle if a node should be validated or not
+        public override void DefaultVisit(SyntaxNode node)
+        {
+            //base.DefaultVisit(node);
+        }
+
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             var methods = node.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
@@ -56,6 +62,18 @@ namespace MiCS.Validators
         {
             if (node.HasAttribute(attribute)) //|| node.HasAttribute("ClientSide"))
                 base.VisitMethodDeclaration(node);
+        }
+
+        // Ignore fields - not supported
+        public override void VisitFieldDeclaration(FieldDeclarationSyntax node)
+        {
+            
+        }
+
+        // Ignore properties - not supported
+        public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        {
+            
         }
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
