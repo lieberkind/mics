@@ -50,6 +50,7 @@ namespace MiCSCaseStudy
         string isNameValid(string name)
         {
             //string asger = name;
+            
             String[] strings = new String[2];
             return strings[1];
 

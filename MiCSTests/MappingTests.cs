@@ -567,7 +567,104 @@ namespace MiCSTests
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
         }
-                    
+
+        [TestMethod]
+        public void CoreTypeTestBool()
+        {
+            var source = @"bool b = true;";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.Boolean");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(MemberNotMappedException))]
+        public void CoreTypeTestBooleanFail()
+        {
+            var source = @"bool b = true; b.GetType();";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+        }
+
+        [TestMethod]
+        public void CoreTypeTestBoolean()
+        {
+            var source = @"Boolean b = true;";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.Boolean");
+        }
+
+        [TestMethod]
+        public void CoreTypeTestBooleanNew()
+        {
+            var source = @"bool b = new Boolean();";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.Boolean");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(MemberSignatureArgumentTypeNotMappedException))]
+        public void CoreTypeTestStringMemberFail()
+        {
+            var source = @"string s = ""foo""; s.IndexOf(""foo"")";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.String");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(MemberSignatureNotMappedException))]
+        public void CoreTypeTestStringMemberFailArgumentCount()
+        {
+            var source = @"string s = ""foo""; s.IndexOf('f', 2)";
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+        }
+
+        [TestMethod]
+        public void CoreTypeTestStringMember()
+        {
+            var source = @"string s = ""foo""; s.IndexOf('f')";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.String");
+        }
+
+        [TestMethod]
+        public void CoreTypeTestString()
+        {
+            var source = @"string s = ""foo"";";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.String");
+        }
+
+        [TestMethod]
+        public void CoreTypeTestStringNew()
+        {
+            var source = @"var s = new String(""foo"");";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.String");
+        }
+                   
 
         [TestMethod]
         public void InvocationDOMTypeTest()
