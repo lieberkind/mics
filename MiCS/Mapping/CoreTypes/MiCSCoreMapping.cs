@@ -34,6 +34,15 @@ namespace MiCS
 
             mapping.Add(new MiCSCoreTypeMapping()
             {
+                Name = "Void",
+                NameScript = "Void",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
                 Name = "Regex",
                 NameScript = "RegExp",
                 NamespaceName = "System.Text.RegularExpressions",
@@ -111,6 +120,15 @@ namespace MiCS
 
             mapping.Add(new MiCSCoreTypeMapping()
             {
+                Name = "Int",
+                NameScript = "Int32",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
                 Name = "Int64",
                 NameScript = "Int64",
                 NamespaceName = "System",
@@ -140,6 +158,24 @@ namespace MiCS
             {
                 Name = "Int64",
                 NameScript = "Int64",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Decimal",
+                NameScript = "Decimal",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Double",
+                NameScript = "Double",
                 NamespaceName = "System",
                 NamespaceNameScript = "System",
                 Members = new List<MiCSCoreMemberMapping>()

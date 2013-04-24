@@ -254,172 +254,53 @@ namespace MiCS.Mappers
 
             SS.ClassSymbol ssType = null;
 
-            // Todo: Not sure the typeSymbol.Name property is the right one to use? Thinking that using the fullname (System.String and not just String) would be better.
-            switch (typeSymbol.Name)
+            var isArray = false;
+            if (typeSymbol is ArrayTypeSymbol)
             {
-                // Todo: Where is float? IntrinsicType.Number?
-                //case IntrinsicType.Object:
-                //    mappedTypeName = "Object";
-                //    break;
-                //case "Boolean":
-                //    mappedTypeName = "Boolean";
-                //    break;
-                //case "String":
-                //    mappedTypeName = "String";
-                //    break;
-                //case "Int32":
-                //    mappedTypeName = "Int32";
-                //    break;
-                //case "UInt32":
-                //    mappedTypeName = "UInt32";
-                //    break;
-                //case "Int64":
-                //    mappedTypeName = "Int64";
-                //    break;
-                //case "UInt64":
-                //    mappedTypeName = "UInt64";
-                //    break;
-                //case "Int16":
-                //    mappedTypeName = "Int16";
-                //    break;
-                //case "UInt16":
-                //    mappedTypeName = "UInt16";
-                //    break;
-                case "Decimal":
-                    mappedTypeName = "Decimal";
-                    break;
-                case "Double":
-                    mappedTypeName = "Double";
-                    break;
-                case "Void":
-                    mappedTypeName = "Void";
-                    break;
-                case "Array":
-                    mappedTypeName = "Array";
-                    namespaceName = typeSymbol.BaseType.ContainingNamespace.FullName();
-                    break;
-                //case IntrinsicType.Dictionary:
-                //    mappedTypeName = "Dictionary";
-                //    mappedNamespace = "System.Collections";
-                //    break;
-                //case IntrinsicType.GenericList:
-                //    mappedTypeName = "List`1";
-                //    mappedNamespace = "System.Collections.Generic";
-                //    break;
-                //case IntrinsicType.GenericDictionary:
-                //    mappedTypeName = "Dictionary`2";
-                //    mappedNamespace = "System.Collections.Generic";
-                //    break;
-                //case IntrinsicType.Type:
-                //    mappedTypeName = "Type";
-                //    break;
-                //case IntrinsicType.IEnumerator:
-                //    mappedTypeName = "IEnumerator";
-                //    mappedNamespace = "System.Collections";
-                //    break;
-                //case IntrinsicType.Enum:
-                //    mappedTypeName = "Enum";
-                //    break;
-                //case IntrinsicType.Exception:
-                //    mappedTypeName = "Exception";
-                //    break;
-                //case IntrinsicType.Script:
-                //    mappedTypeName = "Script";
-                //    break;
-                //case IntrinsicType.Number:
-                //    mappedTypeName = "Number";
-                //    break;
-                //case IntrinsicType.Arguments:
-                //    mappedTypeName = "Arguments";
-                //    break;
-                //case IntrinsicType.Nullable:
-                //    mappedTypeName = "Nullable`1";
-                //    break;
-                default:
-                    var isArray = false;
-                    if (typeSymbol is ArrayTypeSymbol)
-                    {
-                        mappedTypeName = "Array";
-                        namespaceName = typeSymbol.BaseType.ContainingNamespace.FullName();
-                        isArray = true;
-                    }
-                    else
-                    {
-                        namespaceName = typeSymbol.ContainingNamespace.FullName();
-                    }
-
-                    var isSupportedClientSideType =
-                        MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
-                        MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
-
-                    var isSupportedMixedSideType =
-                        MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
-                        MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
-
-                    var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
-
-                    var isSupportedType = 
-                        isSupportedClientSideType || 
-                        isSupportedMixedSideType || 
-                        isSupportedCoreType;
-
-                    if(!isSupportedType)
-                        throw new NotSupportedException("TypeSymbol type is currently not supported.");
-
-                    mappedTypeName = typeSymbol.TypeScriptName();
-                    mappedNamespaceName = namespaceName;
-                    if (isSupportedCoreType)
-                        mappedNamespaceName = CoreTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
-
-                    
-                    ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
-
-                    if (isArray)
-                    {
-                        SS.SymbolSet symbolSet = new SS.SymbolSet();
-
-                        var shit = symbolSet.CreateArrayTypeSymbol(((ArrayTypeSymbol)typeSymbol).ElementType.Map());
-
-                        return shit;
-                        //var lolarrayTypeSymbol = (ArrayTypeSymbol)typeSymbol;
-
-                        //var ssElementSymbel = lolarrayTypeSymbol.ElementType.Map();
-                            
-                        //var _systemNamespace = new SS.NamespaceSymbol("System", null);
-                        //SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", _systemNamespace);
-                        //    //(SS.TypeSymbol)((SS.ISymbolTable)_systemNamespace).FindSymbol("Array", null, SS.SymbolFilter.Types);                        //Debug.Assert(arrayTypeSymbol != null);
-
-                        //ssType = new SS.ClassSymbol("Array", _systemNamespace);
-                        //foreach (SS.MemberSymbol memberSymbol in arrayTypeSymbol.Members)
-                        //{
-                        //    ssType.AddMember(memberSymbol);
-                        //}
-
-                        //SS.IndexerSymbol indexerSymbol = new SS.IndexerSymbol(ssType, null,
-                        //                                                SS.MemberVisibility.Public);
-                        //indexerSymbol.SetScriptIndexer();
-                        //ssType.AddMember(indexerSymbol);
-                        //ssType.SetIgnoreNamespace();
-                        //ssType.SetArray();
-
-
-
-                        //var i = new SS.IndexerSymbol(ssType, null);
-                        //i.SetScriptIndexer();
-                        //ssType.AddMember(i);
-                        //ssType.SetIgnoreNamespace();
-                        //ssType.SetArray();
-                        
-                    }
-
-                    if (!typeSymbol.IsUserType())
-                        ssType.SetIgnoreNamespace();
-
-                    break;
+                mappedTypeName = "Array";
+                namespaceName = typeSymbol.BaseType.ContainingNamespace.FullName();
+                isArray = true;
+            }
+            else
+            {
+                namespaceName = typeSymbol.ContainingNamespace.FullName();
             }
 
+            var isSupportedClientSideType =
+                MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
+                MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
-            
+            var isSupportedMixedSideType =
+                MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
+                MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
+
+            var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
+
+            var isSupportedType = 
+                isSupportedClientSideType || 
+                isSupportedMixedSideType || 
+                isSupportedCoreType;
+
+            if(!isSupportedType)
+                throw new NotSupportedException("TypeSymbol type is currently not supported.");
+
+            mappedTypeName = typeSymbol.TypeScriptName();
+            mappedNamespaceName = namespaceName;
+            if (isSupportedCoreType)
+                mappedNamespaceName = CoreTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
+
+                    
+            ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
+
+            if (isArray)
+            {
+                SS.SymbolSet symbolSet = new SS.SymbolSet();
+                return symbolSet.CreateArrayTypeSymbol(((ArrayTypeSymbol)typeSymbol).ElementType.Map());
+            }
+
+            if (!typeSymbol.IsUserType())
+                ssType.SetIgnoreNamespace();
+
             if (ssType == null)
             {
                 // Todo: Parent namespace should preferably not be a new namspace object.
