@@ -34,7 +34,7 @@ namespace MiCS.Builders
 
         public override void VisitIfStatement(IfStatementSyntax ifStatement)
         {
-            var ssCondition = ExpressionBuilder.Build(ifStatement.Condition);
+            var ssCondition = ExpressionBuilder.Build(ifStatement.Condition, ssTypeReference, ssParentMember);
             var ssIfStatement = StatementBuilder.Build(ifStatement.Statement, ssTypeReference, ssParentMember);
             var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.Build(ifStatement.Else.Statement, ssTypeReference, ssParentMember);
 
@@ -51,12 +51,12 @@ namespace MiCS.Builders
                 throw new NotSupportedException("Initializers cannot be null. Hint: declare intcrementors outside for statement.");
 
             foreach (var initializer in forStatement.Initializers)
-                ssForStatement.AddInitializer(ExpressionBuilder.Build(initializer));
+                ssForStatement.AddInitializer(ExpressionBuilder.Build(initializer, ssTypeReference, ssParentMember));
 
-            ssForStatement.AddCondition(ExpressionBuilder.Build(forStatement.Condition));
+            ssForStatement.AddCondition(ExpressionBuilder.Build(forStatement.Condition, ssTypeReference, ssParentMember));
 
             foreach (var incrementor in forStatement.Incrementors)
-                ssForStatement.AddIncrement(ExpressionBuilder.Build(incrementor));
+                ssForStatement.AddIncrement(ExpressionBuilder.Build(incrementor, ssTypeReference, ssParentMember));
 
             ssForStatement.AddBody(StatementBuilder.Build(forStatement.Statement, ssTypeReference, ssParentMember));
 
@@ -92,7 +92,7 @@ namespace MiCS.Builders
         public override void VisitReturnStatement(ReturnStatementSyntax returnStatement)
         {
 
-            var ssExpression = ExpressionBuilder.Build(returnStatement.Expression, ssTypeReference);
+            var ssExpression = ExpressionBuilder.Build(returnStatement.Expression, ssTypeReference, ssParentMember);
 
             ssStatements.Add(returnStatement.Map(ssExpression));
 
@@ -101,7 +101,7 @@ namespace MiCS.Builders
 
         public override void VisitExpressionStatement(ExpressionStatementSyntax expressionStatement)
         {
-            var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression, ssTypeReference);
+            var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression, ssTypeReference, ssParentMember);
             
             ssStatements.Add(expressionStatement.Map(ssExpression));
 
@@ -141,7 +141,7 @@ namespace MiCS.Builders
 
                 var val = variable.Initializer.Value;
 
-                ssVariable.SetValue(ExpressionBuilder.Build(val, ssTypeReference));
+                ssVariable.SetValue(ExpressionBuilder.Build(val, ssTypeReference, ssParentMember));
 
             }
 

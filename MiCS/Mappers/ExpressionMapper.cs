@@ -63,17 +63,26 @@ namespace MiCS.Mappers
         //}
 
 
-
         static internal SS.UnaryExpression Map(this PrefixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
         {
             if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
                 return new SS.UnaryExpression(SS.Operator.Minus, ssOperandExpression);
+            if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.ExclamationToken)
+                return new SS.UnaryExpression(SS.Operator.LogicalNot, ssOperandExpression);
             else
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
+
+        //static internal SS.UnaryExpression Map(this PostfixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
+        //{
+        //    if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
+        //        return new SS.UnaryExpression(SS.Operator.Minus, ssOperandExpression);
+        //    else
+        //        throw new NotSupportedException("Prefix unary operator is currently not supported.");
+        //}
         
         // Todo: Prettify this shit!
-        static internal SS.Expression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType)
+        static internal SS.Expression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent)
         {
             SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", new SS.NamespaceSymbol("System", null));
             arrayTypeSymbol.SetIgnoreNamespace();
@@ -88,7 +97,7 @@ namespace MiCS.Mappers
                 int i = 0;
                 foreach (var expr in arrayCreationExpression.Initializer.Expressions)
                 {
-                    exprs[i] = ExpressionBuilder.Build(expr);
+                    exprs[i] = ExpressionBuilder.Build(expr, associatedType, associatedParent);
                     i++;
                 }
             }

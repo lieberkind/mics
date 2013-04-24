@@ -8,13 +8,26 @@ using System.Web.UI.WebControls;
 using System.Html;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Drawing;
 
 namespace MiCSCaseStudy
 {
     public partial class WebForm1 : System.Web.UI.Page
     {
+        TextBox NameBox = new TextBox() { ID = "name", Text = "Name" };
+        Panel CheckBoxGroup = new Panel();
+        CheckBox SnailMailCheck = new CheckBox() { Text = "Snail Mail" };
+        CheckBox EmailCheck = new CheckBox() { Text = "E-Mail" };
+        TextBox AddressBox = new TextBox() { ID = "address", Text = "Address" };
+        TextBox ZipcodeBox = new TextBox() { ID = "zipcode", Text = "Zip Code" };
+        TextBox EmailBox = new TextBox() { ID = "email", Text = "E-mail" };
+        TextBox PhoneBox = new TextBox() { ID = "phone", Text = "Phone" };
+        Button SubmitButton = new Button() { Text = "Register" };
+
         protected void Page_Init(object sender, EventArgs e)
         {
+            form1.ID = "myform";
+            
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
 
@@ -24,17 +37,34 @@ namespace MiCSCaseStudy
             MiCSManager.Initiate(source);
             MiCSManager.BuildScript(scriptManager, this);
 
+            form1.Add(NameBox);
+            CheckBoxGroup.Controls.Add(SnailMailCheck);
+            CheckBoxGroup.Controls.Add(EmailCheck);
+            form1.Controls.Add(CheckBoxGroup);
+            form1.Add(AddressBox);
+            form1.Add(ZipcodeBox);
+            form1.Add(EmailBox);
+            form1.Add(PhoneBox);
+            form1.Add(SubmitButton);
 
-            var button = new Button() { Text = "Test Button" };
-            form1.Controls.Add(button);
+            SubmitButton.OnClientClick(OnClickAction);
 
-            button.OnClientClick(OnClickAction);
+            SubmitButton.Click += SubmitButton_Click;
+        }
+
+        void SubmitButton_Click(object sender, EventArgs e)
+        {
+            Validator v = new Validator();
+            if (v.isPhoneValid(PhoneBox.Text))
+                PhoneBox.BackColor = Color.Green;
         }
 
         [ClientSide]
-        private void OnClickAction()
+        private bool OnClickAction()
         {
-            Window.Alert("hello world!");
+            Validator v = new Validator();
+            InputElement e = (InputElement)Document.GetElementById("phone");
+            return v.isPhoneValid(e.Value);
         }
 
 
@@ -46,61 +76,72 @@ namespace MiCSCaseStudy
 
     class Validator
     {
-        [MixedSide]
-        string isNameValid(string name)
+        public bool isFormValid()
         {
-            //string asger = name;
-            
-            String[] strings = new String[2];
-            return strings[1];
-
-            //var i = strings.Length;
-            //Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
-            //return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;
+            throw new NotImplementedException();
         }
 
         [MixedSide]
-        int ForScience()
+        public bool isNameValid(string name)
         {
-            int count = 0;
-            int i;
-            for (i = 0; i < 10; i = i + 1)
+            Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
+            return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;
+        }
+
+        [MixedSide]
+        public bool isAddressValid(string address, string zipcode)
+        {
+            var addressRegEx = new Regex("^[A-z]+ [0-9]+(, [0-9]+ (SAL|TH|TV))?$");
+            var isAddressFormatValid = addressRegEx.IsMatch(address);
+
+            var zipCodeRegEx = new Regex("^[1-9][0-9][0-9][0-9]$");
+            var isZipCodeFormatValid = zipCodeRegEx.IsMatch(zipcode);
+
+            return isAddressFormatValid && isZipCodeFormatValid;
+        }
+
+        [MixedSide]
+        public bool isEmailValid(string email)
+        {
+            var emailRegEx = new Regex("^[A-z0-9._%+-]+@[A-z0-9.-]+.[A-z]{2,4}$");
+            var isEmailFormatValid = emailRegEx.IsMatch(email);
+            return isEmailFormatValid;
+        }
+
+        [MixedSide]
+        public bool isDeliveryMethodsValid(bool[] deliveryMethods, string address, string zipcode, string email)
+        {
+            var snailMailChecked = deliveryMethods[0];
+            var emailChecked = deliveryMethods[1];
+
+            if (!snailMailChecked && !emailChecked)
             {
-                count = count + i;
+                return false;
             }
-            return count;
+
+            if (snailMailChecked && emailChecked)
+            {
+                return isEmailValid(email) && isAddressValid(address, zipcode);
+            }
+            else if (snailMailChecked)
+            {
+                return isAddressValid(address, zipcode);
+            }
+            else
+            {
+                return isEmailValid(email);
+            }
         }
 
-        //[MixedSide]
-        //void ForArrayScience()
-        //{ 
-        //    string[] strings = { "hej", "tomas" };
-        //}
+        [MixedSide]
+        public bool isPhoneValid(string phoneNumber)
+        {
+            var phoneNumberRegEx = new Regex("^([1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])?$");
+            var isPhoneFormatValid = phoneNumberRegEx.IsMatch(phoneNumber);
 
-        //[MixedSide]
-        //bool isNameInvalid(string name)
-        //{
-        //    String s = "foo";
-        //    int i = s.Length;
-        //    i = s.IndexOf('o');
-        //    Regex rx = new Regex(@"/^([A-z]+ [A-z]+)( [A-z]+)*$/");
-        //    User usr = new User();
-        //    Validator v = new Validator();
-        //    v.isNameValid("tomas");
+            return isPhoneFormatValid;
+        }
 
-        //    Document.HasFocus();
-        //    bool b = Document.HasFocus();
-        //    Element e = Document.GetElementById("test");
-
-        //    if (2 < 3)
-        //    {
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
     }
 
     class User

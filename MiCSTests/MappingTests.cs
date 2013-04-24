@@ -73,7 +73,6 @@ namespace MiCSTests
             }";
 
             var ssStmt = Parse.StatementToSS(@"string[] strings = new string[2] { ""Tomas"", ""Asger""};");
-            
         }
 
         [TestMethod]
