@@ -35,7 +35,7 @@ namespace MiCS.Validators
         // Todo: Maybe this should handle if a node should be validated or not
         public override void DefaultVisit(SyntaxNode node)
         {
-            //base.DefaultVisit(node);
+            base.DefaultVisit(node);
         }
 
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
