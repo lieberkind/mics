@@ -58,14 +58,18 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="MappingTests\CoreTypeTests.cs" />
+    <Compile Include="MappingTests\DOMTypeTests.cs" />
+    <Compile Include="MappingTests\ExpressionTests.cs" />
     <Compile Include="MappingTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ScriptSharpTests.cs" />
+    <Compile Include="MappingTests\StatementTests.cs" />
     <Compile Include="RoslynTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestUtils\Parse.cs" />
     <Compile Include="MiCSUtilitiesTests.cs" />
+    <Compile Include="TestUtils\ScriptSharpTestExtensions.cs" />
     <Compile Include="ValidatorTests.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +78,7 @@
       <Name>MiCS</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

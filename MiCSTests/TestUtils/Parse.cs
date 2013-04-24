@@ -33,6 +33,24 @@ namespace MiCSTests.TestUtils
             return NamespacesToSymbolSet(source);
         }
 
+        public static List<SS.ClassSymbol> ClassesToSS(string source)
+        {
+            source = "namespace TestNamespace { " + source + " }";
+            var ssClasses = new List<SS.ClassSymbol>();
+
+            var ssSymbolSet = NamespacesToSymbolSet(source);
+            
+            foreach (var ssNamespace in ssSymbolSet.Namespaces)
+	        {
+                foreach (var type in ssNamespace.Types.Where(t => t is SS.ClassSymbol))
+                {
+                    ssClasses.Add((SS.ClassSymbol)type);
+                }
+	        }
+
+            return ssClasses;
+        }
+
         public static SS.SymbolSet MethodsToSymbolSet(string source)
         {
             source = "class TestClass { " + source + " }";
@@ -67,10 +85,10 @@ namespace MiCSTests.TestUtils
 
         public static CompilationUnitSyntax CompilationUnit(string source)
         {
-            //var syntaxTree = SyntaxTree.ParseText(source);
             MiCSManager.Initiate(source);
             return ScriptTypeManager.Instance.CompilationUnit;
         }
+
 
         public static IEnumerable<SyntaxNode> Namespaces(string source)
         {
