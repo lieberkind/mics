@@ -47,13 +47,15 @@ namespace MiCSCaseStudy
     class Validator
     {
         [MixedSide]
-        bool isNameValid(string name)
+        string isNameValid(string name)
         {
-            string asger = "Asger";
-            String[] strings = new String[2] { "tomas", asger };
-            var i = strings.Length;
-            Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
-            return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;
+            //string asger = name;
+            String[] strings = new String[2];
+            return strings[1];
+
+            //var i = strings.Length;
+            //Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
+            //return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;
         }
 
         [MixedSide]

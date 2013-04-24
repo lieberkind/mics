@@ -70,11 +70,6 @@ namespace MiCS.Mappers
             return new SS.NamespaceSymbol(@namespace.NameText(), null);
         }
 
-        static internal void Map(this ArrayTypeSyntax array)
-        { 
-            
-        }
-
         static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable, SS.MemberSymbol ssParentMember, SS.TypeSymbol ssType)
         {
             if (ssParentMember == null)
@@ -433,6 +428,10 @@ namespace MiCS.Mappers
             return ssType;
         }
 
+        static internal  SS.IndexerSymbol Map(this BracketedArgumentListSyntax bracketedArgumentList, SS.TypeSymbol ssParentType, SS.TypeSymbol ssPropertyType)
+        {
+            return new SS.IndexerSymbol(ssParentType, ssPropertyType);
+        }
     }
 
 

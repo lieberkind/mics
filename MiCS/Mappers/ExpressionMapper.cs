@@ -79,13 +79,18 @@ namespace MiCS.Mappers
             arrayTypeSymbol.SetIgnoreNamespace();
             arrayTypeSymbol.SetArray();
 
-            SS.Expression[] exprs = new SS.Expression[arrayCreationExpression.Initializer.Expressions.Count];
+            var count = arrayCreationExpression.Initializer == null ? 0 : arrayCreationExpression.Initializer.Expressions.Count;
 
-            int i = 0;
-            foreach (var expr in arrayCreationExpression.Initializer.Expressions)
+            SS.Expression[] exprs = new SS.Expression[count];
+
+            if (count > 0)
             {
-                exprs[i] = ExpressionBuilder.Build(expr);
-                i++;
+                int i = 0;
+                foreach (var expr in arrayCreationExpression.Initializer.Expressions)
+                {
+                    exprs[i] = ExpressionBuilder.Build(expr);
+                    i++;
+                }
             }
 
             if (exprs.Length > 0)
@@ -298,6 +303,11 @@ namespace MiCS.Mappers
         )
         {
             return new SS.ConditionalExpression(ssCondition, ssTrueExpression, ssFalseExpression);
+        }
+
+        static internal SS.IndexerExpression Map(this ElementAccessExpressionSyntax elementAccessExpression, SS.Expression ssObjectReference, SS.IndexerSymbol ssIndexerSymbol)
+        {
+            return new SS.IndexerExpression(ssObjectReference, ssIndexerSymbol);
         }
     }
 }

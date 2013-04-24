@@ -58,7 +58,26 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ArrayCanBeMapped()
+        public void NewArrayWithElementsCanBeMapped()
+        {
+            var source = @"
+            using System;
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() 
+                    {
+                        string[] strings = new string[2] { ""Tomas"", ""Asger""};
+                    }
+                } 
+            }";
+
+            var ssStmt = Parse.StatementToSS(@"string[] strings = new string[2] { ""Tomas"", ""Asger""};");
+            
+        }
+
+        [TestMethod]
+        public void NewEmptyArrayCanBeMapped()
         {
             var source = @"
             using System;
@@ -78,6 +97,45 @@ namespace MiCSTests
             var m = (LocalDeclarationStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is LocalDeclarationStatementSyntax).First();
 
             //throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void ArrayElementAccessCanBeMapped()
+        {
+            var source = @"
+            using System;
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    string f() 
+                    {
+                        string[] strings = new string[2] { ""Tomas"", ""Asger""};
+                        return strings[1];
+                    }
+                } 
+            }";
+
+            Parse.NamespacesToSymbolSet(source);
+        }
+
+        [TestMethod]
+        public void NewElementsCanBeAddedToArray()
+        {
+            var source = @"
+            using System;
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() 
+                    {
+                        string[] strings = new string[2];
+                        strings[0] = ""Asger"";
+                        strings[1] = ""Tomas"";
+                    }
+                } 
+            }";
+
+            Parse.NamespacesToSymbolSet(source);
         }
 
         [TestMethod]

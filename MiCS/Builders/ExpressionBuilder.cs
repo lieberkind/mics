@@ -32,6 +32,38 @@ namespace MiCS.Builders
             ssExpressions.Add(arrayCreationExpression.Map(associatedType));
         }
 
+        public override void VisitElementAccessExpression(ElementAccessExpressionSyntax elementAccessExpression)
+        {
+            // Todo: Is this correct?
+            var ssArgumentType = TypeSymbolGetter.GetTypeSymbol(elementAccessExpression.ArgumentList.Arguments[0].Expression).Map();
+
+            var parentType = TypeSymbolGetter.GetTypeSymbol(elementAccessExpression.Expression);
+
+            if (!(parentType is ArrayTypeSymbol))
+                throw new NotSupportedException("Only array elements can be accessed");
+
+            var ssParentType = TypeSymbolGetter.GetTypeSymbol(elementAccessExpression.Expression).Map();
+
+            var ssIndexerSymbol = elementAccessExpression.ArgumentList.Map(ssParentType, ssArgumentType);
+
+            var ssObjectReference = ExpressionBuilder.Build(elementAccessExpression.Expression, associatedType, associatedParent);
+
+            var ssIndexerExpression = elementAccessExpression.Map(ssObjectReference, ssIndexerSymbol);
+            
+            // This ensures that ScritpSharp doesn't use the ScriptSharp get_item JavaScript method but
+            // the built in bracket indexer ([1]) instead
+            ssIndexerExpression.Indexer.SetScriptIndexer();
+
+            if (elementAccessExpression.ArgumentList.Arguments.Count > 1)
+                throw new NotSupportedException("Only single dimension arrays are supported");
+
+            var ssArgument = ExpressionBuilder.Build(elementAccessExpression.ArgumentList.Arguments[0].Expression);
+
+            ssIndexerExpression.AddIndexParameterValue(ssArgument);
+
+            ssExpressions.Add(ssIndexerExpression);
+        }
+
         public override void VisitIdentifierName(IdentifierNameSyntax identifierName)
         {
             ssExpressions.Add(identifierName.Map());
