@@ -26,8 +26,7 @@ namespace MiCSCaseStudy
 
         protected void Page_Init(object sender, EventArgs e)
         {
-            form1.ID = "myform";
-            
+           
             var scriptManager = new ScriptManager();
             form1.Controls.Add(scriptManager);
 
@@ -55,8 +54,22 @@ namespace MiCSCaseStudy
         void SubmitButton_Click(object sender, EventArgs e)
         {
             Validator v = new Validator();
-            if (v.isPhoneValid(PhoneBox.Text))
-                PhoneBox.BackColor = Color.Green;
+
+            var isPhoneValid = v.isPhoneValid(PhoneBox.Text);
+            var isNameValid = v.isNameValid(NameBox.Text);
+            var isDeliveryMethodsValid = v.isDeliveryMethodsValid(new bool[] { SnailMailCheck.Checked, EmailCheck.Checked }, AddressBox.Text, ZipcodeBox.Text, EmailBox.Text);
+
+            Color color;
+            if (isPhoneValid && isNameValid && isDeliveryMethodsValid)
+                color = Color.Green;
+            else
+                color = Color.Red;
+            
+            NameBox.BackColor = color;
+            AddressBox.BackColor = color;
+            ZipcodeBox.BackColor = color;
+            EmailBox.BackColor = color;
+            PhoneBox.BackColor = color;
         }
 
         [ClientSide]
@@ -86,9 +99,6 @@ namespace MiCSCaseStudy
 
             InputElement phoneField = (InputElement)Document.GetElementById("phone");
             string phone = phoneField.Value;
-
-            Window.Alert(deliveryMethods[0]);
-            Window.Alert(deliveryMethods[1]);
 
             return v.isNameValid(name) && v.isPhoneValid(phone) && v.isDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
         }

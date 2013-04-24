@@ -101,6 +101,10 @@ namespace MiCS
             this.typeSymbolGetter = new TypeSymbolGetter();
 
             userTreeIsValid = this.validate();
+
+            if (!userTreeIsValid)
+                throw new Exception("The submitted source code is not valid");
+
             MiCSManager.instance = this;
         }
 
