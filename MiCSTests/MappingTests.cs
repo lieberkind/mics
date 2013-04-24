@@ -550,13 +550,32 @@ namespace MiCSTests
         public void CoreTypeTestDateCannotBeMapped()
         {
             var source = @"
-                using System;
                 namespace TestNamespace {
                     class TestClass {
                 
                         [MixedSide]
                         public void ImARegEx() {
-                           System.Date d = new System.Date(); 
+                           System.Date d = new Date(); 
+                        }
+                    }
+                }
+
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+        }
+
+        [TestMethod]
+        public void CoreTypeTestVoid()
+        {
+            var source = @"
+                namespace TestNamespace {
+                    class TestClass {
+                
+                        [MixedSide]
+                        public void ImARegEx() {
+                           int i = 0; 
                         }
                     }
                 }
@@ -966,6 +985,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(NotSupportedException))]
         public void StatementVariableDeclarationULongAssignmentTest()
         {
             var source = @"ulong l = 1UL;";
