@@ -288,7 +288,10 @@ namespace MiCS
             return typeSymbol.Name;
         }
 
-
+        //public static bool IsDOMType(this ClassDeclarationSyntax @class)
+        //{
+        //    return @class.HasAttribute("ScriptName") || @class.HasAttribute("ScriptImport");
+        //}
 
         private static string GetName(this NameSyntax nameSyntax)
         {

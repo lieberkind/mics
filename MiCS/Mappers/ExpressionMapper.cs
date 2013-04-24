@@ -73,6 +73,11 @@ namespace MiCS.Mappers
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
+        //static internal SS.Expression Map(this ParenthesizedExpressionSyntax parenthesizeExpression, SS.TypeSymbol associatedType, SS.ClassSymbol associatedParent)
+        //{ 
+        //    var ssExpression = ExpressionBuilder.Build(parenthesizeExpression.Expression
+        //}
+
         //static internal SS.UnaryExpression Map(this PostfixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
         //{
         //    if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)

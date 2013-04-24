@@ -16,8 +16,8 @@ namespace MiCSCaseStudy
     {
         TextBox NameBox = new TextBox() { ID = "name", Text = "Name" };
         Panel CheckBoxGroup = new Panel();
-        CheckBox SnailMailCheck = new CheckBox() { Text = "Snail Mail" };
-        CheckBox EmailCheck = new CheckBox() { Text = "E-Mail" };
+        CheckBox SnailMailCheck = new CheckBox() { ID = "dmSnailmail", Text = "Snail Mail" };
+        CheckBox EmailCheck = new CheckBox() { ID = "dmEmail", Text = "E-Mail" };
         TextBox AddressBox = new TextBox() { ID = "address", Text = "Address" };
         TextBox ZipcodeBox = new TextBox() { ID = "zipcode", Text = "Zip Code" };
         TextBox EmailBox = new TextBox() { ID = "email", Text = "E-mail" };
@@ -63,8 +63,34 @@ namespace MiCSCaseStudy
         private bool OnClickAction()
         {
             Validator v = new Validator();
-            InputElement e = (InputElement)Document.GetElementById("phone");
-            return v.isPhoneValid(e.Value);
+
+            bool[] deliveryMethods = new bool[2];
+            
+            CheckBoxElement snailmailCheckBox = (CheckBoxElement)Document.GetElementById("dmSnailmail");
+            deliveryMethods[0] = snailmailCheckBox.Checked;
+
+            CheckBoxElement emailCheckBok = (CheckBoxElement)Document.GetElementById("dmEmail");
+            deliveryMethods[1] = emailCheckBok.Checked;
+
+            InputElement nameField = (InputElement)Document.GetElementById("name");
+            string name = nameField.Value;
+
+            InputElement addressField = (InputElement)Document.GetElementById("address");
+            string address = addressField.Value;
+            
+            InputElement zipcodeField = (InputElement)Document.GetElementById("zipcode");
+            string zipcode = zipcodeField.Value;
+            
+            InputElement emailField = (InputElement)Document.GetElementById("email");
+            string email = emailField.Value;
+
+            InputElement phoneField = (InputElement)Document.GetElementById("phone");
+            string phone = phoneField.Value;
+
+            Window.Alert(deliveryMethods[0]);
+            Window.Alert(deliveryMethods[1]);
+
+            return v.isNameValid(name) && v.isPhoneValid(phone) && v.isDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
         }
 
 
@@ -123,10 +149,12 @@ namespace MiCSCaseStudy
             {
                 return isEmailValid(email) && isAddressValid(address, zipcode);
             }
+
             else if (snailMailChecked)
             {
                 return isAddressValid(address, zipcode);
             }
+
             else
             {
                 return isEmailValid(email);
@@ -136,7 +164,7 @@ namespace MiCSCaseStudy
         [MixedSide]
         public bool isPhoneValid(string phoneNumber)
         {
-            var phoneNumberRegEx = new Regex("^([1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])?$");
+            var phoneNumberRegEx = new Regex("^([1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])$");
             var isPhoneFormatValid = phoneNumberRegEx.IsMatch(phoneNumber);
 
             return isPhoneFormatValid;

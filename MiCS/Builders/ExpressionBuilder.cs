@@ -27,6 +27,15 @@ namespace MiCS.Builders
             throw new NotSupportedException("The Expression of kind " + node.Kind.ToString() + " cannot be mapped");
         }
 
+        // Todo: Allow ParethesizedExpressions to be mapped
+        //public override void VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
+        //{
+        //    var ssExpression = ExpressionBuilder.Build(node, associatedType, associatedParent);
+        //    ssExpression.AddParenthesisHint();
+
+        //    ssExpressions.Add(ssExpression);
+        //}
+
         public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax arrayCreationExpression)
         {
             ssExpressions.Add(arrayCreationExpression.Map(associatedType, associatedParent));

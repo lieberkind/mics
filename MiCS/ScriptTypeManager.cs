@@ -56,9 +56,6 @@ namespace MiCS
             ClientSideMembers = clientSideCollector.Members;
             ClientSideMembers.AddRange(builtInCollector.Members);
 
-            //Date d = new Date();
-            //var rx = new System.Text.RegularExpressions.Regex("owdjwo");
-
             // Todo: Write about references in report maybe... how to handle references in a more generic manner.
             var mscorlib = new MetadataFileReference(typeof(String).Assembly.Location);
             var systemTextRegularExpression = new MetadataFileReference(typeof(System.Text.RegularExpressions.Regex).Assembly.Location);
@@ -121,7 +118,7 @@ namespace MiCS
         /// </summary>
         public static bool IsDOMType(ClassDeclarationSyntax classDeclaration)
         {
-            return classDeclaration.HasAttribute("ScriptName");
+            return classDeclaration.HasAttribute("ScriptName") || classDeclaration.HasAttribute("ScriptImport");
         }
         /// <summary>
         /// Returns true if the specified type is
