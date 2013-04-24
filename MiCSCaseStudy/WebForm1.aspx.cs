@@ -105,7 +105,6 @@ namespace MiCSCaseStudy
         {
             var emailRegEx = new Regex("^[A-z0-9._%+-]+@[A-z0-9.-]+.[A-z]{2,4}$");
             var isEmailFormatValid = emailRegEx.IsMatch(email);
-
             return isEmailFormatValid;
         }
 

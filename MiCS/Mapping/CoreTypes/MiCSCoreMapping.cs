@@ -81,6 +81,71 @@ namespace MiCS
                 }
             });
 
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Boolean",
+                NameScript = "Boolean",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Int16",
+                NameScript = "Int16",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Int32",
+                NameScript = "Int32",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Int64",
+                NameScript = "Int64",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "UInt16",
+                NameScript = "UInt16",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "UInt32",
+                NameScript = "UInt32",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Int64",
+                NameScript = "Int64",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
+
+
             // Todo: Add Array type mapping.
             mapping.Add(new MiCSCoreTypeMapping()
             {

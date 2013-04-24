@@ -261,31 +261,30 @@ namespace MiCS.Mappers
                 //case IntrinsicType.Object:
                 //    mappedTypeName = "Object";
                 //    break;
-                case "Boolean":
-                    mappedTypeName = "Boolean";
-                    namespaceName = "System";
-                    break;
+                //case "Boolean":
+                //    mappedTypeName = "Boolean";
+                //    break;
                 //case "String":
                 //    mappedTypeName = "String";
                 //    break;
-                case "Int32":
-                    mappedTypeName = "Int32";
-                    break;
-                case "UInt32":
-                    mappedTypeName = "UInt32";
-                    break;
-                case "Int64":
-                    mappedTypeName = "Int64";
-                    break;
-                case "UInt64":
-                    mappedTypeName = "UInt64";
-                    break;
-                case "Int16":
-                    mappedTypeName = "Int16";
-                    break;
-                case "UInt16":
-                    mappedTypeName = "UInt16";
-                    break;
+                //case "Int32":
+                //    mappedTypeName = "Int32";
+                //    break;
+                //case "UInt32":
+                //    mappedTypeName = "UInt32";
+                //    break;
+                //case "Int64":
+                //    mappedTypeName = "Int64";
+                //    break;
+                //case "UInt64":
+                //    mappedTypeName = "UInt64";
+                //    break;
+                //case "Int16":
+                //    mappedTypeName = "Int16";
+                //    break;
+                //case "UInt16":
+                //    mappedTypeName = "UInt16";
+                //    break;
                 case "Decimal":
                     mappedTypeName = "Decimal";
                     break;

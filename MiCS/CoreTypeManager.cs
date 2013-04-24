@@ -100,21 +100,24 @@ namespace MiCS
                                     var argumentTypeMapping = memberMapping.Arguments[i];
 
                                     if (!argumentTypeMapping.Name.Equals(argumentType.Name))
-                                        throw new Exception("Argument with index '" + i + "' with type '" + argumentType.Name + "' on member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' is not correctly mapped.");
+                                        throw new MemberSignatureArgumentTypeNotMappedException("Argument with index '" + i + "' with type '" + argumentType.Name + "' on member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' is not correctly mapped.");
 			                    }
                             }
                             else
-                                throw new Exception("Arguments on member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' are not correctly mapped.");
-
+                                throw new MemberSignatureNotMappedException("Arguments on member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' are not correctly mapped.");
                         }
                         else
-                            throw new Exception("Member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' is not currently (or correctly) mapped.");
+                            throw new MemberNotMappedException("Member: '" + namespaceName + "." + objectType.Name + "." + memberName + "' is not currently (or correctly) mapped.");
                     }
                     else
-                        throw new Exception("Type: '" + namespaceName + "." + objectType.Name + "' is not currently (or correctly) mapped.");
+                        throw new TypeNotMappedException("Type: '" + namespaceName + "." + objectType.Name + "' is not currently (or correctly) mapped.");
                 }
             }
         }
+
+
+
+
 
         /// <summary>
         /// Returns true if this is a core type that can be mapped
@@ -223,15 +226,16 @@ namespace MiCS
             var namespaces = Instance.CompilationUnit.DescendantNodes().Where(n => n.Kind == SyntaxKind.NamespaceDeclaration);
             foreach (var @namespace in namespaces)
             {
-                var classes = @namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.ClassDeclaration);
-                foreach (var node in classes)
+                var members = @namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.ClassDeclaration || n.Kind == SyntaxKind.StructDeclaration);
+                foreach (var node in members)
                 {
-                    var @class = ((ClassDeclarationSyntax)node);
-                    var className = @class.Identifier.ValueText;
 
-                    if (className.Equals(name))
+                    var member = ((TypeDeclarationSyntax)node);
+                    var memberName = member.Identifier.ValueText;
+
+                    if (memberName.Equals(name))
                     {
-                        return Instance.SemanticModel.GetDeclaredSymbol(@class);
+                        return Instance.SemanticModel.GetDeclaredSymbol(member);
                     }
                 }
             }
@@ -250,5 +254,54 @@ namespace MiCS
             return GetCoreScriptTypeFromModel(typeMapping.NamespaceNameScript, typeMapping.NameScript);
         }
 
+    }
+
+
+    [Serializable]
+    public class MemberSignatureArgumentTypeNotMappedException : Exception
+    {
+        public MemberSignatureArgumentTypeNotMappedException() { }
+        public MemberSignatureArgumentTypeNotMappedException(string message) : base(message) { }
+        public MemberSignatureArgumentTypeNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected MemberSignatureArgumentTypeNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class MemberSignatureNotMappedException : Exception
+    {
+        public MemberSignatureNotMappedException() { }
+        public MemberSignatureNotMappedException(string message) : base(message) { }
+        public MemberSignatureNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected MemberSignatureNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class MemberNotMappedException : Exception
+    {
+        public MemberNotMappedException() { }
+        public MemberNotMappedException(string message) : base(message) { }
+        public MemberNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected MemberNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class TypeNotMappedException : Exception
+    {
+        public TypeNotMappedException() { }
+        public TypeNotMappedException(string message) : base(message) { }
+        public TypeNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected TypeNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
     }
 }
