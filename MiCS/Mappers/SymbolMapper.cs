@@ -9,17 +9,40 @@ using SS = ScriptSharp.ScriptModel;
 
 namespace MiCS.Mappers
 {
-
-    public static class SymbolMapper
+    /// <summary>
+    /// Class with extension mapping methods that are used to map
+    /// from Roslyn AST nodes to ScriptSharp symbols
+    /// </summary>
+    internal static class SymbolMapper
     {
-        static internal SS.ParameterSymbol Map(this ParameterSyntax p, SS.MemberSymbol ssParent, SS.TypeSymbol valueType)
+        /// <summary>
+        /// Returns a mapped ScriptSharp ParameterSymbol. Used in methods and constructors.
+        /// </summary>
+        /// <param name="parameter">Roslyn parameter AST node</param>
+        /// <param name="ssParent">The parent ScriptSharp MethodSymbol where the parameter is used.</param>
+        /// <param name="ssValueType">The ScriptSharp type of the parameter.</param>
+        /// <remarks>
+        /// ParameterMode (or parameter modifier settings) is set to "In". 
+        /// If the other parameterModes are needed support this needs to be implemented.
+        /// We have left this setting as unchangeable as it is not that relevant for our
+        /// case study.
+        /// </remarks>
+        static internal SS.ParameterSymbol Map(this ParameterSyntax parameter, SS.MemberSymbol ssParent, SS.TypeSymbol ssValueType)
         {
-            return new SS.ParameterSymbol(p.Identifier.ValueText, ssParent, valueType, SS.ParameterMode.InOut);
+            return new SS.ParameterSymbol(parameter.Identifier.ValueText, ssParent, ssValueType, SS.ParameterMode.In);
         }
 
+        /// <summary>
+        /// Returns a mapped ScriptSharp MethodSymbol that represents a method declaration.
+        /// </summary>
+        /// <param name="methodDeclaration">Roslyn method declaration AST node.</param>
+        /// <param name="ssParentClass">The ScriptSharp class containing this method</param>
+        /// <param name="ssParentNamespace">The ScriptSharp namespace containing this method</param>
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
-            var ssReturnType = TypeManager.GetTypeSymbol(methodDeclaration.ReturnType).Map();
+            var returnType = TypeManager.GetTypeSymbol(methodDeclaration.ReturnType);
+
+            var ssReturnType = returnType.Map();
             var ssMethodName = methodDeclaration.Identifier.ValueText;
 
             var ssMethod = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
@@ -33,7 +56,13 @@ namespace MiCS.Mappers
                 implementationStatements.Add(StatementBuilder.Build(statement, ssParentClass, ssMethod));
             }
 
-            // Todo: Consider if "this" is done right... Could probably also be static call (Math.sin(x))
+            /*
+             * Leaving the second parameter (SymbolScope scope) as null as 
+             * the generated script code is still valid and therefore doesn't
+             * prevent us from showing prove of concept. If the SymbolScope
+             * parameter is set to null this is gracefully handled (see 
+             * ScriptSharp.ScriptCompiler.cs line 71).
+             */
             var sI = new SS.SymbolImplementation(implementationStatements, null, "this");
             ssMethod.AddImplementation(sI);
             
@@ -41,17 +70,10 @@ namespace MiCS.Mappers
         }
 
         /// <summary>
-        /// 
+        /// Returns a mapped ScriptSharp ClassSymbol representing a class declaration.
         /// </summary>
-        /// <param name="roslynClass"></param>
-        /// <param name="ssParentNamespace">
-        /// Parent namespace should be provided so its
-        /// not required to map the parent namespace in
-        /// in the ClassDeclarationSyntax.Map(...)
-        /// function as this creates cyclic mapping in
-        /// n infinte loop.
-        /// </param>
-        /// <returns></returns>
+        /// <param name="class">Roslyn class declaration AST node</param>
+        /// <param name="ssParentNamespace">Parent ScriptSharp namespace containing this class</param>
         static internal SS.ClassSymbol Map(this ClassDeclarationSyntax @class, SS.NamespaceSymbol ssParentNamespace)
         {
             if (ssParentNamespace == null)
@@ -61,15 +83,22 @@ namespace MiCS.Mappers
         }
 
         /// <summary>
-        /// 
+        /// Returns mapped ScriptShar NamespaceSymbol.
         /// </summary>
-        /// <param name="namespace"></param>
-        /// <returns></returns>
+        /// <param name="namespace">Roslyn namespace declaration AST node</param>
         static internal SS.NamespaceSymbol Map(this NamespaceDeclarationSyntax @namespace)
         {
             return new SS.NamespaceSymbol(@namespace.NameText(), null);
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp VariableSymbol e.g. representing the variable
+        /// in a VariableDeclarationStatement.
+        /// </summary>
+        /// <param name="variable">Roslyn VariableDeclarator AST node.</param>
+        /// <param name="ssParentMember">The parent ScriptSharp MethodSymbol.</param>
+        /// <param name="ssType">The ScriptSharp type of the variable.</param>
+        /// <returns></returns>
         static internal SS.VariableSymbol Map(this VariableDeclaratorSyntax variable, SS.MemberSymbol ssParentMember, SS.TypeSymbol ssType)
         {
             if (ssParentMember == null)
@@ -78,12 +107,21 @@ namespace MiCS.Mappers
             return new SS.VariableSymbol(variable.Identifier.ValueText, ssParentMember, ssType);
         }
 
-        // Todo: Is this the correct place to map VariableDeclarationSyntax?
-        static internal SS.VariableDeclarationStatement Map(this VariableDeclarationSyntax variableDeclaration)
+        /// <summary>
+        /// Returns mapped ScriptSharp IndexerSymbol e.g. used for accessing Array elements.
+        /// </summary>
+        /// <param name="bracketedArgumentList">Roslyn bracketed argument list AST node</param>
+        /// <param name="ssParentType">Parent ScriptSharp indexer enabled type (e.g Array).</param>
+        /// <param name="ssPropertyType">ScriptSharp type of the indexer argument.</param>
+        static internal SS.IndexerSymbol Map(this BracketedArgumentListSyntax bracketedArgumentList, SS.TypeSymbol ssParentType, SS.TypeSymbol ssPropertyType)
         {
-            return new SS.VariableDeclarationStatement();
+            return new SS.IndexerSymbol(ssParentType, ssPropertyType);
         }
-
+        // Todo: Maybe try and clean the type symbol mapper extension method...
+        /// <summary>
+        /// Returns mapped ScriptSharp TypeSymbol object.
+        /// </summary>
+        /// <param name="typeSymbol">Roslyn type AST node.</param>
         static internal SS.TypeSymbol Map(this TypeSymbol typeSymbol)
         {
             #region Region: Possibly relevant ScriptSharpCode
@@ -289,7 +327,7 @@ namespace MiCS.Mappers
             if (isSupportedCoreType)
                 mappedNamespaceName = ScriptSharpTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
 
-                    
+            // Todo: Parent namespace should preferably not be a new namspace object.
             ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
 
             if (isArray)
@@ -309,11 +347,5 @@ namespace MiCS.Mappers
             return ssType;
         }
 
-        static internal  SS.IndexerSymbol Map(this BracketedArgumentListSyntax bracketedArgumentList, SS.TypeSymbol ssParentType, SS.TypeSymbol ssPropertyType)
-        {
-            return new SS.IndexerSymbol(ssParentType, ssPropertyType);
-        }
     }
-
-
 }
