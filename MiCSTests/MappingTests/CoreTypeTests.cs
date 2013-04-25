@@ -262,7 +262,7 @@ namespace MiCSTests
         [TestMethod]
         public void TypeSymbol_BooleanTest()
         {
-            var source = @"int b = true;";
+            var source = @"bool b = true;";
             var statement = Parse.Statement(source);
             var ssStatement = Parse.StatementToSS(source);
 
