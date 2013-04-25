@@ -106,6 +106,70 @@ namespace MiCSTests
             var ssNamespace = NamespaceBuilder.Build(@namespace);
         }
 
+        [TestMethod]
+        public void Array_NewWithElementsTest()
+        {
+            var source = @"string[] strings = new string[2] { ""Tomas"", ""Asger""};";
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+
+            var ssLiteral = (SS.LiteralExpression)ssStatement.Variables.ElementAt(0).Value;
+
+            Assert.AreEqual("System.Array", ssLiteral.EvaluatedType.FullName);
+            Assert.IsTrue(ssLiteral.EvaluatedType.IsArray);
+
+            Assert.IsTrue(ssLiteral.Value is SS.Expression[]);
+        }
+
+        [TestMethod]
+        public void Array_NewEmptyArrayTest()
+        {
+            var source = @"string[] strings = new string[2];";
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariable = ssStatement.Variables.ElementAt(0);
+
+            Assert.AreEqual(ssVariable.ValueType.FullName, "System.Array");
+
+            var ssNewExpression = (SS.NewExpression)ssVariable.Value;
+
+            Assert.AreEqual(ssNewExpression.EvaluatedType.FullName, "System.Array");
+        }
+
+        [TestMethod]
+        public void Array_ElementGetAccessTest()
+        {
+            var source = @"
+                [MixedSide]
+                int f() {
+                        string[] strings = new string[2] { ""Tomas"", ""Asger""};
+                        return strings[1];
+                }";
+
+            var ssReturnStatement = (SS.ReturnStatement)Parse.MethodsToSS(source).First().Statements().ElementAt(1);
+
+            Assert.IsTrue(ssReturnStatement.Value is SS.IndexerExpression);
+            Assert.AreEqual("System.String", ssReturnStatement.Value.EvaluatedType.FullName);
+
+            var ssIndexerExpression = (SS.IndexerExpression)ssReturnStatement.Value;
+
+            Assert.AreEqual("System.String", ssIndexerExpression.Indexer.AssociatedType.FullName);
+            Assert.AreEqual("System.Int32", ssIndexerExpression.Indices.ElementAt(0).EvaluatedType.FullName);
+
+            // Todo: Fix...
+        }
+
+        [TestMethod]
+        public void Array_ElementsSetAccessTest()
+        {
+            var source = @"
+                        string[] strings = new string[2];
+                        strings[0] = ""Asger"";
+                        strings[1] = ""Tomas"";";
+
+            var ssStatements = Parse.StatementsToSS(source);
+
+            // Todo: Make assertions...
+        }
+
 
         #region Region: Special Core Type Tests
 

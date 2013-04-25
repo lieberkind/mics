@@ -39,7 +39,7 @@ namespace MiCSTests
 //        }
 
         [TestMethod]
-        public void NamespaceMemberTest()
+        public void Namespace_MemberTest()
         {
             var source = @"
             namespace TestNamespace { 
@@ -53,89 +53,145 @@ namespace MiCSTests
 
             var member = (ClassDeclarationSyntax)@namespace.Members.First();
             var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
+
             Assert.AreEqual(@namespace.Members.Count, ssNamespace.Types.Count);
             Assert.AreEqual(member.Identifier.ValueText, ssMember.Name);
         }
 
         [TestMethod]
-        public void NewArrayWithElementsCanBeMapped()
+        public void Namespace_MultipleTest()
         {
             var source = @"
-            using System;
-            namespace TestNamespace { 
-                class TestClass { 
+            using System.Html;
+            namespace TestNamespace1 { 
+                class TestClass1 { 
                     [MixedSide]
-                    void f() 
-                    {
-                        string[] strings = new string[2] { ""Tomas"", ""Asger""};
-                    }
-                } 
-            }";
+                    void g() { Document.HasFocus(); }
+                }
+            }
+            namespace TestNamespace2 { 
+                class TestClass2 { 
+                    [MixedSide]
+                    void f() { Document.HasFocus(); }
+                }
+            }
+            ";
+            var ssSymbolSet = Parse.NamespacesToSymbolSet(source);
 
-            var ssStmt = Parse.StatementToSS(@"string[] strings = new string[2] { ""Tomas"", ""Asger""};");
         }
 
         [TestMethod]
-        public void NewEmptyArrayCanBeMapped()
+        public void Class_EmptyMemberTest()
         {
             var source = @"
-            using System;
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
-                    void f() 
-                    {
-                        string[] strings = new string[2];
-                    }
+                    void f() { }
                 } 
             }";
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
-            //Parse.NamespacesToSymbolSet(source);
-            var st = SyntaxTree.ParseText(source);
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
 
-            var m = (LocalDeclarationStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is LocalDeclarationStatementSyntax).First();
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
 
-            //throw new NotImplementedException();
+            Assert.AreEqual(method.Identifier.ValueText, ssMethod.Name);
+            Assert.AreEqual(method.Body.Statements.Count, ssMethod.Implementation.Statements.Count);
         }
 
         [TestMethod]
-        public void ArrayElementAccessCanBeMapped()
+        public void Class_MemberTest()
         {
             var source = @"
-            using System;
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
-                    string f() 
-                    {
-                        string[] strings = new string[2] { ""Tomas"", ""Asger""};
-                        return strings[1];
-                    }
+                    void f() { int i = 0; }
                 } 
             }";
 
-            Parse.NamespacesToSymbolSet(source);
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
+
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
+
+            var statement = method.Body.Statements.First();
+            var ssStatement = ssMethod.Implementation.Statements.First();
+
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
         }
 
         [TestMethod]
-        public void NewElementsCanBeAddedToArray()
+        public void Class_MemberDeclarationPredefinedReturnTypeTest()
         {
             var source = @"
-            using System;
             namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
-                    void f() 
-                    {
-                        string[] strings = new string[2];
-                        strings[0] = ""Asger"";
-                        strings[1] = ""Tomas"";
-                    }
+                    void f() { int i; }
                 } 
             }";
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
-            Parse.NamespacesToSymbolSet(source);
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
+
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
+
+            var returnTypeName = ((PredefinedTypeSyntax)method.ReturnType).Keyword.ValueText;
+            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name.ToLower());
+
+            var statement = method.Body.Statements.First();
+            var ssStatement = ssMethod.Implementation.Statements.First();
+
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
         }
+
+        [TestMethod]
+        public void Class_MemberDeclarationCustomReturnTypeTest()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    MyType f() { return new MyType(); }
+                } 
+
+                class MyType { 
+                    [MixedSide]
+                    void f() { int i; }
+                } 
+            }";
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var member = (ClassDeclarationSyntax)@namespace.Members.First();
+            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
+
+            var method = (MethodDeclarationSyntax)member.Members.First();
+            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
+
+            var returnTypeName = ((IdentifierNameSyntax)method.ReturnType).Identifier.ValueText;
+            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name);
+
+        }
+
+
+
+
+
 
         [TestMethod]
         public void ForLoopCanBeMapped()
@@ -168,136 +224,9 @@ namespace MiCSTests
             Assert.IsNotNull(ssForStmt.Increments);
         }
 
-        [TestMethod]
-        public void ClassMemberEmptyTest()
-        {
-            var source = @"
-            namespace TestNamespace { 
-                class TestClass { 
-                    [MixedSide]
-                    void f() { }
-                } 
-            }";
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
 
-            var member = (ClassDeclarationSyntax)@namespace.Members.First();
-            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
 
-            var method = (MethodDeclarationSyntax)member.Members.First();
-            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
 
-            Assert.AreEqual(method.Identifier.ValueText, ssMethod.Name);
-            Assert.AreEqual(method.Body.Statements.Count, ssMethod.Implementation.Statements.Count);
-        }
-
-        [TestMethod]
-        public void ClassMemberTest()
-        {
-            var source = @"
-            namespace TestNamespace { 
-                class TestClass { 
-                    [MixedSide]
-                    void f() { int i = 0; }
-                } 
-            }";
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-            var member = (ClassDeclarationSyntax)@namespace.Members.First();
-            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
-
-            var method = (MethodDeclarationSyntax)member.Members.First();
-            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
-
-            var statement = method.Body.Statements.First();
-            var ssStatement = ssMethod.Implementation.Statements.First();
-
-            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
-        }
-
-        [TestMethod]
-        public void ClassMemberDeclarationPredefinedReturnTypeTest()
-        {
-            var source = @"
-            namespace TestNamespace { 
-                class TestClass { 
-                    [MixedSide]
-                    void f() { int i; }
-                } 
-            }";
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-            var member = (ClassDeclarationSyntax)@namespace.Members.First();
-            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
-
-            var method = (MethodDeclarationSyntax)member.Members.First();
-            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
-
-            var returnTypeName = ((PredefinedTypeSyntax)method.ReturnType).Keyword.ValueText;
-            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name.ToLower());
-
-            var statement = method.Body.Statements.First();
-            var ssStatement = ssMethod.Implementation.Statements.First();
-
-            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
-            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
-        }
-
-        [TestMethod]
-        public void ClassMemberDeclarationCustomReturnTypeTest()
-        {
-            var source = @"
-            namespace TestNamespace { 
-                class TestClass { 
-                    [MixedSide]
-                    MyType f() { return new MyType(); }
-                } 
-
-                class MyType { 
-                    [MixedSide]
-                    void f() { int i; }
-                } 
-            }";
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-            var member = (ClassDeclarationSyntax)@namespace.Members.First();
-            var ssMember = (SS.ClassSymbol)ssNamespace.Types.First();
-
-            var method = (MethodDeclarationSyntax)member.Members.First();
-            var ssMethod = (ScriptSharp.ScriptModel.MethodSymbol)ssMember.Members.First();
-
-            var returnTypeName = ((IdentifierNameSyntax)method.ReturnType).Identifier.ValueText;
-            Assert.AreEqual(returnTypeName, ssMethod.AssociatedType.Name);
-
-        }
-
-        [TestMethod]
-        public void MultipleNamespaceTest()
-        {
-            var source = @"
-            using System.Html;
-            namespace TestNamespace1 { 
-                class TestClass1 { 
-                    [MixedSide]
-                    void g() { Document.HasFocus(); }
-                }
-            }
-            namespace TestNamespace2 { 
-                class TestClass2 { 
-                    [MixedSide]
-                    void f() { Document.HasFocus(); }
-                }
-            }
-            ";
-
-            var namespaces = Parse.Namespaces(source);
-
-        }
 
         [TestMethod]
         public void DuplicateFunctionsInDifferentClassesTest()
