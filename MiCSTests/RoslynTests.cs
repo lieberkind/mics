@@ -17,7 +17,7 @@ namespace MiCSTests
     {
 
         [TestMethod]
-        public void HasAttributeTest()
+        public void Roslyn_HasAttributeTest()
         {
             var namespaces = Parse.Namespaces(@"
             namespace TestNameSpace
@@ -38,7 +38,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void RoslynNamespaceTest()
+        public void Roslyn_NamespaceTest()
         {
             var namespaces = Parse.Namespaces(@"namespace TestNameSpace{ class TestClass { [MixedSide]
                                                 void f() { } } }");
@@ -49,7 +49,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void RoslynClassTest()
+        public void Roslyn_ClassTest()
         {
             var classes = Parse.Classes(@"class TestClass{ [MixedSide]
                                                 void f() { } }");
@@ -60,7 +60,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void RoslynMethodTest()
+        public void Roslyn_MethodTest()
        { 
             var methods = Parse.Methods(@"void [MixedSide]
                                                 TestMethod() { }");
@@ -86,7 +86,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void RoslynEmptyStatementTest()
+        public void Roslyn_EmptyStatementTest()
         {
             Assert.IsTrue(ParseStatement(";").Kind == SyntaxKind.EmptyStatement);
         }
@@ -98,31 +98,31 @@ namespace MiCSTests
         #region Region: Literal Expressions
 
         [TestMethod]
-        public void RoslynIntLiteralExpressionTest()
+        public void Roslyn_IntLiteralExpressionTest()
         {
             Assert.IsTrue(Parse.Expression(@"1").Kind == SyntaxKind.NumericLiteralExpression);
         }
 
         [TestMethod]
-        public void RoslynDoubleLiteralExpressionTest()
+        public void Roslyn_DoubleLiteralExpressionTest()
         {
             Assert.IsTrue(Parse.Expression(@"1.1").Kind == SyntaxKind.NumericLiteralExpression);
         }
 
         [TestMethod]
-        public void RoslynStringLiteralExpressionTest()
+        public void Roslyn_StringLiteralExpressionTest()
         {
             Assert.IsTrue(Parse.Expression(@"""hello""").Kind == SyntaxKind.StringLiteralExpression);
         }
 
         [TestMethod]
-        public void RoslynTrueLiteralExpressionTest()
+        public void Roslyn_TrueLiteralExpressionTest()
         {
             Assert.IsTrue(Parse.Expression(@"true").Kind == SyntaxKind.TrueLiteralExpression);
         }
 
         [TestMethod]
-        public void RoslynNullLiteralExpressionTest()
+        public void Roslyn_NullLiteralExpressionTest()
         {
             Assert.IsTrue(Parse.Expression(@"null").Kind == SyntaxKind.NullLiteralExpression);
         }

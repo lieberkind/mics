@@ -11,33 +11,11 @@ using MiCSTests.TestUtils;
 using MiCS.Builders;
 using MiCS.Validators;
 
-namespace MiCSTests
+namespace MiCSTests.MappingTests
 {
-    /// <summary>
-    /// Summary description for MapTests
-    /// </summary>
     [TestClass]
-    public class MappingTests
+    public class NamespaceClassAndMethodTests
     {
-
-//        [TestMethod]
-//        public void MiCSManagerTest()
-//        {
-//            var source = @"
-//            namespace TestNamespace { 
-//                class TestClass { 
-//                    void f() { }
-//                } 
-//                class TestClass2 { 
-//                    [MixedSide]
-//                    void f() { }
-//                } 
-//            }";
-
-//            MiCSManager.Initiate(source);
-//            Assert.IsTrue(((NamespaceDeclarationSyntax)MiCSManager.CompilationUnit.Members[0]).Members.Count == 1);
-//        }
-
         [TestMethod]
         public void Namespace_MemberTest()
         {
@@ -188,183 +166,12 @@ namespace MiCSTests
 
         }
 
-
-
-
-
-
-        [TestMethod]
-        public void ForLoopCanBeMapped()
-        {
-            var source = @"
-            namespace TestNamespace { 
-                class TestClass { 
-                    [MixedSide]
-                    void f() 
-                    { 
-                        int count = 0;
-                        int i;
-                        for(i = 0; i < 10; i = i + 1)
-                        {
-                            count = count + i;
-                        }
-                    }
-                } 
-            }";
-
-            var st = SyntaxTree.ParseText(source);
-
-            var forStmt = (ForStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is ForStatementSyntax).First();
-
-            var ssForStmt = (SS.ForStatement)StatementBuilder.Build(forStmt, null, null);
-
-            Assert.IsNotNull(ssForStmt.Initializers);
-            Assert.IsNotNull(ssForStmt.Body);
-            Assert.IsNotNull(ssForStmt.Condition);
-            Assert.IsNotNull(ssForStmt.Increments);
-        }
-
-
-
-
-
-        [TestMethod]
-        public void DuplicateFunctionsInDifferentClassesTest()
-        {
-            var source = @"
-            namespace TestNamespace1 { 
-                class TestClass1 { 
-                    [MixedSide]
-                    void f() { int i; }
-                }
-
-                class TestClass2 { 
-                    [MixedSide]
-                    void f() { int i; }
-                }
-            }
-            ";
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-        }
-
-        [TestMethod]
-        public void DuplicateClassesInDifferentNamespacesTest()
-        {
-            var source = @"
-            namespace TestNamespace1 { 
-                class TestClass1 { 
-                    [MixedSide]
-                    void f() { int i; }
-                }
-            }
-            namespace TestNamespace2 {
-                class TestClass1 { 
-                    [MixedSide]
-                    void g() { int i; }
-                }
-            }
-            ";
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-        }
-
-        [TestMethod]
-        public void BuiltInTranslationTest()
-        {
-            var source = @"
-            using System.Html;
-
-            namespace TestNamespace { 
-                class TestClass { 
-                    [ClientSide]
-                    void f() { Document.HasFocus(); }
-                }
-            }
-
-            namespace TestNameSpace.Nested.NestedAgain.Andagain {
-                class Lol {
-                    [MixedSide]
-                    void lol() { }
-                }
-            }
-
-            ";
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-            var ssClass = (SS.ClassSymbol)ssNamespace.Types.ElementAt(0);
-        }
-
-        [TestMethod]
-        public void BuiltInTranslationTest2()
-        {
-            var source = @"
-            using System.Html;
-
-            namespace TestNamespace { 
-                class TestClass { 
-                    [MixedSide]
-                    void f() { Document.HasFocus(); }
-                }
-            }
-
-            namespace TestNameSpace.Nested.NestedAgain.Andagain {
-                class Lol {
-                    [MixedSide]
-                    void lol() { }
-                }
-            }
-
-            ";
-            SyntaxTree st = SyntaxTree.ParseText(source);
-
-            MiCSManager.Initiate(st);
-
-            var c = new Collector(st.GetRoot());
-            c.Collect();
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-            var ssClass = (SS.ClassSymbol)ssNamespace.Types.ElementAt(0);
-        }
-
-        [TestMethod]
-        public void BuiltInElementTranslationTest()
-        {
-            var source = @"
-            using System.Html;
-            namespace TestNamespace { 
-                class TestClass { 
-                    [MixedSide]
-                    public void f() { Element e = new Element(); var e2 = Document.GetElementById(""ewjde""); }
-                }
-
-                class Person
-                {
-                    TestClass g()
-                    {
-                    
-                    }
-                }
-            }";
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-        }
-
-        [TestMethod]
-        public void BuiltInTestTranslationTest()
-        {
-            var source = @"Element e = new Element(); var e2 = Document.GetElementById(""ewjde"");";
-            var ssStatement = Parse.StatementsToSS(source);
-        }
-
-
-
+        // Todo: Test nested namespaces
+            //        namespace TestNameSpace.Nested.NestedAgain.Andagain {
+            //    class Lol {
+            //        [MixedSide]
+            //        void lol() { }
+            //    }
+            //}
     }
 }
