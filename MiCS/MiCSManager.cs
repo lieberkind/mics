@@ -102,8 +102,9 @@ namespace MiCS
 
             userTreeIsValid = this.validate();
 
-            if (!userTreeIsValid)
-                throw new Exception("The submitted source code is not valid");
+            // Todo: Move this elsewhere - probably to BuildScript method
+            //if (!userTreeIsValid)
+            //    throw new Exception("The submitted source code is not valid");
 
             MiCSManager.instance = this;
         }
