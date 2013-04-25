@@ -113,6 +113,58 @@ namespace MiCS
         }
 
         /// <summary>
+        /// Determines if a type is client side from a namespace name and a type name
+        /// </summary>
+        /// <param name="namespaceName">Namespace name</param>
+        /// <param name="typeName">Type name</param>
+        /// <returns>True if type is client side, false otherwise</returns>
+        public bool isClientSideType(string namespaceName, string typeName)
+        {
+            return ClientSideMembers.ContainsKey(namespaceName) && ClientSideMembers[namespaceName].ContainsKey(typeName);
+        }
+
+        /// <summary>
+        /// Determines if a type is mixed side from a namespace name and a type name
+        /// </summary>
+        /// <param name="namespaceName">Namespace name</param>
+        /// <param name="typeName">Type name</param>
+        /// <returns>True if type is mixed side, false otherwise</returns>
+        public bool isMixedSideType(string namespaceName, string typeName)
+        {
+            return MixedSideMembers.ContainsKey(namespaceName) && MixedSideMembers[namespaceName].ContainsKey(typeName);
+        }
+
+        /// <summary>
+        /// Determines if a member is client side from a namespace name, a type name and a member name
+        /// </summary>
+        /// <param name="namespaceName">Namespaace name</param>
+        /// <param name="typeName">Type name</param>
+        /// <param name="memberName">Member name</param>
+        /// <returns>Returns true if member is client side, false otherwise</returns>
+        public bool isClientSideMethod(string namespaceName, string typeName, string memberName)
+        {
+            return 
+                ClientSideMembers.ContainsKey(namespaceName) &&
+                ClientSideMembers[namespaceName].ContainsKey(typeName) &&
+                ClientSideMembers[namespaceName][typeName].Contains(memberName);
+        }
+
+        /// <summary>
+        /// Determines if a member is mixed side from a namespace name, a type name and a member name
+        /// </summary>
+        /// <param name="namespaceName">Namespace name</param>
+        /// <param name="typeName">Type name</param>
+        /// <param name="memberName">Member name</param>
+        /// <returns>Returns true if member is mixed side, false otherwise</returns>
+        public bool isMixedSideMethod(string namespaceName, string typeName, string memberName)
+        {
+            return 
+                MixedSideMembers.ContainsKey(namespaceName) &&
+                MixedSideMembers[namespaceName].ContainsKey(typeName) &&
+                MixedSideMembers[namespaceName][typeName].Contains(memberName);
+        }
+        
+        /// <summary>
         /// Returns true if the specified type is
         /// a DOM type from the ScriptSharp namespace System.Html.
         /// </summary>
@@ -120,6 +172,7 @@ namespace MiCS
         {
             return classDeclaration.HasAttribute("ScriptName") || classDeclaration.HasAttribute("ScriptImport");
         }
+
         /// <summary>
         /// Returns true if the specified type is
         /// a DOM type from the ScriptSharp namespace System.Html.
