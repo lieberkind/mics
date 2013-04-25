@@ -23,34 +23,17 @@ namespace MiCS
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax objectCreationExpression)
         {
-            //var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(objectCreationExpression.Type).Type;
-
-            //if (type is ErrorTypeSymbol)
-            //    type = TypeSymbolGetter.GetTypeSymbol(objectCreationExpression.Type);
-
-            //TypeSymbol = type;
-
             TypeSymbol = TypeSymbolGetter.GetTypeSymbol(objectCreationExpression.Type);
         }
 
         public override void VisitIdentifierName(IdentifierNameSyntax node)
         {
-            //var type = MiCSManager.ScriptTypeSemanticModel.GetTypeInfo(node).Type;
-
-            //if (type is ErrorTypeSymbol)
-            //    throw new Exception("Type should be found in ScriptTypeSemanticModel.");
-            ////type = CoreTypeManager.GetTypeByName(node.Identifier.ValueText);
-
-            //TypeSymbol = type;
-
             TypeSymbol = TypeSymbolGetter.GetTypeSymbol(node);
         }
 
         public override void VisitArgument(ArgumentSyntax node)
         {
             TypeSymbol = TypeSymbolGetter.GetTypeSymbol(node.Expression);
-
-            //base.VisitArgument(node);
         }
 
         public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)

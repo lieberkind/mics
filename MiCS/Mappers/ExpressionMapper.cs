@@ -15,7 +15,7 @@ using ScriptSharp.CodeModel;
 
 namespace MiCS.Mappers
 {
-    public static class Expressions
+    public static class ExpressionMapper
     {
 
         //private Expression ProcessArrayNewNode(ArrayNewNode node)

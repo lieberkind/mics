@@ -10,7 +10,7 @@ using SS = ScriptSharp.ScriptModel;
 namespace MiCS.Mappers
 {
 
-    public static class Symbols
+    public static class SymbolMapper
     {
         static internal SS.ParameterSymbol Map(this ParameterSyntax p, SS.MemberSymbol ssParent, SS.TypeSymbol valueType)
         {
