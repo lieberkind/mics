@@ -9,7 +9,11 @@ using MiCS.Builders;
 
 namespace MiCS.Mappers
 {
-    public static class StatementMapper
+    /// <summary>
+    /// Class with extension mapping methods that are used to map
+    /// from Roslyn AST nodes to ScriptSharp statements.
+    /// </summary>
+    internal static class StatementMapper
     {
         /// <summary>
         /// Returns mapped ScriptSharp IfElseStatement with the specified condition, ifStatement and elseStatement.

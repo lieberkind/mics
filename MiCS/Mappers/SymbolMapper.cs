@@ -125,7 +125,7 @@ namespace MiCS.Mappers
         static internal SS.TypeSymbol Map(this TypeSymbol typeSymbol)
         {
             #region Region: Possibly relevant ScriptSharpCode
-                //            /// <summary>
+                ///// <summary>
                 ///// This maps C# intrinsic types (managed types that have an equivalent
                 ///// C# keyword)
                 ///// </summary>

@@ -9,60 +9,20 @@ using System.Threading.Tasks;
 using MiCS.Builders;
 using ScriptSharp.CodeModel;
 
-// Todo: DOM representation!
-// Todo: Check how is C# built in complex types (e.g. String & DateTime) supported?
-// Todo: Consider the return type issue related to MethodSymbol nodes (see mapping method).
+
 
 namespace MiCS.Mappers
 {
-    public static class ExpressionMapper
+    /// <summary>
+    /// Class with extension mapping methods that are used to map
+    /// from Roslyn AST nodes to ScriptSharp expressions.
+    /// </summary>
+    internal static class ExpressionMapper
     {
-
-        //private Expression ProcessArrayNewNode(ArrayNewNode node)
-        //{
-        //    TypeSymbol itemTypeSymbol = _symbolSet.ResolveType(node.TypeReference, _symbolTable, _symbolContext);
-        //    Debug.Assert(itemTypeSymbol != null);
-        //    TypeSymbol arrayTypeSymbol = _symbolSet.CreateArrayTypeSymbol(itemTypeSymbol);
-        //    if (node.InitializerExpression == null)
-        //    {
-        //        if (node.ExpressionList == null)
-        //        {
-        //            return new LiteralExpression(arrayTypeSymbol, new Expression[0]);
-        //        }
-        //        else
-        //        {
-        //            Debug.Assert(node.ExpressionList.NodeType == ParseNodeType.ExpressionList);
-        //            ExpressionListNode argsList = (ExpressionListNode)node.ExpressionList;
-        //            Debug.Assert(argsList.Expressions.Count == 1);
-        //            Expression sizeExpression = BuildExpression(argsList.Expressions[0]);
-        //            if (sizeExpression is MemberExpression)
-        //            {
-        //                sizeExpression = TransformMemberExpression((MemberExpression)sizeExpression);
-        //            }
-        //            NewExpression newExpr = new NewExpression(arrayTypeSymbol);
-        //            newExpr.AddParameterValue(sizeExpression);
-        //            return newExpr;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        ArrayInitializerNode initializerNode = (ArrayInitializerNode)node.InitializerExpression;
-        //        Expression[] values = new Expression[initializerNode.Values.Count];
-        //        int i = 0;
-        //        foreach (ParseNode valueNode in initializerNode.Values)
-        //        {
-        //            values[i] = BuildExpression(valueNode);
-        //            if (values[i] is MemberExpression)
-        //            {
-        //                values[i] = TransformMemberExpression((MemberExpression)values[i]);
-        //            }
-        //            i++;
-        //        }
-        //        return new LiteralExpression(arrayTypeSymbol, values);
-        //    }
-        //}
-
-
+        /// <summary>
+        /// Returns mapped ScriptSharp UnaryExpression with specified operand expression.
+        /// </summary>
+        /// <remarks>Currently only minus and exclamationmark unary operators are supported.</remarks>
         static internal SS.UnaryExpression Map(this PrefixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
         {
             if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
@@ -73,22 +33,24 @@ namespace MiCS.Mappers
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
+        // Todo: Do we need this for case study? doen't seem like it...
         //static internal SS.Expression Map(this ParenthesizedExpressionSyntax parenthesizeExpression, SS.TypeSymbol associatedType, SS.ClassSymbol associatedParent)
         //{ 
         //    var ssExpression = ExpressionBuilder.Build(parenthesizeExpression.Expression
         //}
-
-        //static internal SS.UnaryExpression Map(this PostfixUnaryExpressionSyntax prefixUnaryExpression, SS.Expression ssOperandExpression)
-        //{
-        //    if (prefixUnaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken)
-        //        return new SS.UnaryExpression(SS.Operator.Minus, ssOperandExpression);
-        //    else
-        //        throw new NotSupportedException("Prefix unary operator is currently not supported.");
-        //}
         
         // Todo: Prettify this shit!
+        /// <summary>
+        /// Return ScriptSharp LiteralExpression (when initializer syntax is used) or NewExpression representing new Array creation.
+        /// </summary>
+        /// <param name="arrayCreationExpression">Roslyn ArrayCreationExpression AST node.</param>
+        /// <param name="associatedType"></param>
+        /// <param name="associatedParent"></param>
+        /// <returns></returns>
         static internal SS.Expression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent)
         {
+            // Todo: Fix... maybe wrong associated type...
+
             SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", new SS.NamespaceSymbol("System", null));
             arrayTypeSymbol.SetIgnoreNamespace();
             arrayTypeSymbol.SetArray();
@@ -115,6 +77,9 @@ namespace MiCS.Mappers
             return newExpr;
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp NewExpression with the specified type.
+        /// </summary>
         static internal SS.NewExpression Map(this ObjectCreationExpressionSyntax objectCreationExpression, SS.TypeSymbol associatedType)
         {
             if (associatedType == null)
@@ -122,11 +87,12 @@ namespace MiCS.Mappers
             if (!(associatedType is SS.ClassSymbol))
                 throw new Exception("Only ClassSymbols as associated type is currently supported.");
 
-            var newExpression = new SS.NewExpression(associatedType);
-
-            return newExpression;
+            return new SS.NewExpression(associatedType);
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp BinaryExpression with specified left and right expressions.
+        /// </summary>
         static internal SS.BinaryExpression Map(this BinaryExpressionSyntax expr, SS.Expression ssLeftExpression, SS.Expression ssRightExpression)
         {
             var op = expr.OperatorToken.Kind;
@@ -138,6 +104,8 @@ namespace MiCS.Mappers
             {
                 case SyntaxKind.EqualsToken:
                     return new SS.BinaryExpression(SS.Operator.Equals, ssLeftExpression, ssRightExpression);
+
+                // Arithmetic expressions
                 case SyntaxKind.PlusToken:
                     return new SS.BinaryExpression(SS.Operator.Plus, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.MinusToken:
@@ -149,7 +117,6 @@ namespace MiCS.Mappers
                 case SyntaxKind.PercentToken:
                     return new SS.BinaryExpression(SS.Operator.Mod, ssLeftExpression, ssRightExpression);
 
-                // Todo: consider use of strict operators such as "===".
                 // Relational expressions (C# "is" and "as" operators are not currently supported).
                 case SyntaxKind.EqualsEqualsToken:
                     return new SS.BinaryExpression(SS.Operator.EqualEqual, ssLeftExpression, ssRightExpression);
@@ -164,8 +131,7 @@ namespace MiCS.Mappers
                 case SyntaxKind.LessThanEqualsToken:
                     return new SS.BinaryExpression(SS.Operator.LessEqual, ssLeftExpression, ssRightExpression);
 
-                // Logical expressions
-                // C# "conditional and" and "conditional or" 
+                // Logical expressions (C# "conditional and" and "conditional or") 
                 case SyntaxKind.AmpersandAmpersandToken:
                     return new SS.BinaryExpression(SS.Operator.LogicalAnd, ssLeftExpression, ssRightExpression);
                 case SyntaxKind.BarBarToken:
@@ -183,48 +149,58 @@ namespace MiCS.Mappers
             return new SS.LocalExpression(new SS.VariableSymbol(identifierName.Identifier.ValueText, null, null));
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp LiteralExpression.
+        /// </summary>
         static internal SS.LiteralExpression Map(this LiteralExpressionSyntax literalExpression)
         {
             var @value = literalExpression.Token.Value;
+            var ssValue = TypeManager.GetTypeSymbol(literalExpression).Map();
 
-            // Todo: Set valueType parameter as done in ScriptSharp
             switch (literalExpression.Kind)
             {
                 case SyntaxKind.StringLiteralExpression:
-                    return new SS.LiteralExpression(null, (string)@value);
+                    return new SS.LiteralExpression(ssValue, (string)@value);
                 case SyntaxKind.NumericLiteralExpression:
                     if (@value is int)
-                        return new SS.LiteralExpression(null, (int)@value);
+                        return new SS.LiteralExpression(ssValue, (int)@value);
                     if (@value is double)
-                        return new SS.LiteralExpression(null, (double)@value);
+                        return new SS.LiteralExpression(ssValue, (double)@value);
                     if (@value is float)
-                        return new SS.LiteralExpression(null, (float)@value);
+                        return new SS.LiteralExpression(ssValue, (float)@value);
                     if (@value is decimal)
-                        return new SS.LiteralExpression(null, (decimal)@value);
+                        return new SS.LiteralExpression(ssValue, (decimal)@value);
                     if (@value is uint)
-                        return new SS.LiteralExpression(null, (uint)@value);
+                        return new SS.LiteralExpression(ssValue, (uint)@value);
                     if (@value is long)
-                        return new SS.LiteralExpression(null, (long)@value);
+                        return new SS.LiteralExpression(ssValue, (long)@value);
                     if (@value is ulong)
-                        return new SS.LiteralExpression(null, (ulong)@value);
+                        return new SS.LiteralExpression(ssValue, (ulong)@value);
                     if (@value is short)
-                        return new SS.LiteralExpression(null, (short)@value);
+                        return new SS.LiteralExpression(ssValue, (short)@value);
                     if (@value is ushort)
-                        return new SS.LiteralExpression(null, (ushort)@value);
+                        return new SS.LiteralExpression(ssValue, (ushort)@value);
                     throw new NotSupportedException("Literal type is not supported!");
                 case SyntaxKind.FalseLiteralExpression:
-                    return new SS.LiteralExpression(null, (bool)@value);
+                    return new SS.LiteralExpression(ssValue, (bool)@value);
                 case SyntaxKind.TrueLiteralExpression:
-                    return new SS.LiteralExpression(null, (bool)@value);
+                    return new SS.LiteralExpression(ssValue, (bool)@value);
                 case SyntaxKind.CharacterLiteralExpression:
-                    return new SS.LiteralExpression(null, (char)@value);
+                    return new SS.LiteralExpression(ssValue, (char)@value);
                 case SyntaxKind.NullLiteralExpression:
-                    return new SS.LiteralExpression(null, null);
+                    return new SS.LiteralExpression(ssValue, null);
                 default:
                     throw new NotSupportedException("Literal type is not supported!");
             }
         }
-
+        // Todo: Maybe try and clean up more...
+        /// <summary>
+        /// Return mapped ScriptSharp MethodExpression representing method invocation.
+        /// </summary>
+        /// <param name="invocation">Roslyn InvocationExpressionSyntax AST node.</param>
+        /// <param name="ssParent">Parent ScriptSharp class containing the method being called.</param>
+        /// <param name="ssParentMethod">Parent ScriptSharp method containing the invocation.</param>
+        /// <param name="ssParameters">ScriptSharp invocation parameters.</param>
         static internal SS.MethodExpression Map(this InvocationExpressionSyntax invocation, SS.ClassSymbol ssParent, SS.MethodSymbol ssParentMethod, Collection<SS.Expression> ssParameters)
         {
             if (!(invocation.Expression is IdentifierNameSyntax) && !(invocation.Expression is MemberAccessExpressionSyntax))
@@ -305,11 +281,18 @@ namespace MiCS.Mappers
             }
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp FieldExpression with the specified object reference and field symbol.
+        /// </summary>
         static internal SS.FieldExpression Map(this MemberAccessExpressionSyntax memberAccess, SS.Expression ssObjectReference, SS.FieldSymbol ssField)
         {
+            // Todo: Do we have any code that come in here? no tests it seems...
             return new SS.FieldExpression(ssObjectReference, ssField);
         }
 
+        /// <summary>
+        /// REturns mapped ScriptSharp ConditionalExpression with the specified condition, true expression and false expression.
+        /// </summary>
         static internal SS.ConditionalExpression Map(this ConditionalExpressionSyntax conditionalExpression, 
             SS.Expression ssCondition, 
             SS.Expression ssTrueExpression, 
@@ -319,6 +302,10 @@ namespace MiCS.Mappers
             return new SS.ConditionalExpression(ssCondition, ssTrueExpression, ssFalseExpression);
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp IndexerExpression with the specified object 
+        /// reference and indexer symbol (e.g. used for accessing Array elements).
+        /// </summary>
         static internal SS.IndexerExpression Map(this ElementAccessExpressionSyntax elementAccessExpression, SS.Expression ssObjectReference, SS.IndexerSymbol ssIndexerSymbol)
         {
             return new SS.IndexerExpression(ssObjectReference, ssIndexerSymbol);
