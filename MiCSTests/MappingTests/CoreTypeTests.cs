@@ -18,7 +18,7 @@ namespace MiCSTests
     {
 
         [TestMethod]
-        public void CoreTypeTestRegexCanBeMapped()
+        public void Regex_CanBeMappedTest()
         {
             var source = @"
                 using System.Text.RegularExpressions;
@@ -27,7 +27,7 @@ namespace MiCSTests
                     class TestClass {
                 
                         [MixedSide]
-                        public void ImARegEx() {
+                        public void f() {
                             Regex rx = new Regex(""imapattern""); 
                         }
                     }
@@ -40,7 +40,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void CoreTypeTestRegexMethodCanBeMapped()
+        public void Regex_RegexMethodCanBeMapped()
         {
             var source = @"
                 using System.Text.RegularExpressions;
@@ -63,28 +63,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void CoreTypeTestStringCanBeMapped()
-        {
-            var source = @"
-                using System;
-                namespace TestNamespace {
-                    class TestClass {
-                
-                        [MixedSide]
-                        public void ImARegEx() {
-                            String s = ""foo"";
-                        }
-                    }
-                }
-
-            ";
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-        }
-
-        [TestMethod]
-        public void CoreTypeTestStringPropertyCanBeMapped()
+        public void String_StringPropertyCanBeMappedTest()
         {
             var source = @"
                 using System;
@@ -106,7 +85,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void CoreTypeTestStringMethodCanBeMapped()
+        public void String_MethodCanBeMappedTest()
         {
             var source = @"
                 using System;
@@ -127,70 +106,34 @@ namespace MiCSTests
             var ssNamespace = NamespaceBuilder.Build(@namespace);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
-        public void CoreTypeTestDateCannotBeMapped()
-        {
-            var source = @"
-                namespace TestNamespace {
-                    class TestClass {
-                
-                        [MixedSide]
-                        public void ImARegEx() {
-                           System.Date d = new Date(); 
-                        }
-                    }
-                }
 
-            ";
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-        }
+        #region Region: Special Core Type Tests
 
         [TestMethod]
-        public void CoreTypeTestVoid()
+        public void CoreType_VoidTest()
         {
             var source = @"
-                namespace TestNamespace {
-                    class TestClass {
-                
                         [MixedSide]
-                        public void ImARegEx() {
+                        public void f() {
                            int i = 0; 
-                        }
-                    }
-                }
-
-            ";
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-        }
-
-        [TestMethod]
-        public void CoreTypeTestBool()
-        {
-            var source = @"bool b = true;";
-
-            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
-            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
-
-            Assert.AreEqual(ssVariableType.FullName, "System.Boolean");
+                        }";
+            var ssMethod = Parse.MethodsToSS(source).First();
+            Assert.AreEqual(ssMethod.AssociatedType.FullName, "System.Void");
         }
 
         [TestMethod]
         [ExpectedException(typeof(MemberNotMappedException))]
-        public void CoreTypeTestBooleanFail()
+        public void CoreType_BooleanMemberFailTest()
         {
             var source = @"bool b = true; b.GetType();";
 
-            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementsToSS(source).First();
             var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+            
         }
 
         [TestMethod]
-        public void CoreTypeTestBoolean()
+        public void CoreType_BooleanTest()
         {
             var source = @"Boolean b = true;";
 
@@ -201,7 +144,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void CoreTypeTestBooleanNew()
+        public void CoreType_NewBooleanTest()
         {
             var source = @"bool b = new Boolean();";
 
@@ -213,7 +156,7 @@ namespace MiCSTests
 
         [TestMethod]
         [ExpectedException(typeof(MemberSignatureArgumentTypeNotMappedException))]
-        public void CoreTypeTestStringMemberFail()
+        public void CoreType_StringMemberFailTest()
         {
             var source = @"string s = ""foo""; s.IndexOf(""foo"")";
 
@@ -225,7 +168,7 @@ namespace MiCSTests
 
         [TestMethod]
         [ExpectedException(typeof(MemberSignatureNotMappedException))]
-        public void CoreTypeTestStringMemberFailArgumentCount()
+        public void CoreType_StringMemberFailArgumentCountTest()
         {
             var source = @"string s = ""foo""; s.IndexOf('f', 2)";
             var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
@@ -233,7 +176,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void CoreTypeTestStringMember()
+        public void CoreType_StringMemberTest()
         {
             var source = @"string s = ""foo""; s.IndexOf('f')";
 
@@ -244,18 +187,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void CoreTypeTestString()
-        {
-            var source = @"string s = ""foo"";";
-
-            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
-            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
-
-            Assert.AreEqual(ssVariableType.FullName, "System.String");
-        }
-
-        [TestMethod]
-        public void CoreTypeTestStringNew()
+        public void CoreType_StringNewTest()
         {
             var source = @"var s = new String(""foo"");";
 
@@ -264,5 +196,190 @@ namespace MiCSTests
 
             Assert.AreEqual(ssVariableType.FullName, "System.String");
         }
+
+        #endregion
+
+        #region Region: Types
+
+        // Todo: Add Array tests
+
+        [TestMethod]
+        public void TypeSymbol_StringTest()
+        {
+            var source = @"string i = ""foo"";";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
+            Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            Assert.IsTrue(declaration is VariableDeclarationSyntax);
+            Assert.AreEqual(declaration.Variables.Count, ssDeclaration.Variables.Count);
+            Assert.IsTrue(ssDeclaration.Variables.Count == 1);
+
+            var ssVariable = ssDeclaration.Variables.First();
+
+            Assert.AreEqual(ssVariable.ValueType.FullName, "System.String");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_IntTest()
+        {
+            var source = @"int i = -1;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)((PrefixUnaryExpressionSyntax)declaration.Variables.First().Initializer.Value).Operand;
+            var ssLiteral = (SS.LiteralExpression)((SS.UnaryExpression)ssDeclaration.Variables.First().Value).Operand;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.Int32");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_UIntTest()
+        {
+            var source = @"uint i = 0U;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.UInt32");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_BooleanTest()
+        {
+            var source = @"int b = true;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.Boolean");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_LongTest()
+        {
+            var source = @"long l = 1L;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.Int64");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_ULongTest()
+        {
+            var source = @"ulong l = 1UL;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.UInt64");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_DecimalTest()
+        {
+            var source = @"decimal d = 1.0m;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.Decimal");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_DoubleTest()
+        {
+            var source = @"double d = 1.0d;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)declaration.Variables.First().Initializer.Value;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.Double");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_ShortTest()
+        {
+            var source = @"short s = (short)1;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)((CastExpressionSyntax)declaration.Variables.First().Initializer.Value).Expression;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.Int16");
+        }
+
+        [TestMethod]
+        public void TypeSymbol_UShortTest()
+        {
+            var source = @"ushort s = (ushort)1;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
+
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+
+            var literal = (LiteralExpressionSyntax)((CastExpressionSyntax)declaration.Variables.First().Initializer.Value).Expression;
+            var ssLiteral = (SS.LiteralExpression)ssDeclaration.Variables.First().Value;
+
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssDeclaration.Variables.ElementAt(0).ValueType.FullName, "System.UInt16");
+        }
+
+        #endregion
+
+
     }
 }

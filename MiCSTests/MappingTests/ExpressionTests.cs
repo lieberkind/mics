@@ -74,6 +74,49 @@ namespace MiCSTests
             Assert.AreEqual(ssLiteral.Value, 1);
         }
 
+        [TestMethod]
+        public void UnaryExpression_LogicalNotTest()
+        {
+            var expression = Parse.Expression(@"!true");
+            var ssExpression = ExpressionBuilder.Build(expression);
+
+            Assert.IsTrue(expression is PrefixUnaryExpressionSyntax);
+            Assert.IsTrue(ssExpression is SS.UnaryExpression);
+
+            var unaryExpression = (PrefixUnaryExpressionSyntax)expression;
+            var ssUnaryExpression = (SS.UnaryExpression)ssExpression;
+
+            Assert.IsTrue(unaryExpression.OperatorToken.Kind == SyntaxKind.ExclamationToken);
+            Assert.IsTrue(ssUnaryExpression.Operator == SS.Operator.LogicalNot);
+            Assert.IsTrue(ssUnaryExpression.Operand is SS.LiteralExpression);
+
+            var ssLiteral = (SS.LiteralExpression)ssUnaryExpression.Operand;
+            Assert.AreEqual(ssLiteral.Value, true);
+        }
+
+        [TestMethod]
+        public void FieldExpression_Test()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    int f() { var s = ""hello""; return s.Length; }
+                } 
+            }";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+            var ssMethod = (SS.MethodSymbol)ssNamespace.Types.ElementAt(0).Members.ElementAt(0);
+            var ssReturnStatement = (SS.ReturnStatement)ssMethod.Implementation.Statements.ElementAt(1);
+
+            Assert.IsTrue(ssReturnStatement.Value is SS.FieldExpression);
+
+            var ssFieldExpression = (SS.FieldExpression)ssReturnStatement.Value;
+            Assert.IsTrue(ssFieldExpression.Field.AssociatedType.Name.Equals("Int32"));
+        }
+
         #region Region: Invocation Expression
 
         [TestMethod]
@@ -159,7 +202,6 @@ namespace MiCSTests
             Assert.IsTrue(((SS.LocalExpression)ssBinaryExpression.LeftOperand).Symbol is SS.VariableSymbol);
         }
 
-
         [TestMethod]
         public void BinaryExpression_PlusTest()
         {
@@ -234,7 +276,6 @@ namespace MiCSTests
             Assert.IsTrue(ssBinary.RightOperand is SS.LiteralExpression);
             Assert.IsTrue(ssBinary.Operator == SS.Operator.Mod);
         }
-
 
         [TestMethod]
         public void BinaryExpression_RelationalEqualsTest()
@@ -355,8 +396,6 @@ namespace MiCSTests
             Assert.IsTrue(ssBinary.RightOperand is SS.BinaryExpression);
             Assert.IsTrue(ssBinary.Operator == SS.Operator.LogicalOr);
         }
-
-
 
         [TestMethod]
         public void BinaryExpression_NestedTest()
