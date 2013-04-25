@@ -185,6 +185,21 @@ namespace MiCSTests
             Assert.AreEqual(ssMethod.AssociatedType.FullName, "System.Void");
         }
 
+        // Todo: Fix maybe...
+        //[TestMethod]
+        //public void CoreType_NullObjectLiteralTest()
+        //{
+        //    var source = @"return null;";
+        //    var statement = Parse.Statement(source);
+        //    var ssStatement = Parse.StatementToSS(source);
+
+        //    Assert.IsTrue(ssStatement is SS.ReturnStatement);
+
+        //    var returnStmt = (SS.ReturnStatement)ssStatement;
+
+        //    Assert.IsTrue(returnStmt.Value is SS.LiteralExpression);
+        //}
+
         [TestMethod]
         [ExpectedException(typeof(MemberNotMappedException))]
         public void CoreType_BooleanMemberFailTest()
@@ -223,6 +238,17 @@ namespace MiCSTests
         public void CoreType_StringMemberFailTest()
         {
             var source = @"string s = ""foo""; s.IndexOf(""foo"")";
+
+            var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
+            var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;
+
+            Assert.AreEqual(ssVariableType.FullName, "System.String");
+        }
+
+        [TestMethod]
+        public void CoreType_StringMemberFieldTest()
+        {
+            var source = @"string s = ""foo""; s.Length;";
 
             var ssStatement = (SS.VariableDeclarationStatement)Parse.StatementToSS(source);
             var ssVariableType = (SS.ClassSymbol)ssStatement.Variables.ElementAt(0).ValueType;

@@ -61,7 +61,7 @@ namespace MiCS
                     }
                 }
                 else
-                    throw new NotImplementedException();
+                    throw new NotImplementedException(); // Todo: Map type null (to System.Object) maybe...
             }
 
             if (type is ErrorTypeSymbol)
