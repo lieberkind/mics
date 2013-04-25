@@ -236,5 +236,10 @@ namespace MiCS
 
             return ((MethodSymbol)symbol).ReturnType;
         }
+
+        internal SymbolInfo GetSymbolInfo(SimpleNameSyntax simpleName)
+        {
+            return SemanticModel.GetSymbolInfo(simpleName);
+        }
     }
 }

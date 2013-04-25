@@ -128,7 +128,7 @@ namespace MiCS
         /// </summary>
         public static bool IsSupportedCoreType(this TypeSymbol typeSymbol)
         {
-            return ScriptSharpTypeManager.IsSupportedCoreType(typeSymbol);
+            return TypeManager.IsSupportedCoreType(typeSymbol);
         }
         /// <summary>
         /// Returns true if this is a core type that can be mapped
@@ -136,7 +136,7 @@ namespace MiCS
         /// </summary>
         public static bool IsSupportedCoreType(this SimpleNameSyntax simpleName)
         {
-            return ScriptSharpTypeManager.IsSupportedCoreType(simpleName);
+            return TypeManager.IsSupportedCoreType(simpleName);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace MiCS
                 return typeSymbol.Name;
 
             if (typeSymbol.IsSupportedCoreType())
-                return ScriptSharpTypeManager.ToCoreScriptType(typeSymbol).Name;
+                return TypeManager.ToCoreScriptType(typeSymbol).Name;
 
             return typeSymbol.Name;
         }
@@ -187,7 +187,7 @@ namespace MiCS
                 }
             }
 
-            var ts = CSharpTypeManager.Instance.SemanticModel.GetSymbolInfo(simpleName).Symbol;
+            var ts = TypeManager.GetSymbolInfo(simpleName).Symbol;
             if (ts is MethodSymbol)
             {
                 var method = (MethodSymbol)ts;
@@ -196,7 +196,7 @@ namespace MiCS
                 var containingNamespaceName = method.ContainingNamespace.FullName();
                 if (method.ContainingType.IsSupportedCoreType())
                 {
-                    var coreMappings = ScriptSharpTypeManager.Instance.CoreMapping.Where(n => 
+                    var coreMappings = TypeManager.CoreMapping.Where(n => 
                         n.NamespaceName.Equals(containingNamespaceName) &&
                         n.Name.Equals(containingTypeName) &&
                         (n.Members.Where(m => m.Name.Equals(methodName))).Count() > 0);

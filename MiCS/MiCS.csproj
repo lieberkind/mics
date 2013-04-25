@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MiCSExceptions.cs" />
     <Compile Include="ScriptSharpTypeManager.cs" />
     <Compile Include="Mapping\CoreTypes\MiCSCoreMapping.cs" />
     <Compile Include="Mapping\CoreTypes\MiCSCoreMemberMapping.cs" />

@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MiCS
+{
+    [Serializable]
+    public class MemberSignatureArgumentTypeNotMappedException : Exception
+    {
+        public MemberSignatureArgumentTypeNotMappedException() { }
+        public MemberSignatureArgumentTypeNotMappedException(string message) : base(message) { }
+        public MemberSignatureArgumentTypeNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected MemberSignatureArgumentTypeNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class MemberSignatureNotMappedException : Exception
+    {
+        public MemberSignatureNotMappedException() { }
+        public MemberSignatureNotMappedException(string message) : base(message) { }
+        public MemberSignatureNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected MemberSignatureNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class MemberNotMappedException : Exception
+    {
+        public MemberNotMappedException() { }
+        public MemberNotMappedException(string message) : base(message) { }
+        public MemberNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected MemberNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+
+    [Serializable]
+    public class TypeNotMappedException : Exception
+    {
+        public TypeNotMappedException() { }
+        public TypeNotMappedException(string message) : base(message) { }
+        public TypeNotMappedException(string message, Exception inner) : base(message, inner) { }
+        protected TypeNotMappedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
+}
