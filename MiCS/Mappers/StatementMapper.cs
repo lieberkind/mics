@@ -11,7 +11,9 @@ namespace MiCS.Mappers
 {
     public static class StatementMapper
     {
-
+        /// <summary>
+        /// Returns mapped ScriptSharp IfElseStatement with the specified condition, ifStatement and elseStatement.
+        /// </summary>
         static internal SS.IfElseStatement Map(this IfStatementSyntax stmt,
             SS.Expression ssCondition,
             SS.Statement ssIfStatement,
@@ -21,21 +23,33 @@ namespace MiCS.Mappers
             return new SS.IfElseStatement(ssCondition, ssIfStatement, ssElseStatement);
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp block statement.
+        /// </summary>
         static internal SS.BlockStatement Map(this BlockSyntax block)
         {
             return new SS.BlockStatement();
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp ReturnStatement with specified expression.
+        /// </summary>
         static internal SS.ReturnStatement Map(this ReturnStatementSyntax returnStatement, SS.Expression ssExpression)
         {
             return new SS.ReturnStatement(ssExpression);
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp ExpressionStatement with specified expression.
+        /// </summary>
         static internal SS.ExpressionStatement Map(this ExpressionStatementSyntax expressionStatement, SS.Expression ssExpression)
         {
             return new SS.ExpressionStatement(ssExpression);
         }
 
+        /// <summary>
+        /// Returns mapped ScriptSharp VariableDeclarationStatement.
+        /// </summary>
         static internal SS.VariableDeclarationStatement Map(this VariableDeclarationSyntax variableDeclaration)
         {
             return new SS.VariableDeclarationStatement();
@@ -47,6 +61,9 @@ namespace MiCS.Mappers
         //    return new SS.VariableDeclarationStatement();
         //}
 
+        /// <summary>
+        /// Returns mapped ScriptSharp ForStatement.
+        /// </summary>
         static internal SS.ForStatement Map(this ForStatementSyntax forStatement)
         {
             return new SS.ForStatement();
