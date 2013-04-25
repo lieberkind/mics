@@ -53,7 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreTypeManager.cs" />
+    <Compile Include="ScriptSharpTypeManager.cs" />
     <Compile Include="Mapping\CoreTypes\MiCSCoreMapping.cs" />
     <Compile Include="Mapping\CoreTypes\MiCSCoreMemberMapping.cs" />
     <Compile Include="Mapping\CoreTypes\MiCSCoreTypeMapping.cs" />
@@ -227,9 +227,8 @@
     <Compile Include="ScriptSharp\Web\Html\Window.cs" />
     <Compile Include="ScriptSharp\Web\Html\WindowInstance.cs" />
     <Compile Include="ScriptSharp\TextSources\Web.cs" />
-    <Compile Include="ScriptTypeManager.cs" />
+    <Compile Include="CSharpTypeManager.cs" />
     <Compile Include="TypeManager.cs" />
-    <Compile Include="TypeSymbolGetter.cs" />
     <Compile Include="TypeSymbolWalker.cs" />
     <Compile Include="Validators\Collector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

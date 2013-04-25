@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="MiCS.CoreTypeManager" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAARAAAAAAAAAAIAAAAEAgAACABAAAAAQAQEAACAAAQ=</HashCode>
+      <FileName>CoreTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MemberSignatureArgumentTypeNotMappedException" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CoreTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MemberSignatureNotMappedException" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CoreTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MemberNotMappedException" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CoreTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.TypeNotMappedException" Collapsed="true">
+    <Position X="4" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CoreTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MixedSide" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MiCSAttributes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.ClientSide" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MiCSAttributes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.ClassCollector" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAEAAAAAAAAIAAABAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>MiCSCollectors.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MethodCollector" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAEAAAAAAAAAAAAAAAAAIAAAAAAAAAAAEA=</HashCode>
+      <FileName>MiCSCollectors.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.AttributeCollector" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAQAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>MiCSCollectors.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MiCSCSharpExtensions" Collapsed="true">
+    <Position X="5.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>MiCSCSharpExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MiCSManager" Collapsed="true">
+    <Position X="7.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAIAAAQBAAAEAAAAAAhCABABAAAAIQBAEAACCgQA=</HashCode>
+      <FileName>MiCSManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MiCSRoslynExtensions" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQIQAAAAgICAAJAAAIAAAAAAAAACAAIIAAAAAAEARAA=</HashCode>
+      <FileName>MiCSRoslynExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MiCSUtilities" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>MiCSUtilities.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MiCSValue&lt;T&gt;" Collapsed="true">
+    <Position X="4" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>MiCSValue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MiCSValue" Collapsed="true">
+    <Position X="5.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgQAAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>MiCSValue.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.MiCSWebControlExtensions" Collapsed="true">
+    <Position X="7.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>MiCSWebControlExtensions.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.ScriptTypeManager" Collapsed="true">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAEAAAAAAAAIAAEIAAABAAAAAAAAAAQBQAACAAAAQ=</HashCode>
+      <FileName>ScriptTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MiCS.TypeSymbolGetter" Collapsed="true">
+    <Position X="5.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAEABAAQAAAAAAABAAAIAAAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>TypeSymbolGetter.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
