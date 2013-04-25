@@ -9,21 +9,23 @@ namespace MiCS
 {
     class TypeManager
     {
-        private ScriptTypeManager scriptTypeManager;
-        private CoreTypeManager coreTypeManager;
+        private CSharpTypeManager scriptTypeManager;
+        private ScriptSharpTypeManager coreTypeManager;
 
         private static TypeManager instance;
 
-        private TypeManager(ScriptTypeManager scriptTypeManager, CoreTypeManager coreTypeManager)
+        private TypeManager(CSharpTypeManager scriptTypeManager, ScriptSharpTypeManager coreTypeManager)
         {
             this.scriptTypeManager = scriptTypeManager;
             this.coreTypeManager = coreTypeManager;
         }
 
-        public static void Initiate(ScriptTypeManager scriptTypeManager, CoreTypeManager coreTypeManager)
+
+        // Todo: Find out what to do with this
+        public static void Initiate(CSharpTypeManager scriptTypeManager, ScriptSharpTypeManager coreTypeManager)
         {
-            if (instance == null)            
-                instance = new TypeManager(scriptTypeManager, coreTypeManager);
+            //if (instance == null)            
+            instance = new TypeManager(scriptTypeManager, coreTypeManager);
         }
 
         #region CSharpTypeManager functionality
@@ -74,6 +76,16 @@ namespace MiCS
         public static bool IsMixedSideType(string namespaceName, string typeName)
         {
             return instance.scriptTypeManager.IsMixedSideType(namespaceName, typeName);
+        }
+
+        public static TypeSymbol GetTypeSymbol(SyntaxNode node)
+        {
+            return instance.scriptTypeManager.GetTypeSymbol(node);
+        }
+
+        public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
+        {
+            return instance.scriptTypeManager.GetTypeSymbol(expression);
         }
         #endregion
     }

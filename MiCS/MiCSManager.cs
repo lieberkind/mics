@@ -19,17 +19,16 @@ namespace MiCS
 {
     public class MiCSManager
     {
-        private ScriptTypeManager scriptTypeManager;
-        private CoreTypeManager coreTypeManager;
-        private TypeSymbolGetter typeSymbolGetter;
+        private CSharpTypeManager scriptTypeManager;
+        private ScriptSharpTypeManager coreTypeManager;
+        //private TypeSymbolGetter typeSymbolGetter;
         private static MiCSManager instance;
         private bool userTreeIsValid;
-        private TypeManager typeManager;
 
-        public static TypeSymbolGetter TypeSymbolGetter 
-        {
-            get { return Instance.typeSymbolGetter; } 
-        }
+        //public static TypeSymbolGetter TypeSymbolGetter 
+        //{
+        //    get { return Instance.typeSymbolGetter; } 
+        //}
 
         public static Dictionary<string, Dictionary<string, List<string>>> MixedSideMembers
         {
@@ -95,12 +94,12 @@ namespace MiCS
             if (!Syntax.IsCompleteSubmission(userTree))
                 throw new Exception("Source submission failed!");
 
-            this.scriptTypeManager = new ScriptTypeManager(userTree);
-            this.coreTypeManager = new CoreTypeManager();
+            this.scriptTypeManager = new CSharpTypeManager(userTree);
+            this.coreTypeManager = new ScriptSharpTypeManager();
 
             TypeManager.Initiate(scriptTypeManager, coreTypeManager);
 
-            this.typeSymbolGetter = new TypeSymbolGetter();
+            //this.typeSymbolGetter = new TypeSymbolGetter();
 
             userTreeIsValid = this.validate();
 
@@ -110,15 +109,6 @@ namespace MiCS
 
             MiCSManager.instance = this;
         }
-
-        #region TypeSymbol functionality
-        public static TypeSymbol GetTypeSymbol(SyntaxNode node)
-        {
-            Instance.typeSymbolGetter.Visit(node);
-            return Instance.typeSymbolGetter.TypeSymbol;
-        }
-        #endregion
-
 
         private bool validate()
         {

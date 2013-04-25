@@ -78,7 +78,7 @@ namespace MiCS.Validators
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
-            var type = TypeSymbolGetter.GetTypeSymbol(node.Expression);
+            var type = TypeManager.GetTypeSymbol(node.Expression);
 
             var namespaceName = type.OriginalDefinition.ContainingNamespace.ToString();
 
@@ -154,12 +154,12 @@ namespace MiCS.Validators
 
         private bool IsCoreType(TypeSyntax node)
         {
-            var typeSymbol = TypeSymbolGetter.GetTypeSymbol(node);
+            var typeSymbol = TypeManager.GetTypeSymbol(node);
 
             var typeName = typeSymbol.Name;
             var namespaceName = typeSymbol.OriginalDefinition.ContainingNamespace.ToString();
 
-            var coreTypes = CoreTypeManager.Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
+            var coreTypes = ScriptSharpTypeManager.Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName));
             var isCoreType = coreTypes.Count() > 0;
 
             return isCoreType;
@@ -167,7 +167,7 @@ namespace MiCS.Validators
 
         private bool IsCoreMember(string namespaceName, string typeName, string methodName)
         {
-            var coreMembers = CoreTypeManager.Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName) && (t.Members.Where(m => m.Name.Equals(methodName)).Count() > 0));
+            var coreMembers = ScriptSharpTypeManager.Instance.CoreMapping.Where(t => t.NamespaceName.Equals(namespaceName) && t.Name.Equals(typeName) && (t.Members.Where(m => m.Name.Equals(methodName)).Count() > 0));
             var isCoreMember = coreMembers.Count() > 0;
 
             return isCoreMember;

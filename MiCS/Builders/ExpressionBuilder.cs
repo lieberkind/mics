@@ -44,14 +44,14 @@ namespace MiCS.Builders
         public override void VisitElementAccessExpression(ElementAccessExpressionSyntax elementAccessExpression)
         {
             // Todo: Is this correct?
-            var ssArgumentType = TypeSymbolGetter.GetTypeSymbol(elementAccessExpression.ArgumentList.Arguments[0].Expression).Map();
+            var ssArgumentType = TypeManager.GetTypeSymbol(elementAccessExpression.ArgumentList.Arguments[0].Expression).Map();
 
-            var parentType = TypeSymbolGetter.GetTypeSymbol(elementAccessExpression.Expression);
+            var parentType = TypeManager.GetTypeSymbol(elementAccessExpression.Expression);
 
             if (!(parentType is ArrayTypeSymbol))
                 throw new NotSupportedException("Only array elements can be accessed");
 
-            var ssParentType = TypeSymbolGetter.GetTypeSymbol(elementAccessExpression.Expression).Map();
+            var ssParentType = TypeManager.GetTypeSymbol(elementAccessExpression.Expression).Map();
 
             var ssIndexerSymbol = elementAccessExpression.ArgumentList.Map(ssParentType, ssArgumentType);
 
@@ -126,7 +126,7 @@ namespace MiCS.Builders
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax objectCreationExpression)
         {
             // Todo: This type might have been mapped already...
-            var type = TypeSymbolGetter.GetTypeSymbol(objectCreationExpression);
+            var type = TypeManager.GetTypeSymbol(objectCreationExpression);
 
             var ssTargetType = type.Map();
             var ssNewExpression = objectCreationExpression.Map(ssTargetType);
@@ -154,11 +154,11 @@ namespace MiCS.Builders
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax memberAccess)
         {
-            var memberParentType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Expression);
+            var memberParentType = TypeManager.GetTypeSymbol(memberAccess.Expression);
 
             var ssObjectReference = ExpressionBuilder.Build(memberAccess.Expression, associatedType, associatedParent);
             var ssMemberParentType = memberParentType.Map();
-            var ssType = TypeSymbolGetter.GetTypeSymbol(memberAccess.Name).Map();
+            var ssType = TypeManager.GetTypeSymbol(memberAccess.Name).Map();
             var ssFieldName = memberAccess.Name.ScriptName();
 
             var ssField = new SS.FieldSymbol(ssFieldName, ssMemberParentType, ssType); 

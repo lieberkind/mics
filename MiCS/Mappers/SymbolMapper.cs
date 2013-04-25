@@ -19,13 +19,13 @@ namespace MiCS.Mappers
 
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
-            var ssReturnType = TypeSymbolGetter.GetTypeSymbol(methodDeclaration.ReturnType).Map();
+            var ssReturnType = TypeManager.GetTypeSymbol(methodDeclaration.ReturnType).Map();
             var ssMethodName = methodDeclaration.Identifier.ValueText;
 
             var ssMethod = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
             foreach (var parameter in methodDeclaration.ParameterList.Parameters)
-                ssMethod.AddParameter(parameter.Map(ssMethod, TypeSymbolGetter.GetTypeSymbol(parameter.Type).Map()));
+                ssMethod.AddParameter(parameter.Map(ssMethod, TypeManager.GetTypeSymbol(parameter.Type).Map()));
 
             var implementationStatements = new List<SS.Statement>();
             foreach (var statement in methodDeclaration.Body.Statements)
@@ -287,7 +287,7 @@ namespace MiCS.Mappers
             mappedTypeName = typeSymbol.TypeScriptName();
             mappedNamespaceName = namespaceName;
             if (isSupportedCoreType)
-                mappedNamespaceName = CoreTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
+                mappedNamespaceName = ScriptSharpTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
 
                     
             ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));

@@ -121,15 +121,7 @@ namespace MiCS.Builders
             if (identifier.Kind != SyntaxKind.IdentifierToken)
                 throw new NotSupportedException(); // Todo: Maybe not a necesary check...
  
-
-            var type = TypeSymbolGetter.GetTypeSymbol(localDeclarationStatement.Declaration.Type);
-
-            // Todo: Delete this
-            //if (type is ErrorTypeSymbol)
-            //{
-            //    var coreTypeName = ((IdentifierNameSyntax)localDeclarationStatement.Declaration.Type).Identifier.ValueText;
-            //    type  = CoreTypeManager.GetTypeByName(coreTypeName);
-            //}
+            var type = TypeManager.GetTypeSymbol(localDeclarationStatement.Declaration.Type);
 
             var ssVariable = variable.Map(ssParentMember, type.Map());
 

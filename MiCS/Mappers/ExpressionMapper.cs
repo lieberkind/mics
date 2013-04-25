@@ -243,7 +243,7 @@ namespace MiCS.Mappers
             {
                 var identifierName = (IdentifierNameSyntax)invocation.Expression;
 
-                var ssReturnType = TypeSymbolGetter.GetReturnType(identifierName).Map();
+                var ssReturnType = TypeManager.GetReturnType(identifierName).Map();
                 var ssMethodName = identifierName.ScriptName();
 
                 var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
@@ -263,7 +263,7 @@ namespace MiCS.Mappers
                      * Verify correct use of supported core type (if
                      * this member access is on a supported core type).
                      */
-                    CoreTypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+                    ScriptSharpTypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
                     // Todo: Consider writing for report issues with only verify correct use of core
                     // types on 'foreign' member access. If you can inherit from a core type this
                     // could maybe be problematic, but as inheritance is not within the scope of our
@@ -272,10 +272,10 @@ namespace MiCS.Mappers
                     var ssObjectReferenceName = objectReference.ScriptName();
                     var ssMethodName = memberAccess.Name.ScriptName();
 
-                    var ssReturnType = TypeSymbolGetter.GetReturnType(memberAccess.Name).Map();
+                    var ssReturnType = TypeManager.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
-                    var ssVariableType = TypeSymbolGetter.GetTypeSymbol(objectReference).Map();
+                    var ssVariableType = TypeManager.GetTypeSymbol(objectReference).Map();
                     var ssObjectReference = new SS.VariableSymbol(ssObjectReferenceName, ssParentMethod, ssVariableType);
 
                     var ssLocalExpression = new SS.LocalExpression(ssObjectReference);
@@ -286,7 +286,7 @@ namespace MiCS.Mappers
                 else if (memberAccess.Expression is ThisExpressionSyntax)
                 {
                     var ssMethodName = memberAccess.Name.ScriptName();
-                    var ssReturnType = TypeSymbolGetter.GetReturnType(memberAccess.Name).Map();
+                    var ssReturnType = TypeManager.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
                     var ssThisExpression = new SS.ThisExpression(ssParentClass, true);
