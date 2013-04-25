@@ -1,10 +1,15 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MiCS.Validators;
-using Roslyn.Compilers.CSharp;
-using MiCS;
+using System.Text;
+using System.Linq;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Roslyn.Compilers.CSharp;
+using SS = ScriptSharp.ScriptModel;
+using MiCS;
+using MiCS.Mappers;
+using MiCSTests.TestUtils;
+using MiCS.Builders;
+using MiCS.Validators;
 
 namespace MiCSTests
 {
@@ -508,6 +513,53 @@ namespace MiCSTests
             MiCSManager.Initiate(st);
 
             Assert.IsTrue(MiCSManager.UserTreeIsValid);
+        }
+
+
+
+        [TestMethod]
+        public void DuplicateFunctionsInDifferentClassesTest()
+        {
+            var source = @"
+            namespace TestNamespace1 { 
+                class TestClass1 { 
+                    [MixedSide]
+                    void f() { int i; }
+                }
+
+                class TestClass2 { 
+                    [MixedSide]
+                    void f() { int i; }
+                }
+            }
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
+        }
+
+        [TestMethod]
+        public void DuplicateClassesInDifferentNamespacesTest()
+        {
+            var source = @"
+            namespace TestNamespace1 { 
+                class TestClass1 { 
+                    [MixedSide]
+                    void f() { int i; }
+                }
+            }
+            namespace TestNamespace2 {
+                class TestClass1 { 
+                    [MixedSide]
+                    void g() { int i; }
+                }
+            }
+            ";
+
+            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+            var ssNamespace = NamespaceBuilder.Build(@namespace);
+
         }
     }
 }

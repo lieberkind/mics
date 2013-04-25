@@ -7,7 +7,7 @@ using Roslyn.Compilers.CSharp;
 namespace MiCSTests
 {
     [TestClass]
-    public class MiCSUtilitiesTests
+    public class UtilitiesTests
     {
         [TestMethod]
         public void SyntaxTreeIsReturnedWhenFileExistsInSolution()

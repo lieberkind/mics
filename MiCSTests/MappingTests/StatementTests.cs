@@ -18,7 +18,7 @@ namespace MiCSTests
     {
 
         [TestMethod]
-        public void StatementVariableDeclarationTest()
+        public void VariableDeclarationStatement_DeclarationTest()
         {
             var source = @"string i;";
             var statement = Parse.Statement(source);
@@ -27,21 +27,21 @@ namespace MiCSTests
             Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
             Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
 
-            var RosDeclaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var SSDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
-            Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
-            Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
-            Assert.IsTrue(SSDeclaration.Variables.Count == 1);
+            Assert.IsTrue(declaration is VariableDeclarationSyntax);
+            Assert.AreEqual(declaration.Variables.Count, ssDeclaration.Variables.Count);
+            Assert.IsTrue(ssDeclaration.Variables.Count == 1);
 
-            var RosName = RosDeclaration.Variables.First().Identifier.ValueText;
-            var SSName = SSDeclaration.Variables.First().Name;
+            var name = declaration.Variables.First().Identifier.ValueText;
+            var ssName = ssDeclaration.Variables.First().Name;
 
-            Assert.AreEqual(RosName, SSName);
+            Assert.AreEqual(name, ssName);
         }
 
         [TestMethod]
-        public void StatementVariableVarDeclarationAssignmentTest()
+        public void VariableDeclarationStatement_VarDeclarationTest()
         {
             var source = @"var i = ""foo"";";
             var statement = Parse.Statement(source);
@@ -50,27 +50,27 @@ namespace MiCSTests
             Assert.IsTrue(statement is LocalDeclarationStatementSyntax);
             Assert.IsTrue(ssStatement is SS.VariableDeclarationStatement);
 
-            var RosDeclaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
-            var SSDeclaration = (SS.VariableDeclarationStatement)ssStatement;
+            var declaration = ((LocalDeclarationStatementSyntax)statement).Declaration;
+            var ssDeclaration = (SS.VariableDeclarationStatement)ssStatement;
 
-            Assert.IsTrue(RosDeclaration is VariableDeclarationSyntax);
-            Assert.AreEqual(RosDeclaration.Variables.Count, SSDeclaration.Variables.Count);
-            Assert.IsTrue(SSDeclaration.Variables.Count == 1);
+            Assert.IsTrue(declaration is VariableDeclarationSyntax);
+            Assert.AreEqual(declaration.Variables.Count, ssDeclaration.Variables.Count);
+            Assert.IsTrue(ssDeclaration.Variables.Count == 1);
 
-            var RosVal = RosDeclaration.Variables.First().Initializer.Value;
-            var SSVal = SSDeclaration.Variables.First().Value;
+            var @value = declaration.Variables.First().Initializer.Value;
+            var ssValue = ssDeclaration.Variables.First().Value;
 
-            Assert.IsTrue(RosVal is LiteralExpressionSyntax);
-            Assert.IsTrue(SSVal is SS.LiteralExpression);
+            Assert.IsTrue(@value is LiteralExpressionSyntax);
+            Assert.IsTrue(ssValue is SS.LiteralExpression);
 
-            var RosLiteral = (LiteralExpressionSyntax)RosVal;
-            var SSLiteral = (SS.LiteralExpression)SSVal;
+            var literal = (LiteralExpressionSyntax)@value;
+            var ssLiteral = (SS.LiteralExpression)ssValue;
 
-            Assert.AreEqual(RosLiteral.Token.ValueText, SSLiteral.Value);
+            Assert.AreEqual(literal.Token.ValueText, ssLiteral.Value);
         }
 
         [TestMethod]
-        public void StatementVariableAssignmentTest()
+        public void ExpressionStatement_AssignmentTest()
         {
             var source = @"string i = ""foo""; i = ""hello"";";
             var statement = Parse.Statements(source).ElementAt(1);
@@ -84,7 +84,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void StatementAritmethicAssignmentTest()
+        public void VariableDeclarationStatement_AritmethicAssignmentTest()
         {
             var source = @"string i = 1 + 1;";
             var statement = Parse.Statement(source);
@@ -92,7 +92,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void IfElseStatementTest()
+        public void IfElseStatement_Test()
         {
             var source = @"if (true) { int i; } else { int i; }";
             var statement = Parse.Statement(source);
@@ -108,7 +108,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void IfStatementTest()
+        public void IfStatement_Test()
         {
             var source = @"if (true) { int i; } ";
             var statement = Parse.Statement(source);
@@ -124,7 +124,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void IfElseStatementExplicitNoBlockTest()
+        public void IfElseStatement_NoBlockTest()
         {
             var source = @"
                 if (true)
@@ -145,7 +145,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void IfStatementNoBlockTest()
+        public void IfStatement_NoBlockTest()
         {
             var source = @"if (true) int i;";
             var statement = Parse.Statement(source);
@@ -161,7 +161,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ReturnStatementTest()
+        public void ReturnStatement_Test()
         {
             var source = @"return 12;";
             var statement = Parse.Statement(source);
@@ -175,11 +175,9 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void StatementExpressionInvocationTest()
+        public void ExpressionStatement_InvocationTest()
         {
             var source = @"
-            namespace ns {
-                class Foo {
                     [MixedSide]
                     public void f()
                     {
@@ -190,31 +188,48 @@ namespace MiCSTests
                     public void g()
                     { 
                         f(); 
-                    }
-                }
-            }";
-            var roslynNamespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
+                    }";
 
-            var scriptSharpNamespace = NamespaceBuilder.Build(roslynNamespace);
-            var foo = (SS.ClassSymbol)scriptSharpNamespace.Types.First();
-            var g = (ScriptSharp.ScriptModel.MethodSymbol)foo.Members.ElementAt(1);
-            var expressionStatement = (SS.ExpressionStatement)g.Implementation.Statements.First();
-            var expression = ((SS.MethodExpression)expressionStatement.Expression);
-            var invocationTarget = expression.Method;
+            var ssMethod = Parse.MethodsToSS(source).ElementAt(1);
+            var ssExpressionStatement = (SS.ExpressionStatement)ssMethod.Implementation.Statements.First();
+            var ssExpression = ((SS.MethodExpression)ssExpressionStatement.Expression);
+            var ssInvocationTarget = ssExpression.Method;
 
-            Assert.IsTrue(expression.ObjectReference is SS.ThisExpression);
-            Assert.IsTrue(expression.Parameters.Count == 0);
-            Assert.IsTrue(invocationTarget.Name.Equals("f"));
-
-            /*
-             * The property InvocationTarget.Implementation has an 
-             * assertion that fails when _implementation is null.
-             * the invocation target implementation is null here as 
-             * this is not a method declaration but and invocation. 
-             * Not sure how to verify this with an Assert?
-             */
+            Assert.IsTrue(ssExpression.ObjectReference is SS.ThisExpression);
+            Assert.IsTrue(ssExpression.Parameters.Count == 0);
+            Assert.IsTrue(ssInvocationTarget.Name.Equals("f"));
 
         }
 
+        [TestMethod]
+        public void ForStatement_Test()
+        {
+            var source = @"
+            namespace TestNamespace { 
+                class TestClass { 
+                    [MixedSide]
+                    void f() 
+                    { 
+                        int count = 0;
+                        int i;
+                        for(i = 0; i < 10; i = i + 1)
+                        {
+                            count = count + i;
+                        }
+                    }
+                } 
+            }";
+
+            var st = SyntaxTree.ParseText(source);
+
+            var forStatement = (ForStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is ForStatementSyntax).First();
+
+            var ssForStatement = (SS.ForStatement)StatementBuilder.Build(forStatement, null, null);
+
+            Assert.IsNotNull(ssForStatement.Initializers);
+            Assert.IsNotNull(ssForStatement.Body);
+            Assert.IsNotNull(ssForStatement.Condition);
+            Assert.IsNotNull(ssForStatement.Increments);
+        }
     }
 }
