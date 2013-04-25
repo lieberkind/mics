@@ -57,6 +57,15 @@ namespace MiCSTests.TestUtils
             return ClassesToSymbolSet(source);
         }
 
+        public static List<SS.MethodSymbol> MethodsToSS(string source)
+        {
+            source = "class TestClass { " + source + " }";
+            var ssMethods = new List<SS.MethodSymbol>();
+            var ssClass = ClassesToSS(source).First();
+            return ssClass.Methods();
+
+        }
+
         public static SS.SymbolSet StatementsToSymbolSet(string source)
         {
             source = @"[MixedSide]

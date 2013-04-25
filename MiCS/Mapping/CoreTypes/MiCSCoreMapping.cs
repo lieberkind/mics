@@ -156,8 +156,8 @@ namespace MiCS
 
             mapping.Add(new MiCSCoreTypeMapping()
             {
-                Name = "Int64",
-                NameScript = "Int64",
+                Name = "UInt64",
+                NameScript = "UInt64",
                 NamespaceName = "System",
                 NamespaceNameScript = "System",
                 Members = new List<MiCSCoreMemberMapping>()
