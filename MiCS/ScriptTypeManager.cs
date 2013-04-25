@@ -12,6 +12,8 @@ namespace MiCS
 {
     class ScriptTypeManager
     {
+        private TypeSymbolWalker typeSymbolWalker;
+
         public SemanticModel SemanticModel
         {
             get;
@@ -62,6 +64,8 @@ namespace MiCS
 
             var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree }, references: new[] { mscorlib, systemTextRegularExpression });
             SemanticModel = compilation.GetSemanticModel(tree);
+
+            typeSymbolWalker = new TypeSymbolWalker(SemanticModel);
 
             Instance = this;
         }
@@ -190,6 +194,29 @@ namespace MiCS
             }
             else
                 throw new NotSupportedException();
+        }
+
+        public TypeSymbol GetTypeSymbol(SyntaxNode node)
+        {
+            typeSymbolWalker.Visit(node);
+            return typeSymbolWalker.TypeSymbol;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
+        public TypeSymbol GetReturnType(SimpleNameSyntax node)
+        {
+            var symbol = SemanticModel.GetSymbolInfo(node).Symbol;
+
+            if (symbol == null)
+                throw new Exception("Symbol is null. Can be caused by invalid C# syntax.");
+            else if (!(symbol is MethodSymbol))
+                throw new NotSupportedException();
+
+            return ((MethodSymbol)symbol).ReturnType;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace MiCS
         private TypeSymbolGetter typeSymbolGetter;
         private static MiCSManager instance;
         private bool userTreeIsValid;
-
+        private TypeManager typeManager;
 
         public static TypeSymbolGetter TypeSymbolGetter 
         {
@@ -98,6 +98,8 @@ namespace MiCS
             this.scriptTypeManager = new ScriptTypeManager(userTree);
             this.coreTypeManager = new CoreTypeManager();
 
+            typeManager = new TypeManager(scriptTypeManager, coreTypeManager);
+
             this.typeSymbolGetter = new TypeSymbolGetter();
 
             userTreeIsValid = this.validate();
@@ -109,7 +111,15 @@ namespace MiCS
             MiCSManager.instance = this;
         }
 
-        
+        #region TypeSymbol functionality
+        public static TypeSymbol GetTypeSymbol(SyntaxNode node)
+        {
+            Instance.typeSymbolGetter.Visit(node);
+            return Instance.typeSymbolGetter.TypeSymbol;
+        }
+        #endregion
+
+
         private bool validate()
         {
             var mixedSideMembers = scriptTypeManager.MixedSideMembers;
@@ -188,6 +198,11 @@ namespace MiCS
             generator.GenerateScript(symbols);
             return stringWriter.ToString();
         }
+
+        //public static TypeSymbol GetTypeSymbol(SyntaxNode node)
+        //{
+        //    return Instance.scriptTypeManager.GetTypeSymbol(node);
+        //}
 
     }
 }

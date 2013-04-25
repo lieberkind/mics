@@ -142,6 +142,7 @@ namespace MiCS
         /// Returns true if this is a core type that can be mapped
         /// to a script core type.
         /// </summary>
+        // Todo: Move to MiCSManager
         public static bool IsSupportedCoreType(SimpleNameSyntax simpleName)
         {
             return IsSupportedCoreType(TypeSymbolGetter.GetTypeSymbol(simpleName));
@@ -256,7 +257,7 @@ namespace MiCS
 
     }
 
-
+    // Todo: Should probably be moved away from CoreTypeManager
     [Serializable]
     public class MemberSignatureArgumentTypeNotMappedException : Exception
     {
