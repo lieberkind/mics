@@ -67,13 +67,6 @@ namespace MiCS
 
             typeSymbolWalker = new TypeSymbolWalker(SemanticModel);
 
-            Instance = this;
-        }
-
-        public static CSharpTypeManager Instance
-        {
-            get;
-            private set;
         }
 
 
