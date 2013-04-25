@@ -93,7 +93,7 @@ namespace MiCS
         /// </summary>
         public static bool IsUserType(this ClassDeclarationSyntax classDeclaration)
         {
-            return ScriptTypeManager.IsUserType(classDeclaration);
+            return TypeManager.IsUserType(classDeclaration);
         }
         /// <summary>
         /// Returns true if the specified type is
@@ -101,7 +101,7 @@ namespace MiCS
         /// </summary>
         public static bool IsUserType(this TypeSymbol typeSymbol)
         {
-            return ScriptTypeManager.IsUserType(typeSymbol);
+            return TypeManager.IsUserType(typeSymbol);
         }
 
 
@@ -111,7 +111,7 @@ namespace MiCS
         /// </summary>
         public static bool IsDOMType(this ClassDeclarationSyntax classDeclaration)
         {
-            return ScriptTypeManager.IsDOMType(classDeclaration);
+            return TypeManager.IsDOMType(classDeclaration);
         }
         /// <summary>
         /// Returns true if the specified type is
@@ -119,7 +119,7 @@ namespace MiCS
         /// </summary>
         public static bool IsDOMType(this TypeSymbol typeSymbol)
         {
-            return ScriptTypeManager.IsDOMType(typeSymbol);
+            return TypeManager.IsDOMType(typeSymbol);
         }
 
         /// <summary>

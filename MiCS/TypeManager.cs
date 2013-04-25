@@ -12,22 +12,69 @@ namespace MiCS
         private ScriptTypeManager scriptTypeManager;
         private CoreTypeManager coreTypeManager;
 
-        private TypeManager instance;
+        private static TypeManager instance;
 
-        public TypeManager(ScriptTypeManager scriptTypeManager, CoreTypeManager coreTypeManager)
+        private TypeManager(ScriptTypeManager scriptTypeManager, CoreTypeManager coreTypeManager)
         {
             this.scriptTypeManager = scriptTypeManager;
             this.coreTypeManager = coreTypeManager;
         }
 
-        public TypeSymbol GetReturnType(SimpleNameSyntax simpleName)
+        public static void Initiate(ScriptTypeManager scriptTypeManager, CoreTypeManager coreTypeManager)
         {
-            return scriptTypeManager.GetReturnType(simpleName);
+            if (instance == null)            
+                instance = new TypeManager(scriptTypeManager, coreTypeManager);
         }
 
-        //public bool IsDOMType(ClassDeclarationSyntax classDeclaration)
-        //{ 
-        //    return 
-        //}
+        #region CSharpTypeManager functionality
+        public static TypeSymbol GetReturnType(SimpleNameSyntax simpleName)
+        {
+            return instance.scriptTypeManager.GetReturnType(simpleName);
+        }
+
+        public static bool IsUserType(ClassDeclarationSyntax classDeclaration)
+        {
+            return instance.scriptTypeManager.IsUserType(classDeclaration);
+        }
+
+        public static bool IsUserType(TypeSymbol typeSymbol)
+        {
+            return instance.scriptTypeManager.IsUserType(typeSymbol);
+        }
+
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a DOM type from the ScriptSharp namespace System.Html.
+        /// </summary>
+        public static bool IsDOMType(ClassDeclarationSyntax classDeclaration)
+        {
+            return classDeclaration.HasAttribute("ScriptName") || classDeclaration.HasAttribute("ScriptImport");
+        }
+
+        public static bool IsDOMType(TypeSymbol typeSymbol)
+        {
+            return instance.scriptTypeManager.IsDOMType(typeSymbol);
+        }
+
+        public bool IsClientSideType(string namespaceName, string typeName)
+        {
+            return instance.scriptTypeManager.IsClientSideType(namespaceName, typeName);
+        }
+
+        public static bool IsMixedSideMethod(string namespaceName, string typeName, string memberName)
+        {
+            return instance.scriptTypeManager.IsMixedSideMethod(namespaceName, typeName, memberName);
+        }
+
+        public static bool IsClientSideMethod(string namespaceName, string typeName, string memberName)
+        {
+            return instance.scriptTypeManager.IsClientSideMethod(namespaceName, typeName, memberName);
+        }
+
+        public static bool IsMixedSideType(string namespaceName, string typeName)
+        {
+            return instance.scriptTypeManager.IsMixedSideType(namespaceName, typeName);
+        }
+        #endregion
     }
 }

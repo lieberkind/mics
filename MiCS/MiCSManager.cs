@@ -85,12 +85,12 @@ namespace MiCS
         }
 
 
-        public MiCSManager(string source) : this(SyntaxTree.ParseText(source))
+        private MiCSManager(string source) : this(SyntaxTree.ParseText(source))
         {
 
         }
 
-        public MiCSManager(SyntaxTree userTree)
+        private MiCSManager(SyntaxTree userTree)
         {
             if (!Syntax.IsCompleteSubmission(userTree))
                 throw new Exception("Source submission failed!");
@@ -98,7 +98,7 @@ namespace MiCS
             this.scriptTypeManager = new ScriptTypeManager(userTree);
             this.coreTypeManager = new CoreTypeManager();
 
-            typeManager = new TypeManager(scriptTypeManager, coreTypeManager);
+            TypeManager.Initiate(scriptTypeManager, coreTypeManager);
 
             this.typeSymbolGetter = new TypeSymbolGetter();
 

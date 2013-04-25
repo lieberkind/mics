@@ -228,6 +228,7 @@
     <Compile Include="ScriptSharp\Web\Html\WindowInstance.cs" />
     <Compile Include="ScriptSharp\TextSources\Web.cs" />
     <Compile Include="ScriptTypeManager.cs" />
+    <Compile Include="TypeManager.cs" />
     <Compile Include="TypeSymbolGetter.cs" />
     <Compile Include="TypeSymbolWalker.cs" />
     <Compile Include="Validators\Collector.cs" />

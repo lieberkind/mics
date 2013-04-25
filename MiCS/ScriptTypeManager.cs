@@ -81,7 +81,7 @@ namespace MiCS
         /// Returns true if the specified type declaration is
         /// a user defined type.
         /// </summary>
-        public static bool IsUserType(ClassDeclarationSyntax classDeclaration)
+        public bool IsUserType(ClassDeclarationSyntax classDeclaration)
         {
             foreach (var member in classDeclaration.Members)
             {
@@ -101,17 +101,15 @@ namespace MiCS
         /// Returns true if the specified type is
         /// a user defined type.
         /// </summary>
-        public static bool IsUserType(TypeSymbol typeSymbol)
+        public bool IsUserType(TypeSymbol typeSymbol)
         {
             if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
                 return false;
 
             var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+
             if (declaration is ClassDeclarationSyntax)
-            {
-                var @class = (ClassDeclarationSyntax)declaration;
-                return @class.IsUserType();
-            }
+                return IsUserType((ClassDeclarationSyntax)declaration);
 
             return false;
         }
@@ -122,7 +120,7 @@ namespace MiCS
         /// <param name="namespaceName">Namespace name</param>
         /// <param name="typeName">Type name</param>
         /// <returns>True if type is client side, false otherwise</returns>
-        public bool isClientSideType(string namespaceName, string typeName)
+        public bool IsClientSideType(string namespaceName, string typeName)
         {
             return ClientSideMembers.ContainsKey(namespaceName) && ClientSideMembers[namespaceName].ContainsKey(typeName);
         }
@@ -133,7 +131,7 @@ namespace MiCS
         /// <param name="namespaceName">Namespace name</param>
         /// <param name="typeName">Type name</param>
         /// <returns>True if type is mixed side, false otherwise</returns>
-        public bool isMixedSideType(string namespaceName, string typeName)
+        public bool IsMixedSideType(string namespaceName, string typeName)
         {
             return MixedSideMembers.ContainsKey(namespaceName) && MixedSideMembers[namespaceName].ContainsKey(typeName);
         }
@@ -145,7 +143,7 @@ namespace MiCS
         /// <param name="typeName">Type name</param>
         /// <param name="memberName">Member name</param>
         /// <returns>Returns true if member is client side, false otherwise</returns>
-        public bool isClientSideMethod(string namespaceName, string typeName, string memberName)
+        public bool IsClientSideMethod(string namespaceName, string typeName, string memberName)
         {
             return 
                 ClientSideMembers.ContainsKey(namespaceName) &&
@@ -160,7 +158,7 @@ namespace MiCS
         /// <param name="typeName">Type name</param>
         /// <param name="memberName">Member name</param>
         /// <returns>Returns true if member is mixed side, false otherwise</returns>
-        public bool isMixedSideMethod(string namespaceName, string typeName, string memberName)
+        public bool IsMixedSideMethod(string namespaceName, string typeName, string memberName)
         {
             return 
                 MixedSideMembers.ContainsKey(namespaceName) &&
@@ -172,16 +170,31 @@ namespace MiCS
         /// Returns true if the specified type is
         /// a DOM type from the ScriptSharp namespace System.Html.
         /// </summary>
-        public static bool IsDOMType(ClassDeclarationSyntax classDeclaration)
-        {
-            return classDeclaration.HasAttribute("ScriptName") || classDeclaration.HasAttribute("ScriptImport");
-        }
+        //public bool IsDOMType(ClassDeclarationSyntax classDeclaration)
+        //{
+        //    return classDeclaration.HasAttribute("ScriptName") || classDeclaration.HasAttribute("ScriptImport");
+        //}
 
         /// <summary>
         /// Returns true if the specified type is
         /// a DOM type from the ScriptSharp namespace System.Html.
         /// </summary>
-        public static bool IsDOMType(TypeSymbol typeSymbol)
+        //public static bool IsDOMType(TypeSymbol typeSymbol)
+        //{
+        //    if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
+        //        return false;
+
+        //    var declaration = typeSymbol.DeclaringSyntaxNodes[0];
+        //    if (declaration is ClassDeclarationSyntax)
+        //    {
+        //        var @class = (ClassDeclarationSyntax)declaration;
+        //        return @class.IsDOMType();
+        //    }
+        //    else
+        //        throw new NotSupportedException();
+        //}
+
+        public bool IsDOMType(TypeSymbol typeSymbol)
         {
             if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
                 return false;
