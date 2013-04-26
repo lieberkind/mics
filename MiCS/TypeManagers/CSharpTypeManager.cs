@@ -12,32 +12,51 @@ namespace MiCS
 {
     class CSharpTypeManager
     {
+        /// <summary>
+        /// Helper to get TypeSymbols
+        /// </summary>
         private TypeSymbolWalker typeSymbolWalker;
 
+        /// <summary>
+        /// The semantic model that contains user tree and DOM types
+        /// </summary>
         public SemanticModel SemanticModel
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Mixed side members.
+        /// </summary>
         public Dictionary<string, Dictionary<string, List<string>>> MixedSideMembers
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Client side members.
+        /// </summary>
         public Dictionary<string, Dictionary<string, List<string>>> ClientSideMembers
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// User tree compilation unit
+        /// </summary>
         public CompilationUnitSyntax CompilationUnit
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CSharpTypeManager"/> class.
+        /// </summary>
+        /// <param name="userTree">User syntax tree.</param>
         public CSharpTypeManager(SyntaxTree userTree)
         {
             var tree = SyntaxTree.ParseText(userTree.GetText() + ScriptSharp.TextSources.Web.Text);

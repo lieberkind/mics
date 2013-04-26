@@ -10,7 +10,7 @@ namespace MiCS
     class TypeManager
     {
         #region Region: Fields, properties and construction
-        
+
         private CSharpTypeManager cSharpTypeManager;
         private ScriptSharpTypeManager scriptSharpTypeManager;
 
@@ -51,6 +51,9 @@ namespace MiCS
 
         #region Region: CSharpTypeManager functionality
 
+        /// <summary>
+        /// Gets the return type from the specified name
+        /// </summary>
         public static TypeSymbol GetReturnType(SimpleNameSyntax simpleName)
         {
             return instance.cSharpTypeManager.GetReturnType(simpleName);
@@ -138,16 +141,25 @@ namespace MiCS
             return instance.cSharpTypeManager.IsClientSideType(namespaceName, typeName);
         }
 
+        /// <summary>
+        /// Gets a type symbol from the given syntax node
+        /// </summary>
         public static TypeSymbol GetTypeSymbol(SyntaxNode node)
         {
             return instance.cSharpTypeManager.GetTypeSymbol(node);
         }
 
+        /// <summary>
+        /// Gets a type symbol from the given expression 
+        /// </summary>
         public static TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {
             return instance.cSharpTypeManager.GetTypeSymbol(expression);
         }
 
+        /// <summary>
+        /// Gets symbol info from the specified name
+        /// </summary>
         public static SymbolInfo GetSymbolInfo(SimpleNameSyntax simpleName)
         { 
             return instance.cSharpTypeManager.GetSymbolInfo(simpleName);
