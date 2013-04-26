@@ -9,38 +9,56 @@ using MiCS.Mappers;
 
 namespace MiCS.Builders
 {
+    /// <summary>
+    /// Builds ScriptSharp statements from Roslyn statements
+    /// </summary>
     class StatementBuilder : SyntaxWalker
     {
-
+        /// <summary>
+        /// The ScriptSharp class in which the statements' parent method belong.
+        /// </summary>
         SS.ClassSymbol ssTypeReference;
+
+        /// <summary>
+        /// The ScriptSharp member in which the statements belong.
+        /// </summary>
         SS.MemberSymbol ssParentMember;
+
+        /// <summary>
+        /// List of generated ScriptSharp statements
+        /// </summary>
         public readonly List<SS.Statement> ssStatements = new List<SS.Statement>();
 
-        //public StatementBuilder(SS.ClassSymbol typeReference)
-        //{
-        //    this.ssTypeReference = typeReference;
-        //}
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StatementBuilder"/> class.
+        /// </summary>
+        /// <param name="typeReference">The ScriptSharp class in which the statements' parent method belong.</param>
+        /// <param name="ssParentMember">The ScriptSharp member in which the statements belong.</param>
         public StatementBuilder(SS.ClassSymbol typeReference, SS.MemberSymbol ssParentMember)
         {
             this.ssTypeReference = typeReference;
             this.ssParentMember = ssParentMember;
         }
 
-        public override void DefaultVisit(SyntaxNode node)
-        {
-            base.DefaultVisit(node);
-        }
-
+        /// <summary>
+        /// Builds an if statement along with its condition and branches
+        /// </summary>
+        /// <param name="ifStatement">If statement.</param>
         public override void VisitIfStatement(IfStatementSyntax ifStatement)
         {
             var ssCondition = ExpressionBuilder.Build(ifStatement.Condition, ssTypeReference, ssParentMember);
-            var ssIfStatement = StatementBuilder.Build(ifStatement.Statement, ssTypeReference, ssParentMember);
-            var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.Build(ifStatement.Else.Statement, ssTypeReference, ssParentMember);
+            var ssIfStatement = StatementBuilder.BuildStatement(ifStatement.Statement, ssTypeReference, ssParentMember);
+            var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.BuildStatement(ifStatement.Else.Statement, ssTypeReference, ssParentMember);
 
             ssStatements.Add(ifStatement.Map(ssCondition, ssIfStatement, ssElseStatement));            
         }
 
+        /// <summary>
+        /// Builds a for statement along with its initializers, codition, increments and body
+        /// </summary>
+        /// <param name="forStatement">For statement.</param>
+        /// <remarks>Currently has a problem with initializers not declared outside the for statement. Mapping the VaribleDeclarationSyntax should solve this.</remarks>
+        /// <exception cref="System.NotSupportedException">Initializers cannot be null. Hint: declare intcrementors outside for statement.</exception>
         public override void VisitForStatement(ForStatementSyntax forStatement)
         {
             var ssForStatement = forStatement.Map();
@@ -58,11 +76,15 @@ namespace MiCS.Builders
             foreach (var incrementor in forStatement.Incrementors)
                 ssForStatement.AddIncrement(ExpressionBuilder.Build(incrementor, ssTypeReference, ssParentMember));
 
-            ssForStatement.AddBody(StatementBuilder.Build(forStatement.Statement, ssTypeReference, ssParentMember));
+            ssForStatement.AddBody(StatementBuilder.BuildStatement(forStatement.Statement, ssTypeReference, ssParentMember));
 
             ssStatements.Add(ssForStatement);
         }
 
+        /// <summary>
+        /// Builds a block statement along with its child statements
+        /// </summary>
+        /// <param name="block">The block.</param>
         public override void VisitBlock(BlockSyntax block)
         {
             var ssBlock = block.Map();
@@ -71,58 +93,53 @@ namespace MiCS.Builders
 
             foreach (var statement in block.Statements)
             {
-                ssChildStatements.Add(StatementBuilder.Build(statement, ssTypeReference, ssParentMember));
+                ssChildStatements.Add(StatementBuilder.BuildStatement(statement, ssTypeReference, ssParentMember));
             }
 
             ssBlock.Statements.AddRange(ssChildStatements);
             ssStatements.Add(ssBlock);
         }
 
-        //public override void VisitVariableDeclaration(VariableDeclarationSyntax variableDeclaration)
-        //{
-        //    var ssVariableDeclaration = variableDeclaration.Map();
-        //    var ssType = TypeSymbolGetter.GetTypeSymbol(variableDeclaration).Map();
-
-        //    foreach (var variableDeclarator in variableDeclaration.Variables)
-        //        ssVariableDeclaration.AddVariable(variableDeclarator.Map(ssParentMember, ssType));
-
-        //    ssStatements.Add(ssVariableDeclaration);
-        //}
-
+        /// <summary>
+        /// Builds a return statement along with its expression
+        /// </summary>
+        /// <param name="returnStatement">The return statement.</param>
         public override void VisitReturnStatement(ReturnStatementSyntax returnStatement)
         {
-
             var ssExpression = ExpressionBuilder.Build(returnStatement.Expression, ssTypeReference, ssParentMember);
 
             ssStatements.Add(returnStatement.Map(ssExpression));
-
-            // base.VisitReturnStatement(returnStatement);
         }
 
+        /// <summary>
+        /// Builds an expression statement along with its expression
+        /// </summary>
+        /// <param name="expressionStatement">The expression statement.</param>
         public override void VisitExpressionStatement(ExpressionStatementSyntax expressionStatement)
         {
             var ssExpression = ExpressionBuilder.Build(expressionStatement.Expression, ssTypeReference, ssParentMember);
             
             ssStatements.Add(expressionStatement.Map(ssExpression));
 
-            // base.VisitExpressionStatement(expressionStatement);
         }
 
+        /// <summary>
+        /// Builds a ScriptSharp VariableSymbol from a local declaration statement, along with its initializer
+        /// </summary>
+        /// <param name="localDeclarationStatement">The local declaration statement.</param>
+        /// <exception cref="System.NotSupportedException">
+        /// LocalDeclarationStatement has unsupported declaration
+        /// or
+        /// Unsupported initializer
+        /// </exception>
         public override void VisitLocalDeclarationStatement(LocalDeclarationStatementSyntax localDeclarationStatement)
         {
             var variable = localDeclarationStatement.Declaration.Variables[0];
 
             if (!(localDeclarationStatement.Declaration is VariableDeclarationSyntax))
-            {
                 throw new NotSupportedException("LocalDeclarationStatement has unsupported declaration");
-            }
-
-            var identifier = variable.Identifier;
-            if (identifier.Kind != SyntaxKind.IdentifierToken)
-                throw new NotSupportedException(); // Todo: Maybe not a necesary check...
  
             var type = TypeManager.GetTypeSymbol(localDeclarationStatement.Declaration.Type);
-
             var ssVariable = variable.Map(ssParentMember, type.Map());
 
             var initializer = variable.Initializer;
@@ -131,43 +148,40 @@ namespace MiCS.Builders
                 if (!(initializer is EqualsValueClauseSyntax))
                     throw new NotSupportedException("Unsupported initializer");
 
-                var val = variable.Initializer.Value;
+                var val = initializer.Value;
 
                 ssVariable.SetValue(ExpressionBuilder.Build(val, ssTypeReference, ssParentMember));
-
             }
 
             var ssVariableDecalarationStatement = new SS.VariableDeclarationStatement();
             ssVariableDecalarationStatement.Variables.Add(ssVariable);
 
             ssStatements.Add(ssVariableDecalarationStatement);
-
-            //base.VisitLocalDeclarationStatement(localDeclarationStatement);
         }
 
-        //public static SS.Statement Build(VariableDeclarationSyntax node, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
-        //{
-        //    return StatementBuilder.BuildList(node, ssTypeReference, ssParentMember).First();
-        //}
-
-
-        public static SS.Statement Build(StatementSyntax statement, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
+        /// <summary>
+        /// Builds a single statement
+        /// </summary>
+        /// <param name="statement">The statement.</param>
+        /// <param name="ssTypeReference">The ScriptSharp class in which the statements' parent method belong.</param>
+        /// <param name="ssParentMember">The ScriptSharp member in which the statements belong.</param>
+        /// <returns></returns>
+        public static SS.Statement BuildStatement(StatementSyntax statement, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
         {
-            return StatementBuilder.BuildList(statement, ssTypeReference, ssParentMember).First();
+            return StatementBuilder.BuildStatements(statement, ssTypeReference, ssParentMember).First();
         }
 
-        public static List<SS.Statement> BuildList(StatementSyntax statement, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
+        /// <summary>
+        /// Builds a list of ScriptSharp statements from a single statement
+        /// </summary>
+        /// <param name="statement">The statement.</param>
+        /// <param name="ssTypeReference">The ScriptSharp class in which the statements' parent method belong.</param>
+        /// <param name="ssParentMember">The ScriptSharp member in which the statements belong.</param>
+        /// <returns></returns>
+        public static List<SS.Statement> BuildStatements(StatementSyntax statement, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
         {
             var statementBuilder = new StatementBuilder(ssTypeReference, ssParentMember);
             statementBuilder.Visit(statement);
-
-            return statementBuilder.ssStatements;
-        }
-
-        public static List<SS.Statement> BuildList(SyntaxNode node, SS.ClassSymbol ssTypeReference, SS.MemberSymbol ssParentMember)
-        {
-            var statementBuilder = new StatementBuilder(ssTypeReference, ssParentMember);
-            statementBuilder.Visit(node);
 
             return statementBuilder.ssStatements;
         }

@@ -45,28 +45,7 @@ namespace MiCS.Mappers
             var ssReturnType = returnType.Map();
             var ssMethodName = methodDeclaration.Identifier.ValueText;
 
-            var ssMethod = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
-
-            foreach (var parameter in methodDeclaration.ParameterList.Parameters)
-                ssMethod.AddParameter(parameter.Map(ssMethod, TypeManager.GetTypeSymbol(parameter.Type).Map()));
-
-            var implementationStatements = new List<SS.Statement>();
-            foreach (var statement in methodDeclaration.Body.Statements)
-            {
-                implementationStatements.Add(StatementBuilder.Build(statement, ssParentClass, ssMethod));
-            }
-
-            /*
-             * Leaving the second parameter (SymbolScope scope) as null as 
-             * the generated script code is still valid and therefore doesn't
-             * prevent us from showing prove of concept. If the SymbolScope
-             * parameter is set to null this is gracefully handled (see 
-             * ScriptSharp.ScriptCompiler.cs line 71).
-             */
-            var sI = new SS.SymbolImplementation(implementationStatements, null, "this");
-            ssMethod.AddImplementation(sI);
-            
-            return ssMethod;
+            return new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
         }
 
         /// <summary>
@@ -316,12 +295,7 @@ namespace MiCS.Mappers
             }
 
             var isSupportedClientSideType = TypeManager.IsClientSideType(namespaceName, typeSymbol.Name);
-                //MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
-                //MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
-
             var isSupportedMixedSideType = TypeManager.IsMixedSideType(namespaceName, typeSymbol.Name);
-                //MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
-                //MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
             var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
 
