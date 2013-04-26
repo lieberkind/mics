@@ -116,10 +116,7 @@ namespace MiCS.Validators
 
             var typeName = ((IdentifierNameSyntax)node.Type).Identifier.ValueText;
 
-            var @namespace = node.Type.ParentNamespace();
-            //var namespaceName = @namespace.GetFullName();
-
-            var namespaceName = TypeManager.GetTypeSymbol(node).ContainingNamespace.FullName();
+            var namespaceName = TypeManager.GetTypeSymbol(node).ContainingNamespace.GetFullName();
             
             
             var isUserType =

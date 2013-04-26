@@ -88,7 +88,7 @@ namespace MiCS.Mappers
         /// <param name="namespace">Roslyn namespace declaration AST node</param>
         static internal SS.NamespaceSymbol Map(this NamespaceDeclarationSyntax @namespace)
         {
-            return new SS.NamespaceSymbol(@namespace.NameText(), null);
+            return new SS.NamespaceSymbol(@namespace.GetFullName(), null);
         }
 
         /// <summary>
@@ -307,12 +307,12 @@ namespace MiCS.Mappers
             if (typeSymbol is ArrayTypeSymbol)
             {
                 mappedTypeName = "Array";
-                namespaceName = typeSymbol.BaseType.ContainingNamespace.FullName();
+                namespaceName = typeSymbol.BaseType.ContainingNamespace.GetFullName();
                 isArray = true;
             }
             else
             {
-                namespaceName = typeSymbol.ContainingNamespace.FullName();
+                namespaceName = typeSymbol.ContainingNamespace.GetFullName();
             }
 
             var isSupportedClientSideType = TypeManager.IsClientSideType(namespaceName, typeSymbol.Name);
@@ -333,10 +333,10 @@ namespace MiCS.Mappers
             if(!isSupportedType)
                 throw new NotSupportedException("TypeSymbol type is currently not supported.");
 
-            mappedTypeName = typeSymbol.TypeScriptName();
+            mappedTypeName = typeSymbol.GetTypeScriptName();
             mappedNamespaceName = namespaceName;
             if (isSupportedCoreType)
-                mappedNamespaceName = TypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
+                mappedNamespaceName = TypeManager.GetCoreScriptTypeNamespace(typeSymbol).GetFullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
 
             // Todo: Parent namespace should preferably not be a new namspace object.
             ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));

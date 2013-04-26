@@ -58,9 +58,9 @@ namespace MiCS
         public bool IsSupportedCoreType(TypeSymbol typeSymbol)
         {
             if (typeSymbol is ArrayTypeSymbol)
-                return IsSupportedCoreType(typeSymbol.BaseType.ContainingNamespace.FullName(), "Array");
+                return IsSupportedCoreType(typeSymbol.BaseType.ContainingNamespace.GetFullName(), "Array");
             else
-                return IsSupportedCoreType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
+                return IsSupportedCoreType(typeSymbol.ContainingNamespace.GetFullName(), typeSymbol.Name);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace MiCS
         /// </summary>
         public bool IsCoreScriptType(TypeSymbol typeSymbol)
         {
-            var namespaceName = typeSymbol.ContainingNamespace.FullName();
+            var namespaceName = typeSymbol.ContainingNamespace.GetFullName();
             var typeName = typeSymbol.Name;
             return IsCoreScriptType(namespaceName, typeName);
         }
@@ -125,11 +125,15 @@ namespace MiCS
         public TypeSymbol ToCoreScriptType(TypeSymbol typeSymbol)
         {
             if (typeSymbol is ArrayTypeSymbol)
-                return ToCoreScriptType(typeSymbol.BaseType.ContainingNamespace.FullName(), "Array");
+                return ToCoreScriptType(typeSymbol.BaseType.ContainingNamespace.GetFullName(), "Array");
             else
-                return ToCoreScriptType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
+                return ToCoreScriptType(typeSymbol.ContainingNamespace.GetFullName(), typeSymbol.Name);
         }
 
+        /// <summary>
+        /// Retrieve the TypeSymbols containing NamespaceSymbol from 
+        /// the ScriptSharp core type semanic model.
+        /// </summary>
         public NamespaceSymbol GetCoreScriptTypeNamespace(TypeSymbol typeSymbol)
         {
             return ToCoreScriptType(typeSymbol).ContainingNamespace;
