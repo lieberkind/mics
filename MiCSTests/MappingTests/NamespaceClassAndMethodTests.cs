@@ -43,13 +43,13 @@ namespace MiCSTests.MappingTests
             using System.Html;
             namespace TestNamespace1 { 
                 class TestClass1 { 
-                    [MixedSide]
+                    [ClientSide]
                     void g() { Document.HasFocus(); }
                 }
             }
             namespace TestNamespace2 { 
                 class TestClass2 { 
-                    [MixedSide]
+                    [ClientSide]
                     void f() { Document.HasFocus(); }
                 }
             }

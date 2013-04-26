@@ -41,14 +41,11 @@ namespace MiCS.Validators
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             var methods = node.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
-
             var visit = false;
 
             foreach (var method in methods)
             {
-                var m = ((MethodDeclarationSyntax)method);
-                //visit = m.HasAttribute("MixedSide") || m.HasAttribute("ClientSide");
-                visit = m.HasAttribute(attribute);
+                visit = ((MethodDeclarationSyntax)method).HasAttribute(attribute);
 
                 if (visit)
                     break;
@@ -60,7 +57,7 @@ namespace MiCS.Validators
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
-            if (node.HasAttribute(attribute)) //|| node.HasAttribute("ClientSide"))
+            if (node.HasAttribute(attribute))
                 base.VisitMethodDeclaration(node);
         }
 
@@ -74,6 +71,18 @@ namespace MiCS.Validators
         public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             
+        }
+
+        public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
+        {
+            if (invocation.Expression is MemberAccessExpressionSyntax)
+            {
+                var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+                if (memberAccess.Expression is IdentifierNameSyntax)
+                    TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+            }
+
+            base.VisitInvocationExpression(invocation);
         }
 
         public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
@@ -96,6 +105,8 @@ namespace MiCS.Validators
 
             if (IsValid)
                 base.VisitMemberAccessExpression(node);
+            else
+                throw new MixedSidePrincipleViolatedException(attribute + " code made illegal call");
         }
 
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax node)
@@ -106,9 +117,12 @@ namespace MiCS.Validators
             var typeName = ((IdentifierNameSyntax)node.Type).Identifier.ValueText;
 
             var @namespace = node.Type.ParentNamespace();
-            var namespaceName = @namespace.GetFullName();
+            //var namespaceName = @namespace.GetFullName();
 
-            var isUserType = // Very lame name. This means; ClientSide, MixedSide or DOM type (i think)
+            var namespaceName = TypeManager.GetTypeSymbol(node).ContainingNamespace.FullName();
+            
+            
+            var isUserType =
                 members.ContainsKey(namespaceName) &&
                 members[namespaceName].ContainsKey(typeName);
 
@@ -118,6 +132,8 @@ namespace MiCS.Validators
 
             if (IsValid)
                 base.VisitObjectCreationExpression(node);
+            else
+                throw new MixedSidePrincipleViolatedException(attribute + " code created illegal object");
         }
 
         public void AddToMembers(Dictionary<string, Dictionary<string, List<string>>> newMembers)
@@ -172,7 +188,5 @@ namespace MiCS.Validators
 
             return isCoreMember;
         }
-
-
     }
 }

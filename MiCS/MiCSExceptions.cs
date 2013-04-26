@@ -53,4 +53,16 @@ namespace MiCS
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
+
+    [Serializable]
+    internal class MixedSidePrincipleViolatedException : Exception
+    {
+        public MixedSidePrincipleViolatedException() { }
+        public MixedSidePrincipleViolatedException(string message) : base(message) { }
+        public MixedSidePrincipleViolatedException(string message, Exception inner) : base(message, inner) { }
+        protected MixedSidePrincipleViolatedException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
 }
