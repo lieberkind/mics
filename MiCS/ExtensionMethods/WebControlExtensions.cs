@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 
 namespace MiCS
 {
-    public static class MiCSWebControlExtensions
+    public static class WebControlExtensions
     {
         public static void OnClientClick(this Button button, Func<bool> action)
         {

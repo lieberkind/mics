@@ -16,9 +16,9 @@ namespace TestProject
     {
         static void Main(string[] args)
         {
-            var st = MiCSUtilities.GetSyntaxTree(@"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCS.sln", "Person.cs");
+            //var st = MiCSUtilities.GetSyntaxTree(@"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCS.sln", "Person.cs");
 
-            MiCSManager.Initiate(st);
+            //MiCSManager.Initiate(st);
 
             //MiCSValidator validator = new MiCSValidator(MiCSManager.CompilationUnit);
 
