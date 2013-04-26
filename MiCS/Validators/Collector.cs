@@ -7,19 +7,49 @@ using System.Threading.Tasks;
 
 namespace MiCS.Validators
 {
+    /// <summary>
+    /// Collects namespaces, classes and methods to be used in validation
+    /// </summary>
     public class Collector : SyntaxWalker
     {
+        /// <summary>
+        /// List of attribute names. Only methods with 
+        /// attributes contained in this list is collected.
+        /// </summary>
         List<string> attributeNames;
+
+        /// <summary>
+        /// The current namespace members
+        /// </summary>
         Dictionary<string, List<string>> currentNamespaceMembers;
+
+        /// <summary>
+        /// The current methods
+        /// </summary>
         List<string> currentMethods;
+
+        /// <summary>
+        /// The compilation unit to collect members from
+        /// </summary>
         CompilationUnitSyntax compilationUnit;
 
+        /// <summary>
+        /// Gets the members.
+        /// </summary>
+        /// <value>
+        /// The members.
+        /// </value>
         public Dictionary<string, Dictionary<string, List<string>>> Members
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Collector"/> class.
+        /// </summary>
+        /// <param name="compilationUnit">The compilation unit to collect from</param>
+        /// <param name="attributeNames">The attribute names</param>
         public Collector(CompilationUnitSyntax compilationUnit, List<string> attributeNames = null)
         {
             this.compilationUnit = compilationUnit;
@@ -34,11 +64,17 @@ namespace MiCS.Validators
             Members = new Dictionary<string, Dictionary<string, List<string>>>();
         }
 
+        /// <summary>
+        /// Collects members
+        /// </summary>
         public void Collect()
         {
             Visit(compilationUnit);
         }
 
+        /// <summary>
+        /// Determines wether the current namespace should be collected
+        /// </summary>
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
             currentNamespaceMembers.Clear();
@@ -61,6 +97,9 @@ namespace MiCS.Validators
             }
         }
 
+        /// <summary>
+        /// Detemines whether the current class should be collected
+        /// </summary>
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             currentMethods.Clear();
@@ -78,13 +117,21 @@ namespace MiCS.Validators
                 
         }
 
-        // Todo: Fix
+
+        /// <summary>
+        /// Makes sure that properties are added to members when no attribute
+        /// names have been set. This is to ensure that DOM types' properties
+        /// can be used.
+        /// </summary>
         public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
         {
             if (attributeNames.Count == 0)
                 currentMethods.Add(node.Identifier.ValueText);
         }
 
+        /// <summary>
+        /// Determines whether the current method should be collected
+        /// </summary>
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
             var hasAttributeName = false;
@@ -104,6 +151,9 @@ namespace MiCS.Validators
         }
 
         #region Helper Methods
+        /// <summary>
+        /// Gets the full name of a name syntax
+        /// </summary>
         private string GetFullName(NameSyntax name)
         {
             if (name is IdentifierNameSyntax)
