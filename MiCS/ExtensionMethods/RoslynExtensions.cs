@@ -11,7 +11,7 @@ namespace MiCS
     /// <summary>
     /// Roslyn extension methods to help improve readability of code.
     /// </summary>
-    public static class MiCSRoslynExtensions
+    public static class RoslynExtensions
     {
         public static string NameText(this NamespaceDeclarationSyntax roslynNamespace)
         {

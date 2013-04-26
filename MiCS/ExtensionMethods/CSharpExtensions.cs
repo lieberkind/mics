@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiCS
 {
-    public static class MiCSCSharpExtensions
+    public static class CSharpExtensions
     {
 
         /// <summary>

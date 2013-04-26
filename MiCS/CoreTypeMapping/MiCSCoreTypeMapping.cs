@@ -15,10 +15,5 @@ namespace MiCS
         public string NameScript { get; set; }
 
         public List<MiCSCoreMemberMapping> Members { get; set; }
-
-        public MiCSCoreTypeMapping()
-        {
-
-        }
     }
 }

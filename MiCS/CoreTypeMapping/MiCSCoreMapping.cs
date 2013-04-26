@@ -15,24 +15,9 @@ namespace MiCS
     /// </summary>
     class MiCSCoreMapping : List<MiCSCoreTypeMapping>
     {
-        public static MiCSCoreMapping Instance
+        public MiCSCoreMapping()
         {
-            get
-            {
-                if (_Instance == null)
-                    _Instance = Instantiate();
-
-                return _Instance;
-            }
-        }
-        private static MiCSCoreMapping _Instance;
-        private MiCSCoreMapping() { }
-
-        private static MiCSCoreMapping Instantiate()
-        {
-            var mapping = new MiCSCoreMapping();
-
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Void",
                 NameScript = "Void",
@@ -41,7 +26,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Regex",
                 NameScript = "RegExp",
@@ -62,7 +47,7 @@ namespace MiCS
                 }
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "String",
                 NameScript = "String",
@@ -90,7 +75,7 @@ namespace MiCS
                 }
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Char",
                 NameScript = "String",
@@ -99,7 +84,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Boolean",
                 NameScript = "Boolean",
@@ -108,7 +93,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Int16",
                 NameScript = "Int16",
@@ -117,7 +102,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Int32",
                 NameScript = "Int32",
@@ -126,7 +111,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Int",
                 NameScript = "Int32",
@@ -135,7 +120,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Int64",
                 NameScript = "Int64",
@@ -144,7 +129,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "UInt16",
                 NameScript = "UInt16",
@@ -153,7 +138,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "UInt32",
                 NameScript = "UInt32",
@@ -162,7 +147,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "UInt64",
                 NameScript = "UInt64",
@@ -171,7 +156,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Decimal",
                 NameScript = "Decimal",
@@ -180,7 +165,7 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Double",
                 NameScript = "Double",
@@ -191,7 +176,7 @@ namespace MiCS
 
 
             // Todo: Add Array type mapping.
-            mapping.Add(new MiCSCoreTypeMapping()
+            this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Array",
                 NameScript = "Array",
@@ -199,11 +184,7 @@ namespace MiCS
                 NamespaceNameScript = "System",
                 Members = new List<MiCSCoreMemberMapping>()
             });
-
-
-            return mapping;
         }
-
     }
 
     

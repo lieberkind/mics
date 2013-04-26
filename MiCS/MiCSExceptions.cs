@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MiCS
 {
     [Serializable]
-    public class MemberSignatureArgumentTypeNotMappedException : Exception
+    internal class MemberSignatureArgumentTypeNotMappedException : Exception
     {
         public MemberSignatureArgumentTypeNotMappedException() { }
         public MemberSignatureArgumentTypeNotMappedException(string message) : base(message) { }
@@ -19,7 +19,7 @@ namespace MiCS
     }
 
     [Serializable]
-    public class MemberSignatureNotMappedException : Exception
+    internal class MemberSignatureNotMappedException : Exception
     {
         public MemberSignatureNotMappedException() { }
         public MemberSignatureNotMappedException(string message) : base(message) { }
@@ -31,7 +31,7 @@ namespace MiCS
     }
 
     [Serializable]
-    public class MemberNotMappedException : Exception
+    internal class MemberNotMappedException : Exception
     {
         public MemberNotMappedException() { }
         public MemberNotMappedException(string message) : base(message) { }
@@ -43,7 +43,7 @@ namespace MiCS
     }
 
     [Serializable]
-    public class TypeNotMappedException : Exception
+    internal class TypeNotMappedException : Exception
     {
         public TypeNotMappedException() { }
         public TypeNotMappedException(string message) : base(message) { }
