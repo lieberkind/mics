@@ -21,7 +21,7 @@ namespace MiCSTests
         public void ConditionalExpression_Test()
         {
             var expression = Parse.Expression("2 > 1 ? 10 : 0");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.ConditionalExpression);
 
@@ -58,7 +58,7 @@ namespace MiCSTests
         public void UnaryExpression_MinusTest()
         {
             var expression = Parse.Expression(@"-1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(expression is PrefixUnaryExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.UnaryExpression);
@@ -79,7 +79,7 @@ namespace MiCSTests
         {
             var parenthesizedExpression = (ParenthesizedExpressionSyntax)Parse.Expression(@"(-1)");
             var expression = parenthesizedExpression.Expression;
-            var ssExpression = ExpressionBuilder.Build(parenthesizedExpression);
+            var ssExpression = ExpressionBuilder.BuildExpression(parenthesizedExpression);
 
             Assert.IsTrue(expression is PrefixUnaryExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.UnaryExpression);
@@ -101,7 +101,7 @@ namespace MiCSTests
         public void UnaryExpression_LogicalNotTest()
         {
             var expression = Parse.Expression(@"!true");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(expression is PrefixUnaryExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.UnaryExpression);
@@ -229,7 +229,7 @@ namespace MiCSTests
         public void BinaryExpression_PlusTest()
         {
             var expression = Parse.Expression("1 + 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -244,7 +244,7 @@ namespace MiCSTests
         public void BinaryExpression_MinusTest()
         {
             var expression = Parse.Expression("1 - 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -259,7 +259,7 @@ namespace MiCSTests
         public void BinaryExpression_MultiplyTest()
         {
             var expression = Parse.Expression("1 * 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -274,7 +274,7 @@ namespace MiCSTests
         public void BinaryExpression_DivideTest()
         {
             var expression = Parse.Expression("1 / 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -289,7 +289,7 @@ namespace MiCSTests
         public void BinaryExpression_ModulusTest()
         {
             var expression = Parse.Expression("1 % 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -304,7 +304,7 @@ namespace MiCSTests
         public void BinaryExpression_RelationalEqualsTest()
         {
             var expression = Parse.Expression("1 == 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -319,7 +319,7 @@ namespace MiCSTests
         public void BinaryExpression_RelationalNotEqualsTest()
         {
             var expression = Parse.Expression("1 != 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -334,7 +334,7 @@ namespace MiCSTests
         public void BinaryExpression_RelationalGreaterThanTest()
         {
             var expression = Parse.Expression("1 > 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -349,7 +349,7 @@ namespace MiCSTests
         public void BinaryExpression_RelationalLessThanTest()
         {
             var expression = Parse.Expression("1 < 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -364,7 +364,7 @@ namespace MiCSTests
         public void BinaryExpression_RelationalGreaterThanEqualsTest()
         {
             var expression = Parse.Expression("1 >= 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -379,7 +379,7 @@ namespace MiCSTests
         public void BinaryExpression_RelationalLessThanEqualsTest()
         {
             var expression = Parse.Expression("1 <= 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -394,7 +394,7 @@ namespace MiCSTests
         public void BinaryExpression_LogicalAndTest()
         {
             var expression = Parse.Expression("true && -1 > 6");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -409,7 +409,7 @@ namespace MiCSTests
         public void BinaryExpression_LogicalOrTest()
         {
             var expression = Parse.Expression("true || 1 > -1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -424,7 +424,7 @@ namespace MiCSTests
         public void BinaryExpression_NestedTest()
         {
             var expression = Parse.Expression("1 + 1 + 1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(ssExpression is SS.BinaryExpression);
 
@@ -443,7 +443,7 @@ namespace MiCSTests
         public void LiteralExpression_StringTest()
         {
             var expression = Parse.Expression(@"""foo""");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(expression is LiteralExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.LiteralExpression);
@@ -460,7 +460,7 @@ namespace MiCSTests
         public void LiteralExpression_IntTest()
         {
             var expression = Parse.Expression(@"1");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(expression is LiteralExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.LiteralExpression);
@@ -477,7 +477,7 @@ namespace MiCSTests
         public void LiteralExpression_TrueTest()
         {
             var expression = Parse.Expression(@"true");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(expression is LiteralExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.LiteralExpression);
@@ -494,7 +494,7 @@ namespace MiCSTests
         public void LiteralExpression_FalseTest()
         {
             var expression = Parse.Expression(@"false");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(expression is LiteralExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.LiteralExpression);
@@ -511,7 +511,7 @@ namespace MiCSTests
         public void LiteralExpression_NullTest()
         {
             var expression = Parse.Expression(@"null");
-            var ssExpression = ExpressionBuilder.Build(expression);
+            var ssExpression = ExpressionBuilder.BuildExpression(expression);
 
             Assert.IsTrue(expression is LiteralExpressionSyntax);
             Assert.IsTrue(ssExpression is SS.LiteralExpression);
