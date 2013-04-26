@@ -121,7 +121,7 @@ namespace MiCS.Mappers
         /// <summary>
         /// Returns mapped ScriptSharp TypeSymbol object.
         /// </summary>
-        /// <param name="typeSymbol">Roslyn type AST node.</param>
+        /// <param name="typeSymbol">Roslyn type AST node. Attention! if null is provided as this parameter it is always mapped to System.Object.</param>
         static internal SS.TypeSymbol Map(this TypeSymbol typeSymbol)
         {
             #region Region: Possibly relevant ScriptSharpCode
@@ -285,6 +285,17 @@ namespace MiCS.Mappers
             if (typeSymbol is ErrorTypeSymbol)
                 throw new Exception("Not possible to map error type!");
 
+            /*
+             * Mapping null as ScriptSharp (and EcmaScript specification)
+             * null -> Object. The only time when typeSymbol has the value
+             * null is when the type of a NullLiteral is requested. This
+             * however is only guaranteed if the TypeSymbolWalker.GetTypeSymbol(...)
+             * method is used to retreive the typeSymbol. The TypeSymbolWalker
+             * only returns null on null literals and otherwise throw an 
+             * Exception if a type is not found.
+             */
+            if (typeSymbol == null)
+                return new SS.ClassSymbol("Object", new SS.NamespaceSymbol("System", null));
 
             string mappedTypeName = null;
             string namespaceName = null;

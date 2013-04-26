@@ -33,12 +33,6 @@ namespace MiCS.Mappers
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
-        // Todo: Do we need this for case study? doen't seem like it...
-        //static internal SS.Expression Map(this ParenthesizedExpressionSyntax parenthesizeExpression, SS.TypeSymbol associatedType, SS.ClassSymbol associatedParent)
-        //{ 
-        //    var ssExpression = ExpressionBuilder.Build(parenthesizeExpression.Expression
-        //}
-        
         // Todo: Prettify this shit!
         /// <summary>
         /// Return ScriptSharp LiteralExpression (when initializer syntax is used) or NewExpression representing new Array creation.
@@ -143,10 +137,15 @@ namespace MiCS.Mappers
 
         }
 
-        static internal SS.LocalExpression Map(this IdentifierNameSyntax identifierName)
+        /// <summary>
+        /// Returns mapped ScriptSharp LocalExpression with VariableSymbol (mapped from Roslyn Identifier name).
+        /// </summary>
+        /// <param name="identifierName">Roslyn identifier name AST node</param>
+        /// <param name="valueType">The type of the mapped variable symbol.</param>
+        /// <param name="parent">The parent member symbol (MethodSymbol) that contains the mapped variable symbol</param>
+        static internal SS.LocalExpression Map(this IdentifierNameSyntax identifierName, SS.TypeSymbol valueType, SS.MemberSymbol parent)
         {
-            // Todo: Set parent and value type as done in ScriptSharp
-            return new SS.LocalExpression(new SS.VariableSymbol(identifierName.Identifier.ValueText, null, null));
+            return new SS.LocalExpression(new SS.VariableSymbol(identifierName.Identifier.ValueText, parent, valueType));
         }
 
         /// <summary>
@@ -292,7 +291,7 @@ namespace MiCS.Mappers
         }
 
         /// <summary>
-        /// REturns mapped ScriptSharp ConditionalExpression with the specified condition, true expression and false expression.
+        /// Returns mapped ScriptSharp ConditionalExpression with the specified condition, true expression and false expression.
         /// </summary>
         static internal SS.ConditionalExpression Map(this ConditionalExpressionSyntax conditionalExpression, 
             SS.Expression ssCondition, 

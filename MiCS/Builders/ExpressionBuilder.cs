@@ -27,14 +27,16 @@ namespace MiCS.Builders
             throw new NotSupportedException("The Expression of kind " + node.Kind.ToString() + " cannot be mapped");
         }
 
-        // Todo: Allow ParethesizedExpressions to be mapped
-        //public override void VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
-        //{
-        //    var ssExpression = ExpressionBuilder.Build(node, associatedType, associatedParent);
-        //    ssExpression.AddParenthesisHint();
-
-        //    ssExpressions.Add(ssExpression);
-        //}
+        /// <summary>
+        /// Builds ScriptSharp expression where the parenthesized property 
+        /// is set to true (if parenthesizes are not redundant).
+        /// </summary>
+        public override void VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
+        {
+            var ssExpression = ExpressionBuilder.Build(node.Expression, associatedType, associatedParent);
+            ssExpression.AddParenthesisHint();
+            ssExpressions.Add(ssExpression);
+        }
 
         public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax arrayCreationExpression)
         {
@@ -75,7 +77,7 @@ namespace MiCS.Builders
 
         public override void VisitIdentifierName(IdentifierNameSyntax identifierName)
         {
-            ssExpressions.Add(identifierName.Map());
+            ssExpressions.Add(identifierName.Map(associatedType, associatedParent));
             
             //base.VisitIdentifierName(node);
         }
@@ -169,10 +171,12 @@ namespace MiCS.Builders
             //base.VisitConditionalExpression(node);
         }
 
+        // Todo: Put WARNING on these methods so one knows that they should only be used in tests!!
         public static SS.Expression Build(ExpressionSyntax expression)
         {
             return Build(expression, null, null);
         }
+        // Todo: Put WARNING on these methods so one knows that they should only be used in tests!!
         public static SS.Expression Build(ExpressionSyntax expression, SS.TypeSymbol associatedType)
         {
             return Build(expression, associatedType, null);

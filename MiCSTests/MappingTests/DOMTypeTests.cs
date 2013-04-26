@@ -17,7 +17,6 @@ namespace MiCSTests
     public class DOMTypeTests
     {
 
-
         [TestMethod]
         public void DOMType_InvocationTest()
         {
@@ -79,84 +78,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void BuiltInTranslationTest()
-        {
-            var source = @"
-            using System.Html;
-
-            namespace TestNamespace { 
-                class TestClass { 
-                    [ClientSide]
-                    void f() { Document.HasFocus(); }
-                }
-            }
-
-            ";
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-            var ssClass = (SS.ClassSymbol)ssNamespace.Types.ElementAt(0);
-        }
-
-        [TestMethod]
-        public void BuiltInTranslationTest2()
-        {
-            var source = @"
-            using System.Html;
-
-            namespace TestNamespace { 
-                class TestClass { 
-                    [ClientSide]
-                    void f() { Document.HasFocus(); }
-                }
-            }
-
-            namespace TestNameSpace.Nested.NestedAgain.Andagain {
-                class Lol {
-                    [MixedSide]
-                    void lol() { }
-                }
-            }
-
-            ";
-            SyntaxTree st = SyntaxTree.ParseText(source);
-
-            MiCSManager.Initiate(st);
-
-            var c = new Collector(st.GetRoot());
-            c.Collect();
-
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-
-            var ssClass = (SS.ClassSymbol)ssNamespace.Types.ElementAt(0);
-        }
-
-        [TestMethod]
-        public void BuiltInElementTranslationTest()
-        {
-            var source = @"
-            using System.Html;
-            namespace TestNamespace { 
-                class TestClass { 
-                    [ClientSide]
-                    public void f() { Element e = new Element(); var e2 = Document.GetElementById(""ewjde""); }
-                }
-
-                class Person
-                {
-                    TestClass g()
-                    {
-                    
-                    }
-                }
-            }";
-            var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
-            var ssNamespace = NamespaceBuilder.Build(@namespace);
-        }
-
-        [TestMethod]
-        public void BuiltInTestTranslationTest()
+        public void DOMType_Test()
         {
             var source = @"
                 [ClientSide]

@@ -75,6 +75,29 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        public void ParenthesizedExpression_Test()
+        {
+            var parenthesizedExpression = (ParenthesizedExpressionSyntax)Parse.Expression(@"(-1)");
+            var expression = parenthesizedExpression.Expression;
+            var ssExpression = ExpressionBuilder.Build(parenthesizedExpression);
+
+            Assert.IsTrue(expression is PrefixUnaryExpressionSyntax);
+            Assert.IsTrue(ssExpression is SS.UnaryExpression);
+
+            var unaryExpression = (PrefixUnaryExpressionSyntax)expression;
+            var ssUnaryExpression = (SS.UnaryExpression)ssExpression;
+            Assert.IsTrue(ssUnaryExpression.Parenthesized);
+
+            Assert.IsTrue(unaryExpression.OperatorToken.Kind == SyntaxKind.MinusToken);
+            Assert.IsTrue(ssUnaryExpression.Operator == SS.Operator.Minus);
+            Assert.IsTrue(ssUnaryExpression.Operand is SS.LiteralExpression);
+
+            var ssLiteral = (SS.LiteralExpression)ssUnaryExpression.Operand;
+            Assert.AreEqual(ssLiteral.Value, 1);
+
+        }
+
+        [TestMethod]
         public void UnaryExpression_LogicalNotTest()
         {
             var expression = Parse.Expression(@"!true");
@@ -416,7 +439,6 @@ namespace MiCSTests
 
         #region Region: Literal Expression
 
-
         [TestMethod]
         public void LiteralExpression_StringTest()
         {
@@ -485,22 +507,22 @@ namespace MiCSTests
             Assert.AreEqual(ssLiteral.EvaluatedType.FullName, "System.Boolean");
         }
         // Todo: Fix maybe...
-        //[TestMethod]
-        //public void LiteralExpression_NullTest()
-        //{
-        //    var expression = Parse.Expression(@"null");
-        //    var ssExpression = ExpressionBuilder.Build(expression);
+        [TestMethod]
+        public void LiteralExpression_NullTest()
+        {
+            var expression = Parse.Expression(@"null");
+            var ssExpression = ExpressionBuilder.Build(expression);
 
-        //    Assert.IsTrue(expression is LiteralExpressionSyntax);
-        //    Assert.IsTrue(ssExpression is SS.LiteralExpression);
+            Assert.IsTrue(expression is LiteralExpressionSyntax);
+            Assert.IsTrue(ssExpression is SS.LiteralExpression);
 
-        //    var literal = (LiteralExpressionSyntax)expression;
-        //    var ssLiteral = (SS.LiteralExpression)ssExpression;
+            var literal = (LiteralExpressionSyntax)expression;
+            var ssLiteral = (SS.LiteralExpression)ssExpression;
 
-        //    Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
-        //    Assert.AreEqual(ssLiteral.Value, null);
-        //    Assert.AreEqual(ssLiteral.EvaluatedType.FullName, "System.Object");
-        //}
+            Assert.AreEqual(literal.Token.Value, ssLiteral.Value);
+            Assert.AreEqual(ssLiteral.Value, null);
+            Assert.AreEqual(ssLiteral.EvaluatedType.FullName, "System.Object");
+        }
 
 
         #endregion
