@@ -61,7 +61,16 @@ namespace MiCS
                     }
                 }
                 else
-                    throw new NotImplementedException(); // Todo: Map type null (to System.Object) maybe...
+                {
+                    /*
+                     * Not sure how Roslyn identifies null type so 
+                     * instead null is used for null literals only.
+                     */
+                    if (expression.Kind == SyntaxKind.NullLiteralExpression)
+                        return null;
+
+                    throw new NotImplementedException();
+                }
             }
 
             if (type is ErrorTypeSymbol)

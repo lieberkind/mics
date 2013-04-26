@@ -285,7 +285,6 @@ namespace MiCS.Mappers
             if (typeSymbol is ErrorTypeSymbol)
                 throw new Exception("Not possible to map error type!");
 
-
             string mappedTypeName = null;
             string namespaceName = null;
             string mappedNamespaceName;

@@ -27,14 +27,16 @@ namespace MiCS.Builders
             throw new NotSupportedException("The Expression of kind " + node.Kind.ToString() + " cannot be mapped");
         }
 
-        // Todo: Allow ParethesizedExpressions to be mapped
-        //public override void VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
-        //{
-        //    var ssExpression = ExpressionBuilder.Build(node, associatedType, associatedParent);
-        //    ssExpression.AddParenthesisHint();
-
-        //    ssExpressions.Add(ssExpression);
-        //}
+        /// <summary>
+        /// Builds ScriptSharp expression where the parenthesized property 
+        /// is set to true (if parenthesizes are not redundant).
+        /// </summary>
+        public override void VisitParenthesizedExpression(ParenthesizedExpressionSyntax node)
+        {
+            var ssExpression = ExpressionBuilder.Build(node.Expression, associatedType, associatedParent);
+            ssExpression.AddParenthesisHint();
+            ssExpressions.Add(ssExpression);
+        }
 
         public override void VisitArrayCreationExpression(ArrayCreationExpressionSyntax arrayCreationExpression)
         {
