@@ -9,10 +9,18 @@ using SS = ScriptSharp.ScriptModel;
 
 namespace MiCS.Builders
 {
+
+    /// <summary>
+    /// Builds ScriptSharp namespaces from Roslyn namespaces
+    /// </summary>
     public class NamespaceBuilder : SyntaxWalker
     {
         public readonly List<SS.NamespaceSymbol> ssNamespaces = new List<SS.NamespaceSymbol>();
 
+        /// <summary>
+        /// Builds the specified namespace and its descendant nodes.
+        /// </summary>
+        /// <param name="namespace">The namespace.</param>
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax @namespace)
         {
             var ssNamespace = @namespace.Map();
@@ -25,6 +33,10 @@ namespace MiCS.Builders
             ssNamespaces.Add(ssNamespace);
         }
 
+        /// <summary>
+        /// Builds the specified namespace and its descendant nodes.
+        /// </summary>
+        /// <param name="namespace">The namespace.</param>
         public static SS.NamespaceSymbol Build(NamespaceDeclarationSyntax @namespace)
         {
             var namespaceBuilder = new NamespaceBuilder();
