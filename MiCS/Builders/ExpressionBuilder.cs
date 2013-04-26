@@ -75,7 +75,7 @@ namespace MiCS.Builders
 
         public override void VisitIdentifierName(IdentifierNameSyntax identifierName)
         {
-            ssExpressions.Add(identifierName.Map());
+            ssExpressions.Add(identifierName.Map(associatedType, associatedParent));
             
             //base.VisitIdentifierName(node);
         }
@@ -169,10 +169,12 @@ namespace MiCS.Builders
             //base.VisitConditionalExpression(node);
         }
 
+        // Todo: Put WARNING on these methods so one knows that they should only be used in tests!!
         public static SS.Expression Build(ExpressionSyntax expression)
         {
             return Build(expression, null, null);
         }
+        // Todo: Put WARNING on these methods so one knows that they should only be used in tests!!
         public static SS.Expression Build(ExpressionSyntax expression, SS.TypeSymbol associatedType)
         {
             return Build(expression, associatedType, null);

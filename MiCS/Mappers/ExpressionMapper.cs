@@ -33,11 +33,16 @@ namespace MiCS.Mappers
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
-        // Todo: Do we need this for case study? doen't seem like it...
-        //static internal SS.Expression Map(this ParenthesizedExpressionSyntax parenthesizeExpression, SS.TypeSymbol associatedType, SS.ClassSymbol associatedParent)
-        //{ 
-        //    var ssExpression = ExpressionBuilder.Build(parenthesizeExpression.Expression
-        //}
+        /// <summary>
+        /// Returns mapped ScriptSharp expression where is parenthesized property 
+        /// is set to true (if parenthesizes are not redundant).
+        /// </summary>
+        static internal SS.Expression Map(this ParenthesizedExpressionSyntax parenthesizeExpression, SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent)
+        {
+            var ssExpression = ExpressionBuilder.Build(parenthesizeExpression.Expression, associatedType, associatedParent);
+            ssExpression.AddParenthesisHint();
+            return ssExpression;
+        }
         
         // Todo: Prettify this shit!
         /// <summary>
@@ -143,10 +148,11 @@ namespace MiCS.Mappers
 
         }
 
-        static internal SS.LocalExpression Map(this IdentifierNameSyntax identifierName)
+
+        static internal SS.LocalExpression Map(this IdentifierNameSyntax identifierName, SS.TypeSymbol valueType, SS.MemberSymbol parent)
         {
             // Todo: Set parent and value type as done in ScriptSharp
-            return new SS.LocalExpression(new SS.VariableSymbol(identifierName.Identifier.ValueText, null, null));
+            return new SS.LocalExpression(new SS.VariableSymbol(identifierName.Identifier.ValueText, parent, valueType));
         }
 
         /// <summary>
