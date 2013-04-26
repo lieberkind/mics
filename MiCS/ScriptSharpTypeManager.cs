@@ -33,7 +33,7 @@ namespace MiCS
             coreTypeCollector.Collect();
             coreTypeMembers = coreTypeCollector.Members;
 
-            CoreMapping = MiCSCoreMapping.Instance;
+            CoreMapping = new MiCSCoreMapping();
 
             var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree });
             semanticModel = compilation.GetSemanticModel(tree);
@@ -172,6 +172,5 @@ namespace MiCS
         {
             return GetCoreScriptTypeFromModel(typeMapping.NamespaceNameScript, typeMapping.NameScript);
         }
-
     }
 }
