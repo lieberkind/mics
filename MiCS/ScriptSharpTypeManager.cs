@@ -14,6 +14,8 @@ namespace MiCS
         #region Region: Construction and Properties
 
         private Dictionary<string, Dictionary<string, List<string>>> coreTypeMembers;
+        private SemanticModel semanticModel;
+        private CompilationUnitSyntax compilationUnit;
 
         public MiCSCoreMapping CoreMapping
         {
@@ -24,9 +26,9 @@ namespace MiCS
         public ScriptSharpTypeManager()
         {
             var tree = SyntaxTree.ParseText(ScriptSharp.TextSources.CoreLib.Text);
-            CompilationUnit = tree.GetRoot();
+            compilationUnit = tree.GetRoot();
 
-            var coreTypeCollector = new Collector(CompilationUnit);
+            var coreTypeCollector = new Collector(compilationUnit);
 
             coreTypeCollector.Collect();
             coreTypeMembers = coreTypeCollector.Members;
@@ -34,36 +36,8 @@ namespace MiCS
             CoreMapping = MiCSCoreMapping.Instance;
 
             var compilation = Compilation.Create("Compilation", syntaxTrees: new[] { tree });
-            SemanticModel = compilation.GetSemanticModel(tree);
+            semanticModel = compilation.GetSemanticModel(tree);
         }
-
-        public CompilationUnitSyntax CompilationUnit
-        {
-            get;
-            private set;
-        }
-
-        public SemanticModel SemanticModel
-        {
-            get;
-            private set;
-        }
-
-        public static ScriptSharpTypeManager Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new ScriptSharpTypeManager();
-
-                return instance;
-            }
-            private set
-            {
-                instance = value;
-            }
-        }
-        private static ScriptSharpTypeManager instance;
 
         #endregion
 
@@ -88,16 +62,6 @@ namespace MiCS
             else
                 return IsSupportedCoreType(typeSymbol.ContainingNamespace.FullName(), typeSymbol.Name);
         }
-        ///// <summary>
-        ///// Returns true if this is a core type that can be mapped
-        ///// to a script core type.
-        ///// </summary>
-        //// Todo: Move to MiCSManager
-        //public static bool IsSupportedCoreType(SimpleNameSyntax simpleName)
-        //{
-        //    return IsSupportedCoreType(TypeManager.GetTypeSymbol(simpleName));
-        //}
-
 
         /// <summary>
         /// Returns true if the specified type is a core script type.
@@ -131,7 +95,7 @@ namespace MiCS
         /// </summary>
         private bool IsCoreScriptType(ExpressionSyntax expression)
         {
-            var coreType = Instance.SemanticModel.GetTypeInfo(expression).Type;
+            var coreType = semanticModel.GetTypeInfo(expression).Type;
             if (coreType.IsSupportedCoreType())
                 return true;
             else
@@ -177,7 +141,7 @@ namespace MiCS
         /// </summary>
         private TypeSymbol GetCoreScriptTypeFromModel(string namespaceName, string name, bool throwExceptionOnError = true)
         {
-            var namespaces = CompilationUnit.DescendantNodes().Where(n => n.Kind == SyntaxKind.NamespaceDeclaration);
+            var namespaces = compilationUnit.DescendantNodes().Where(n => n.Kind == SyntaxKind.NamespaceDeclaration);
             foreach (var @namespace in namespaces)
             {
                 var members = @namespace.DescendantNodes().Where(n => n.Kind == SyntaxKind.ClassDeclaration || n.Kind == SyntaxKind.StructDeclaration);
@@ -189,7 +153,7 @@ namespace MiCS
 
                     if (memberName.Equals(name))
                     {
-                        return SemanticModel.GetDeclaredSymbol(member);
+                        return semanticModel.GetDeclaredSymbol(member);
                     }
                 }
             }
