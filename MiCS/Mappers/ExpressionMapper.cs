@@ -43,12 +43,12 @@ namespace MiCS.Mappers
         /// <returns></returns>
         static internal SS.Expression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent)
         {
-            // Todo: Fix... maybe wrong associated type...
-
             SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", new SS.NamespaceSymbol("System", null));
             arrayTypeSymbol.SetIgnoreNamespace();
             arrayTypeSymbol.SetArray();
 
+            // If the array has any initializers, a LiteralExpression and not a NewExpression is returned.
+            // This is ScriptSharps quirky way of building array syntax and is expected behavior.
             #region Region: Add initializer if any is used.
 
             var count = arrayCreationExpression.Initializer == null ? 0 : arrayCreationExpression.Initializer.Expressions.Count;
@@ -58,7 +58,7 @@ namespace MiCS.Mappers
                 int i = 0;
                 foreach (var expr in arrayCreationExpression.Initializer.Expressions)
                 {
-                    exprs[i] = ExpressionBuilder.Build(expr, associatedType, associatedParent);
+                    exprs[i] = ExpressionBuilder.BuildExpression(expr, associatedType, associatedParent);
                     i++;
                 }
             }
@@ -67,7 +67,6 @@ namespace MiCS.Mappers
                 return new SS.LiteralExpression(arrayTypeSymbol, exprs);
 
             #endregion
-
 
             SS.NewExpression newExpr = new SS.NewExpression(arrayTypeSymbol);
             return newExpr;
