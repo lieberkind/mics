@@ -95,7 +95,7 @@ namespace MiCSTests.TestUtils
         public static CompilationUnitSyntax CompilationUnit(string source)
         {
             MiCSManager.Initiate(source);
-            return CSharpTypeManager.Instance.CompilationUnit;
+            return TypeManager.CompilationUnit;
         }
 
 

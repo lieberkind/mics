@@ -304,13 +304,13 @@ namespace MiCS.Mappers
                 namespaceName = typeSymbol.ContainingNamespace.FullName();
             }
 
-            var isSupportedClientSideType =
-                MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
-                MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
+            var isSupportedClientSideType = TypeManager.IsClientSideType(namespaceName, typeSymbol.Name);
+                //MiCSManager.ClientSideMembers.ContainsKey(namespaceName) &&
+                //MiCSManager.ClientSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
-            var isSupportedMixedSideType =
-                MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
-                MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
+            var isSupportedMixedSideType = TypeManager.IsMixedSideType(namespaceName, typeSymbol.Name);
+                //MiCSManager.MixedSideMembers.ContainsKey(namespaceName) &&
+                //MiCSManager.MixedSideMembers[namespaceName].ContainsKey(typeSymbol.Name);
 
             var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
 
@@ -325,7 +325,7 @@ namespace MiCS.Mappers
             mappedTypeName = typeSymbol.TypeScriptName();
             mappedNamespaceName = namespaceName;
             if (isSupportedCoreType)
-                mappedNamespaceName = ScriptSharpTypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
+                mappedNamespaceName = TypeManager.GetCoreScriptTypeNamespace(typeSymbol).FullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
 
             // Todo: Parent namespace should preferably not be a new namspace object.
             ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));

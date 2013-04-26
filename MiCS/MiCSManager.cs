@@ -19,41 +19,8 @@ namespace MiCS
 {
     public class MiCSManager
     {
-        private CSharpTypeManager scriptTypeManager;
-        private ScriptSharpTypeManager coreTypeManager;
-        //private TypeSymbolGetter typeSymbolGetter;
         private static MiCSManager instance;
         private bool userTreeIsValid;
-
-        //public static TypeSymbolGetter TypeSymbolGetter 
-        //{
-        //    get { return Instance.typeSymbolGetter; } 
-        //}
-
-        public static Dictionary<string, Dictionary<string, List<string>>> MixedSideMembers
-        {
-            get { return Instance.scriptTypeManager.MixedSideMembers; }
-        }
-
-        public static Dictionary<string, Dictionary<string, List<string>>> ClientSideMembers
-        {
-            get { return Instance.scriptTypeManager.ClientSideMembers; }
-        }
-
-        public static Dictionary<string, Dictionary<string, List<string>>> CoreTypeMembers
-        {
-            get { return Instance.coreTypeManager.CoreTypeMembers;  }
-        }
-
-        public static SemanticModel ScriptTypeSemanticModel
-        {
-            get { return Instance.scriptTypeManager.SemanticModel; }
-        }
-
-        public static SemanticModel CoreTypeSemanticModel
-        {
-            get { return Instance.coreTypeManager.SemanticModel; }
-        }
 
         public static bool UserTreeIsValid
         {
@@ -94,12 +61,8 @@ namespace MiCS
             if (!Syntax.IsCompleteSubmission(userTree))
                 throw new Exception("Source submission failed!");
 
-            this.scriptTypeManager = new CSharpTypeManager(userTree);
-            this.coreTypeManager = new ScriptSharpTypeManager();
-
-            TypeManager.Initiate(scriptTypeManager, coreTypeManager);
-
-            //this.typeSymbolGetter = new TypeSymbolGetter();
+            //TypeManager.Initiate(new CSharpTypeManager(userTree), new ScriptSharpTypeManager());
+            TypeManager.Initiate(userTree);
 
             userTreeIsValid = this.validate();
 
@@ -112,12 +75,12 @@ namespace MiCS
 
         private bool validate()
         {
-            var mixedSideMembers = scriptTypeManager.MixedSideMembers;
-            var clientSideMembers = scriptTypeManager.ClientSideMembers;
+            var mixedSideMembers = TypeManager.MixedSideMembers;
+            var clientSideMembers = TypeManager.ClientSideMembers;
 
-            var mixedSideValidator = new Validator(scriptTypeManager.CompilationUnit, mixedSideMembers, "MixedSide");
+            var mixedSideValidator = new Validator(TypeManager.CompilationUnit, mixedSideMembers, "MixedSide");
             
-            var clientSideValidator = new Validator(scriptTypeManager.CompilationUnit, clientSideMembers, "ClientSide");
+            var clientSideValidator = new Validator(TypeManager.CompilationUnit, clientSideMembers, "ClientSide");
             clientSideValidator.AddToMembers(mixedSideMembers);
 
             mixedSideValidator.Validate();
@@ -132,7 +95,7 @@ namespace MiCS
             /*
              * Map from Roslyn (C#) to ScriptSharp (JavaScript) AST.
              */
-            var scriptSharpAST = Instance.MapCompilationUnit(Instance.scriptTypeManager.CompilationUnit);
+            var scriptSharpAST = Instance.MapCompilationUnit(TypeManager.CompilationUnit);
             // Todo: Maybe wrap MiCS code in its own namespace.
 
             /*
@@ -188,11 +151,6 @@ namespace MiCS
             generator.GenerateScript(symbols);
             return stringWriter.ToString();
         }
-
-        //public static TypeSymbol GetTypeSymbol(SyntaxNode node)
-        //{
-        //    return Instance.scriptTypeManager.GetTypeSymbol(node);
-        //}
 
     }
 }

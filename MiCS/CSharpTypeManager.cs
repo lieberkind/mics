@@ -67,13 +67,6 @@ namespace MiCS
 
             typeSymbolWalker = new TypeSymbolWalker(SemanticModel);
 
-            Instance = this;
-        }
-
-        public static CSharpTypeManager Instance
-        {
-            get;
-            private set;
         }
 
 
@@ -235,6 +228,11 @@ namespace MiCS
                 throw new NotSupportedException();
 
             return ((MethodSymbol)symbol).ReturnType;
+        }
+
+        internal SymbolInfo GetSymbolInfo(SimpleNameSyntax simpleName)
+        {
+            return SemanticModel.GetSymbolInfo(simpleName);
         }
     }
 }

@@ -23,15 +23,15 @@ namespace MiCS.Builders
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax method)
         {
-            var isClientSide =
-                MiCSManager.ClientSideMembers.ContainsKey(ssParentNamespace.Name) &&
-                MiCSManager.ClientSideMembers[ssParentNamespace.Name].ContainsKey(ssParentClass.Name) &&
-                MiCSManager.ClientSideMembers[ssParentNamespace.Name][ssParentClass.Name].Contains(method.Identifier.ValueText);
+            var isClientSide = TypeManager.IsClientSideMethod(ssParentNamespace.Name, ssParentClass.Name, method.Identifier.ValueText);
+                //MiCSManager.ClientSideMembers.ContainsKey(ssParentNamespace.Name) &&
+                //MiCSManager.ClientSideMembers[ssParentNamespace.Name].ContainsKey(ssParentClass.Name) &&
+                //MiCSManager.ClientSideMembers[ssParentNamespace.Name][ssParentClass.Name].Contains(method.Identifier.ValueText);
 
-            var isMixedSide =
-                MiCSManager.MixedSideMembers.ContainsKey(ssParentNamespace.Name) &&
-                MiCSManager.MixedSideMembers[ssParentNamespace.Name].ContainsKey(ssParentClass.Name) &&
-                MiCSManager.MixedSideMembers[ssParentNamespace.Name][ssParentClass.Name].Contains(method.Identifier.ValueText);
+            var isMixedSide = TypeManager.IsMixedSideMethod(ssParentNamespace.Name, ssParentClass.Name, method.Identifier.ValueText);
+                //MiCSManager.MixedSideMembers.ContainsKey(ssParentNamespace.Name) &&
+                //MiCSManager.MixedSideMembers[ssParentNamespace.Name].ContainsKey(ssParentClass.Name) &&
+                //MiCSManager.MixedSideMembers[ssParentNamespace.Name][ssParentClass.Name].Contains(method.Identifier.ValueText);
 
             if (isClientSide || isMixedSide)
             {

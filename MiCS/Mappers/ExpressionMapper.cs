@@ -239,7 +239,7 @@ namespace MiCS.Mappers
                      * Verify correct use of supported core type (if
                      * this member access is on a supported core type).
                      */
-                    ScriptSharpTypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+                    TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
                     // Todo: Consider writing for report issues with only verify correct use of core
                     // types on 'foreign' member access. If you can inherit from a core type this
                     // could maybe be problematic, but as inheritance is not within the scope of our
