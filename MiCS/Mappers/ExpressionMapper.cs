@@ -221,7 +221,7 @@ namespace MiCS.Mappers
                 var identifierName = (IdentifierNameSyntax)invocation.Expression;
 
                 var ssReturnType = TypeManager.GetReturnType(identifierName).Map();
-                var ssMethodName = identifierName.ScriptName();
+                var ssMethodName = identifierName.GetScriptName();
 
                 var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 
@@ -246,8 +246,8 @@ namespace MiCS.Mappers
                     // could maybe be problematic, but as inheritance is not within the scope of our
                     // project it might not be a problem anyways?
 
-                    var ssObjectReferenceName = objectReference.ScriptName();
-                    var ssMethodName = memberAccess.Name.ScriptName();
+                    var ssObjectReferenceName = objectReference.GetScriptName();
+                    var ssMethodName = memberAccess.Name.GetScriptName();
 
                     var ssReturnType = TypeManager.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
@@ -262,7 +262,7 @@ namespace MiCS.Mappers
                 }
                 else if (memberAccess.Expression is ThisExpressionSyntax)
                 {
-                    var ssMethodName = memberAccess.Name.ScriptName();
+                    var ssMethodName = memberAccess.Name.GetScriptName();
                     var ssReturnType = TypeManager.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
 

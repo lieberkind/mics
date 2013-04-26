@@ -14,6 +14,7 @@ namespace MiCSCaseStudy
 {
     public partial class WebForm1 : System.Web.UI.Page
     {
+
         TextBox NameBox = new TextBox() { ID = "name", Text = "Name" };
         Panel CheckBoxGroup = new Panel();
         CheckBox SnailMailCheck = new CheckBox() { ID = "dmSnailmail", Text = "Snail Mail" };

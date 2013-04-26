@@ -219,7 +219,7 @@ namespace MiCS.Builders
             var ssObjectReference = ExpressionBuilder.BuildExpression(memberAccess.Expression, associatedType, associatedParent);
             var ssMemberParentType = memberParentType.Map();
             var ssType = TypeManager.GetTypeSymbol(memberAccess.Name).Map();
-            var ssFieldName = memberAccess.Name.ScriptName();
+            var ssFieldName = memberAccess.Name.GetScriptName();
 
             var ssField = new SS.FieldSymbol(ssFieldName, ssMemberParentType, ssType); 
             var ssFieldExpression = new SS.FieldExpression(ssObjectReference, ssField);

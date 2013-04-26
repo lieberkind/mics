@@ -50,16 +50,25 @@ namespace MiCS
         #endregion
 
         #region Region: CSharpTypeManager functionality
+
         public static TypeSymbol GetReturnType(SimpleNameSyntax simpleName)
         {
             return instance.cSharpTypeManager.GetReturnType(simpleName);
         }
 
+        /// <summary>
+        /// Returns true if the specified type declaration is
+        /// a user defined type.
+        /// </summary>
         public static bool IsUserType(ClassDeclarationSyntax classDeclaration)
         {
             return instance.cSharpTypeManager.IsUserType(classDeclaration);
         }
 
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a user defined type.
+        /// </summary>
         public static bool IsUserType(TypeSymbol typeSymbol)
         {
             return instance.cSharpTypeManager.IsUserType(typeSymbol);
@@ -74,6 +83,10 @@ namespace MiCS
             return classDeclaration.HasAttribute("ScriptName") || classDeclaration.HasAttribute("ScriptImport");
         }
 
+        /// <summary>
+        /// Returns true if the specified type is
+        /// a DOM type from the ScriptSharp namespace System.Html.
+        /// </summary>
         public static bool IsDOMType(TypeSymbol typeSymbol)
         {
             return instance.cSharpTypeManager.IsDOMType(typeSymbol);
@@ -113,6 +126,7 @@ namespace MiCS
         { 
             return instance.cSharpTypeManager.GetSymbolInfo(simpleName);
         }
+
         #endregion
 
         #region Region: ScriptSharpTypeManager functionality
@@ -125,7 +139,7 @@ namespace MiCS
                 var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
                 var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
                 var objectType = GetTypeSymbol(objectReference);
-                var namespaceName = objectType.ContainingNamespace.FullName();
+                var namespaceName = objectType.ContainingNamespace.GetFullName();
 
                 if (objectType.IsSupportedCoreType())
                 {
@@ -210,7 +224,10 @@ namespace MiCS
             return instance.scriptSharpTypeManager.ToCoreScriptType(typeSymbol);
         }
 
-        // Todo: Add documentation
+        /// <summary>
+        /// Retrieve the TypeSymbols containing NamespaceSymbol from 
+        /// the ScriptSharp core type semanic model.
+        /// </summary>
         public static NamespaceSymbol GetCoreScriptTypeNamespace(TypeSymbol typeSymbol)
         {
             return instance.scriptSharpTypeManager.GetCoreScriptTypeNamespace(typeSymbol);
@@ -226,9 +243,95 @@ namespace MiCS
             return instance.scriptSharpTypeManager.IsSupportedCoreType(typeSymbol);
         }
 
+        /// <summary>
+        /// Returns the script name defined by ScriptSharp if the 
+        /// type is a built in JavaScript/DOM type (or a supported 
+        /// core type). Otherwise the original type name is return.
+        /// </summary>
+        public static string GetTypeScriptName(TypeSymbol typeSymbol)
+        {
+            if (typeSymbol.IsUserType())
+                return typeSymbol.Name;
 
+            if (typeSymbol.IsSupportedCoreType())
+                return ToCoreScriptType(typeSymbol).Name;
+
+            return typeSymbol.Name;
+        }
+
+        /// <summary>
+        /// Returns the script name of a SimpleNameSyntax. Checks
+        /// if the SimpleNameSyntax is static reference to a DOM
+        /// type and if it is returns the DOM type's script name.
+        /// </summary>
+        public static string GetScriptName(SimpleNameSyntax simpleName)
+        {
+
+            var symbol = TypeManager.GetTypeSymbol(simpleName);
+            if (symbol.IsDOMType())
+            {
+                var typeName = symbol.Name;
+                var referenceName = simpleName.Identifier.ValueText;
+
+                // Check if simpleName is static reference to DOM type.
+                if (referenceName.Equals(typeName))
+                {
+                    // Is static reference (e.g. Document.GetElementById(...)).
+                    return TypeManager.GetScriptNameAttributeValue(symbol);
+                }
+            }
+
+            // Core type script name mapping (E.g Regex.IsMatch(...) to RegExp.test(...)).
+            var ts = TypeManager.GetSymbolInfo(simpleName).Symbol;
+            if (ts is MethodSymbol)
+            {
+                var method = (MethodSymbol)ts;
+                var methodName = method.Name;
+                var containingTypeName = method.ContainingType.Name;
+                var containingNamespaceName = method.ContainingNamespace.GetFullName();
+                if (method.ContainingType.IsSupportedCoreType())
+                {
+                    var coreMappings = TypeManager.CoreMapping.Where(n =>
+                        n.NamespaceName.Equals(containingNamespaceName) &&
+                        n.Name.Equals(containingTypeName) &&
+                        (n.Members.Where(m => m.Name.Equals(methodName))).Count() > 0);
+
+                    if (coreMappings.Count() == 1)
+                    {
+                        return coreMappings.First().Members.Find(m => m.Name.Equals(methodName)).NameScript;
+                    }
+                }
+            }
+
+            // Script and server side name are the same.
+            return simpleName.Identifier.ValueText;
+        }
+
+        /// <summary>
+        /// Retrieve the ScriptSharp defined script name from class attribute
+        /// if any exist (otherwise original TypeSymbol name is returned).
+        /// </summary>
+        private static string GetScriptNameAttributeValue(TypeSymbol typeSymbol)
+        {
+            if (!typeSymbol.IsDOMType())
+                throw new Exception("It is only possible to get the attribute ScriptName value from a DOM type.");
+
+            var attribute = typeSymbol.GetAttribute("ScriptName");
+            if (attribute != null)
+            {
+                var @value = attribute.ArgumentList.Arguments.First().Expression;
+                if (@value is LiteralExpressionSyntax)
+                    return ((LiteralExpressionSyntax)@value).Token.ValueText;
+                else
+                    throw new Exception();
+            }
+
+            return typeSymbol.Name;
+        }
 
 
         #endregion
+
+
     }
 }

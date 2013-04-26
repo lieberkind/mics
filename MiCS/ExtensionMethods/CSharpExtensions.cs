@@ -8,9 +8,8 @@ namespace MiCS
 {
     public static class CSharpExtensions
     {
-
         /// <summary>
-        /// 
+        /// AddRange extension.
         /// </summary>
         ///<remarks>http://stackoverflow.com/questions/1474863/addrange-to-a-collection</remarks>
         public static void AddRange<T>(this ICollection<T> destination, IEnumerable<T> source)

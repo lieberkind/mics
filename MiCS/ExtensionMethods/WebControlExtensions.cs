@@ -9,6 +9,7 @@ using System.Web.UI.WebControls;
 
 namespace MiCS
 {
+
     public static class WebControlExtensions
     {
         /// <summary>
