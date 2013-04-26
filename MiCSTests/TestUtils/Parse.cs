@@ -15,6 +15,7 @@ namespace MiCSTests.TestUtils
 
         public static SS.SymbolSet NamespacesToSymbolSet(string source)
         {
+
             var ssSymbolSet = new SS.SymbolSet();
             source = @"
                 using System.Html;

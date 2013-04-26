@@ -139,7 +139,7 @@ namespace MiCSTests
         {
             var source = @"
                 [MixedSide]
-                int f() {
+                string f() {
                         string[] strings = new string[2] { ""Tomas"", ""Asger""};
                         return strings[1];
                 }";
@@ -154,7 +154,8 @@ namespace MiCSTests
             Assert.AreEqual("System.String", ssIndexerExpression.Indexer.AssociatedType.FullName);
             Assert.AreEqual("System.Int32", ssIndexerExpression.Indices.ElementAt(0).EvaluatedType.FullName);
 
-            // Todo: Fix...
+            Assert.AreEqual("System.String", ssIndexerExpression.EvaluatedType.FullName);
+            Assert.AreEqual("System.Array", ssIndexerExpression.ObjectReference.EvaluatedType.FullName);
         }
 
         [TestMethod]
@@ -165,9 +166,12 @@ namespace MiCSTests
                         strings[0] = ""Asger"";
                         strings[1] = ""Tomas"";";
 
-            var ssStatements = Parse.StatementsToSS(source);
+            var ssStatement = (SS.ExpressionStatement)Parse.StatementsToSS(source).ElementAt(1);
+            var ssBinaryExpression = (SS.BinaryExpression)ssStatement.Expression;
+            var ssIndexerExpression = (SS.IndexerExpression)ssBinaryExpression.LeftOperand;
 
-            // Todo: Make assertions...
+            Assert.AreEqual("System.String", ssIndexerExpression.EvaluatedType.FullName);
+            Assert.AreEqual("System.Array", ssIndexerExpression.ObjectReference.EvaluatedType.FullName);
         }
 
 
