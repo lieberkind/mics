@@ -9,6 +9,8 @@ namespace MiCS
 {
     class TypeManager
     {
+        #region Region: Fields, properties and construction
+        
         private CSharpTypeManager cSharpTypeManager;
         private ScriptSharpTypeManager scriptSharpTypeManager;
 
@@ -34,23 +36,10 @@ namespace MiCS
             get { return instance.cSharpTypeManager.CompilationUnit; }
         }
 
-        private TypeManager(CSharpTypeManager cSharpTypeManager, ScriptSharpTypeManager scriptSharpTypeManager)
-        {
-            this.cSharpTypeManager = cSharpTypeManager;
-            this.scriptSharpTypeManager = scriptSharpTypeManager;
-        }
-
         private TypeManager(SyntaxTree userTree)
         {
             this.cSharpTypeManager = new CSharpTypeManager(userTree);
             this.scriptSharpTypeManager = new ScriptSharpTypeManager();
-        }
-
-        // Todo: Find out what to do with this
-        public static void Initiate(CSharpTypeManager scriptTypeManager, ScriptSharpTypeManager coreTypeManager)
-        {
-            //if (instance == null)            
-            instance = new TypeManager(scriptTypeManager, coreTypeManager);
         }
 
         public static void Initiate(SyntaxTree userTree)
@@ -58,7 +47,9 @@ namespace MiCS
             instance = new TypeManager(userTree);
         }
 
-        #region CSharpTypeManager functionality
+        #endregion
+
+        #region Region: CSharpTypeManager functionality
         public static TypeSymbol GetReturnType(SimpleNameSyntax simpleName)
         {
             return instance.cSharpTypeManager.GetReturnType(simpleName);
@@ -124,7 +115,7 @@ namespace MiCS
         }
         #endregion
 
-        #region ScriptSharpTypeManager
+        #region Region: ScriptSharpTypeManager functionality
 
         // Todo: This really needs untangling
         public static void VerifyCorrectUseOfSupportedCoreType(InvocationExpressionSyntax invocation)

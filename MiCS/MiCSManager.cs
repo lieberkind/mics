@@ -61,7 +61,6 @@ namespace MiCS
             if (!Syntax.IsCompleteSubmission(userTree))
                 throw new Exception("Source submission failed!");
 
-            //TypeManager.Initiate(new CSharpTypeManager(userTree), new ScriptSharpTypeManager());
             TypeManager.Initiate(userTree);
 
             userTreeIsValid = this.validate();
