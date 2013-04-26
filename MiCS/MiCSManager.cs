@@ -13,39 +13,38 @@ namespace MiCS
 {
     public class MiCSManager
     {
-        private static MiCSManager instance;
-        private bool userTreeIsValid;
+        #region Region: Constructor & Fields
 
         public static bool UserTreeIsValid
         {
             get { return Instance.userTreeIsValid; }
         }
+        private bool userTreeIsValid;
 
-        // Todo: Should probably ensure that Instance is singleton!
         private static MiCSManager Instance
         {
             get
             {
-                if (MiCSManager.instance == null) 
+                if (MiCSManager.instance == null)
                     throw new Exception("MiCSManager is not instantiated!");
 
                 return instance;
             }
         }
+        private static MiCSManager instance;
 
-        // Todo: How do these work? This seems overly quirky...
         public static void Initiate(string source)
         {
-            var micsManager = new MiCSManager(source);
+            MiCSManager.instance = new MiCSManager(source);
         }
 
         public static void Initiate(SyntaxTree tree)
         {
-            var micsManager = new MiCSManager(tree);
+            MiCSManager.instance = new MiCSManager(tree);
         }
 
-
-        private MiCSManager(string source) : this(SyntaxTree.ParseText(source))
+        private MiCSManager(string source)
+            : this(SyntaxTree.ParseText(source))
         {
 
         }
@@ -58,14 +57,14 @@ namespace MiCS
             TypeManager.Initiate(userTree);
 
             userTreeIsValid = this.validate();
-
-            // Todo: Move this elsewhere - probably to BuildScript method
-            //if (!userTreeIsValid)
-            //    throw new Exception("The submitted source code is not valid");
-
-            MiCSManager.instance = this;
         }
 
+
+        #endregion
+
+        /// <summary>
+        /// Returns true if the Mixed Side Principle is not violated.
+        /// </summary>
         private bool validate()
         {
             var mixedSideMembers = TypeManager.MixedSideMembers;
@@ -82,49 +81,50 @@ namespace MiCS
             return mixedSideValidator.IsValid && clientSideValidator.IsValid;
         }
 
-        // Todo: Script should be build from more than one file.
+        /// <summary>
+        /// Build scripts from the [MixedSide] and [ClientSide]
+        /// annotated methods.
+        /// </summary>
+        /// <param name="scriptManager">The page's ScriptManager instance.</param>
+        /// <param name="page">The page object</param>
         public static void BuildScript(ScriptManager scriptManager, Page page)
         {
-            /*
-             * Map from Roslyn (C#) to ScriptSharp (JavaScript) AST.
-             */
+            // Map from Roslyn (C#) to ScriptSharp (JavaScript) AST.
             var scriptSharpAST = Instance.MapCompilationUnit(TypeManager.CompilationUnit);
-            // Todo: Maybe wrap MiCS code in its own namespace.
 
-            /*
-             * Generate script code and register with ASP.NET ScriptManager.
-             */
+             // Generate script code and register with ASP.NET ScriptManager.
             var scriptText = Instance.GenerateScriptText(scriptSharpAST);
             ScriptManager.RegisterClientScriptBlock(page, page.GetType(), "MiCSGeneratedScript", scriptText, true);
         }
 
         /// <summary>
-        /// Map the mixed side Roslyn AST to ScriptSharp AST.
+        /// Map the mixed side Roslyn AST to ScriptSharp symbols.
         /// </summary>
         private List<SS.NamespaceSymbol> MapCompilationUnit(CompilationUnitSyntax root)
         {
-            var scriptSharpAST = new List<SS.NamespaceSymbol>();
+            var ssNamespaces = new List<SS.NamespaceSymbol>();
             foreach (var roslynNamespace in root.Members)
             {
                 if (roslynNamespace is NamespaceDeclarationSyntax)
                 {
-                    scriptSharpAST.Add(NamespaceBuilder.Build((NamespaceDeclarationSyntax)roslynNamespace));
+                    ssNamespaces.Add(NamespaceBuilder.Build((NamespaceDeclarationSyntax)roslynNamespace));
                 }
             }
-            return scriptSharpAST;
+            return ssNamespaces;
         }
 
         /// <summary>
-        /// Generate script string from ScriptSharp AST.
+        /// Generate script string from ScriptSharp symbols using
+        /// the ScriptSharp TypeGenerater.
         /// </summary>
-        private string GenerateScriptText(List<SS.NamespaceSymbol> scriptSharpAST)
+        private string GenerateScriptText(List<SS.NamespaceSymbol> ssNamespaces)
         {
             var stringWriter = new StringWriter();
             var writer = new ScriptTextWriter(stringWriter);
             var options = new CompilerOptions();
             var generator = new ScriptGenerator(writer, options, null);
 
-            foreach (var scriptSharpNamespace in scriptSharpAST)
+            foreach (var scriptSharpNamespace in ssNamespaces)
             {
                 foreach (var scriptSharpClass in scriptSharpNamespace.Types)
                 {
@@ -134,16 +134,5 @@ namespace MiCS
 
             return stringWriter.ToString();
         }
-
-        private string GenerateScriptText(SS.SymbolSet symbols)
-        {
-            var stringWriter = new StringWriter();
-            var writer = new ScriptTextWriter(stringWriter);
-            var options = new CompilerOptions();
-            var generator = new ScriptGenerator(writer, options, symbols);
-            generator.GenerateScript(symbols);
-            return stringWriter.ToString();
-        }
-
     }
 }
