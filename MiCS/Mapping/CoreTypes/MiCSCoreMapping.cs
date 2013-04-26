@@ -90,6 +90,14 @@ namespace MiCS
                 }
             });
 
+            mapping.Add(new MiCSCoreTypeMapping()
+            {
+                Name = "Char",
+                NameScript = "String",
+                NamespaceName = "System",
+                NamespaceNameScript = "System",
+                Members = new List<MiCSCoreMemberMapping>()
+            });
 
             mapping.Add(new MiCSCoreTypeMapping()
             {

@@ -205,7 +205,6 @@ namespace MiCSTests
         public void ForStatement_Test()
         {
             var source = @"
-            namespace TestNamespace { 
                 class TestClass { 
                     [MixedSide]
                     void f() 
@@ -217,14 +216,9 @@ namespace MiCSTests
                             count = count + i;
                         }
                     }
-                } 
-            }";
+                }";
 
-            var st = SyntaxTree.ParseText(source);
-
-            var forStatement = (ForStatementSyntax)st.GetRoot().DescendantNodes().Where(n => n is ForStatementSyntax).First();
-
-            var ssForStatement = (SS.ForStatement)StatementBuilder.Build(forStatement, null, null);
+            var ssForStatement = (SS.ForStatement)Parse.ClassesToSS(source).First().Methods().First().Statements().ElementAt(2);
 
             Assert.IsNotNull(ssForStatement.Initializers);
             Assert.IsNotNull(ssForStatement.Body);
