@@ -52,11 +52,29 @@ namespace MiCS.Builders
             if (isClientSide || isMixedSide)
             {
                 var ssMethod = method.Map(ssParentClass, ssParentNamespace);
+
+                foreach (var parameter in method.ParameterList.Parameters)
+                    ssMethod.AddParameter(parameter.Map(ssMethod, TypeManager.GetTypeSymbol(parameter.Type).Map()));
+
+                var implementationStatements = new List<SS.Statement>();
+
+                foreach (var statement in method.Body.Statements)
+                    implementationStatements.Add(StatementBuilder.BuildStatement(statement, ssParentClass, ssMethod));
+
+                /*
+                 * Leaving the second parameter (SymbolScope scope) as null as 
+                 * the generated script code is still valid and therefore doesn't
+                 * prevent us from showing proof of concept. If the SymbolScope
+                 * parameter is set to null this is gracefully handled (see 
+                 * ScriptSharp.ScriptCompiler.cs line 71).
+                 */
+                var symbolImplementation = new SS.SymbolImplementation(implementationStatements, null, "this");
+                ssMethod.AddImplementation(symbolImplementation);
+
                 ssMethods.Add(ssMethod);
             }
 
         }
-
 
         /// <summary>
         /// Builds the methods in the specified Roslyn class and all of their descendant nodes.
