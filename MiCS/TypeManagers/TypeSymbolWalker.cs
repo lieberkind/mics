@@ -76,6 +76,9 @@ namespace MiCS
             if (type is ErrorTypeSymbol)
                 throw new NotSupportedException("Specified expression type was not found in ScriptTypes or CoreTypes. Remember to import required namespaces (e.g. 'using System.Html;').");
 
+            if (type == null)
+                throw new Exception("Only allowed to return null on NullLiteralExpressions.");
+
             return type;
         }
     }

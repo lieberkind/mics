@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
@@ -10,13 +11,18 @@ namespace MiCS
 {
     public static class WebControlExtensions
     {
-        public static void OnClientClick(this Button button, Func<bool> action)
+        /// <summary>
+        /// Registers a [ClientSide] function to be called on Button client click event.
+        /// </summary>
+        /// <param name="func">Method with [ClientSide] attribute to be executed on Button client click event.</param>
+        public static void OnClientClick(this Button button, Func<bool> func)
         {
-            var methodName = action.Method.Name;
-            var className = action.Method.DeclaringType.Name;
-            var namespaceName = action.Method.DeclaringType.Namespace;
+            var methodName = func.Method.Name;
+            var className = func.Method.DeclaringType.Name;
+            var namespaceName = func.Method.DeclaringType.Namespace;
 
-            // Todo: maybe add to report.
+            #region Region: Method name correction
+
             /*
              * Manual method declaration name correction!
              * 
@@ -30,6 +36,8 @@ namespace MiCS
              * mention it here.
              */
             methodName = Char.ToLower(methodName[0]).ToString() + methodName.Substring(1);
+
+            #endregion
 
             var scriptText = "var obj = new " + namespaceName + "$" + className + "(); return obj." + methodName + "();";
             button.OnClientClick = scriptText;

@@ -58,7 +58,6 @@ namespace MiCS
             ClientSideMembers = clientSideCollector.Members;
             ClientSideMembers.AddRange(builtInCollector.Members);
 
-            // Todo: Write about references in report maybe... how to handle references in a more generic manner.
             var mscorlib = new MetadataFileReference(typeof(String).Assembly.Location);
             var systemTextRegularExpression = new MetadataFileReference(typeof(System.Text.RegularExpressions.Regex).Assembly.Location);
 
