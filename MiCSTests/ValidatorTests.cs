@@ -144,6 +144,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
         public void MixedSideValidationFailWhenMixedSideCallsNonMixedSide()
         {
             string treeText = @"
@@ -177,8 +178,6 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-
-            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -285,6 +284,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(MemberNotMappedException))]
         public void ValidatorFailsWhenUnsupportedCoreMethodIsInvoked()
         {
             string treeText = @"
@@ -310,11 +310,10 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-
-            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
+        [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
         public void ClientSideValidationFailsWhenMixedSideCallsNonMixedOrClientSide()
         {
             string treeText = @"
@@ -353,12 +352,11 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-
-            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
 
         [TestMethod]
+        [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
         public void InstanceCreationOfNonMixedOrClientSideClassFails()
         {
             string treeText = @"
@@ -390,8 +388,6 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-
-            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
@@ -435,6 +431,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
         public void MixedSideCodeCantCallClientSideCode()
         {
             string treeText = @"
@@ -471,8 +468,6 @@ namespace MiCSTests
             var st = SyntaxTree.ParseText(treeText);
 
             MiCSManager.Initiate(st);
-
-            Assert.IsFalse(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]

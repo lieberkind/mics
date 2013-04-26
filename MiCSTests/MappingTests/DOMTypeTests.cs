@@ -25,7 +25,7 @@ namespace MiCSTests
             using System.Html;
             namespace TestNamespace { 
                 class TestClass { 
-                    [MixedSide]
+                    [ClientSide]
                     bool f() { Element e = new Element(); e.Blur(); }
                 } 
 
@@ -51,7 +51,7 @@ namespace MiCSTests
             using System.Html;
             namespace TestNamespace { 
                 class TestClass { 
-                    [MixedSide]
+                    [ClientSide]
                     bool f() { return Document.HasFocus(); }
                 } 
 
@@ -106,7 +106,7 @@ namespace MiCSTests
 
             namespace TestNamespace { 
                 class TestClass { 
-                    [MixedSide]
+                    [ClientSide]
                     void f() { Document.HasFocus(); }
                 }
             }
@@ -139,7 +139,7 @@ namespace MiCSTests
             using System.Html;
             namespace TestNamespace { 
                 class TestClass { 
-                    [MixedSide]
+                    [ClientSide]
                     public void f() { Element e = new Element(); var e2 = Document.GetElementById(""ewjde""); }
                 }
 
@@ -158,8 +158,14 @@ namespace MiCSTests
         [TestMethod]
         public void BuiltInTestTranslationTest()
         {
-            var source = @"Element e = new Element(); var e2 = Document.GetElementById(""ewjde"");";
-            var ssStatement = Parse.StatementsToSS(source);
+            var source = @"
+                [ClientSide]
+                public void TestMethod() 
+                {
+                    Element e = new Element(); 
+                    var e2 = Document.GetElementById(""ewjde"");
+                }";
+            var ssStatement = Parse.MethodsToSS(source);
         }
     }
 }

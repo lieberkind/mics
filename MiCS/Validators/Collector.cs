@@ -78,7 +78,12 @@ namespace MiCS.Validators
                 
         }
 
-
+        // Todo: Fix
+        public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
+        {
+            if (attributeNames.Count == 0)
+                currentMethods.Add(node.Identifier.ValueText);
+        }
 
         public override void VisitMethodDeclaration(MethodDeclarationSyntax node)
         {
