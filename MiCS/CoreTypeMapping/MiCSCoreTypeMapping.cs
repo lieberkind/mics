@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace MiCS
 {
+    /// <summary>
+    /// Type mapping specification from C# core type to ScriptSharp core type.
+    /// Name property values are mapped to NameScript property values.
+    /// </summary>
     class MiCSCoreTypeMapping
     {
         public string NamespaceName { get; set; }

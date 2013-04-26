@@ -68,7 +68,6 @@ namespace MiCS
 
         }
 
-
         /// <summary>
         /// Returns true if the specified type declaration is
         /// a user defined type.
@@ -89,6 +88,7 @@ namespace MiCS
             }
             return false;
         }
+
         /// <summary>
         /// Returns true if the specified type is
         /// a user defined type.
@@ -157,35 +157,11 @@ namespace MiCS
                 MixedSideMembers[namespaceName].ContainsKey(typeName) &&
                 MixedSideMembers[namespaceName][typeName].Contains(memberName);
         }
-        
-        /// <summary>
-        /// Returns true if the specified type is
-        /// a DOM type from the ScriptSharp namespace System.Html.
-        /// </summary>
-        //public bool IsDOMType(ClassDeclarationSyntax classDeclaration)
-        //{
-        //    return classDeclaration.HasAttribute("ScriptName") || classDeclaration.HasAttribute("ScriptImport");
-        //}
 
         /// <summary>
         /// Returns true if the specified type is
         /// a DOM type from the ScriptSharp namespace System.Html.
         /// </summary>
-        //public static bool IsDOMType(TypeSymbol typeSymbol)
-        //{
-        //    if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
-        //        return false;
-
-        //    var declaration = typeSymbol.DeclaringSyntaxNodes[0];
-        //    if (declaration is ClassDeclarationSyntax)
-        //    {
-        //        var @class = (ClassDeclarationSyntax)declaration;
-        //        return @class.IsDOMType();
-        //    }
-        //    else
-        //        throw new NotSupportedException();
-        //}
-
         public bool IsDOMType(TypeSymbol typeSymbol)
         {
             if (typeSymbol.DeclaringSyntaxNodes.Count != 1)
