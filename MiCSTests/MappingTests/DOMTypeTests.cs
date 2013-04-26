@@ -29,6 +29,7 @@ namespace MiCSTests
                 } 
 
             }";
+
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
             var ssClass = ssNamespace.Types.First();

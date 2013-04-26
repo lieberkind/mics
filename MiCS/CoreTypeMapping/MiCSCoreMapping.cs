@@ -174,8 +174,6 @@ namespace MiCS
                 Members = new List<MiCSCoreMemberMapping>()
             });
 
-
-            // Todo: Add Array type mapping.
             this.Add(new MiCSCoreTypeMapping()
             {
                 Name = "Array",
@@ -183,6 +181,15 @@ namespace MiCS
                 NamespaceName = "System",
                 NamespaceNameScript = "System",
                 Members = new List<MiCSCoreMemberMapping>()
+                {
+                    new MiCSCoreMemberMapping()
+                    {
+                        Name = "Length",
+                        NameScript = "length",
+                        ReturnType = typeof(int),
+                        Arguments = new List<Type>()
+                    }
+                }
             });
         }
     }

@@ -17,7 +17,7 @@ namespace MiCSTests
     public class ValidatorTests
     {
         [TestMethod]
-        public void CollectorCollectsAllMixedSideClassesInNamespace()
+        public void Validator_CollectorCollectsAllMixedSideClassesInNamespace()
         {
             string treeText = @"
                 using MiCS;
@@ -60,7 +60,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void CollectorCollectsWhenThereAreMethodsToCollect()
+        public void Validator_CollectorCollectsWhenThereAreMethodsToCollect()
         {
             string treeText = @"
                 using MiCS;
@@ -105,7 +105,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void MixedSideValidationPassesWhenTreeIsValid()
+        public void Validator_MixedSideValidationPassesWhenTreeIsValid()
         {
             string treeText = @"
                 using MiCS;
@@ -145,7 +145,7 @@ namespace MiCSTests
 
         [TestMethod]
         [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
-        public void MixedSideValidationFailWhenMixedSideCallsNonMixedSide()
+        public void Validator_MixedSideValidationFailWhenMixedSideCallsNonMixedSide()
         {
             string treeText = @"
                 using MiCS;
@@ -181,7 +181,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ClientSideValidationPassesWhenTreeIsValid()
+        public void Validator_ClientSideValidationPassesWhenTreeIsValid()
         {
             string treeText = @"
                 using MiCS;
@@ -225,7 +225,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ValidatorAllowsCreationOfRegex()
+        public void Validator_AllowsCreationOfRegex()
         {
             string treeText = @"
                 using MiCS;
@@ -254,7 +254,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ValidatorAllowsRegexsIsMatchMethodToBeCalled()
+        public void Validator_AllowsRegexsIsMatchMethodToBeCalled()
         {
             string treeText = @"
                 using MiCS;
@@ -285,7 +285,7 @@ namespace MiCSTests
 
         [TestMethod]
         [ExpectedException(typeof(MemberNotMappedException))]
-        public void ValidatorFailsWhenUnsupportedCoreMethodIsInvoked()
+        public void Validator_FailsWhenUnsupportedCoreMethodIsInvoked()
         {
             string treeText = @"
                 using MiCS;
@@ -314,7 +314,7 @@ namespace MiCSTests
 
         [TestMethod]
         [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
-        public void ClientSideValidationFailsWhenMixedSideCallsNonMixedOrClientSide()
+        public void Validator_ClientSideValidationFailsWhenMixedSideCallsNonMixedOrClientSide()
         {
             string treeText = @"
                 using MiCS;
@@ -357,7 +357,7 @@ namespace MiCSTests
 
         [TestMethod]
         [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
-        public void InstanceCreationOfNonMixedOrClientSideClassFails()
+        public void Validator_InstanceCreationOfNonMixedOrClientSideClassFails()
         {
             string treeText = @"
                 using MiCS;
@@ -391,7 +391,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ObjectCreationIsPossibleIfObjectIsMixedSide()
+        public void Validator_ObjectCreationIsPossibleIfObjectIsMixedSide()
         {
             string treeText = @"
                 using MiCS;
@@ -432,7 +432,7 @@ namespace MiCSTests
 
         [TestMethod]
         [ExpectedException(typeof(MixedSidePrincipleViolatedException))]
-        public void MixedSideCodeCantCallClientSideCode()
+        public void Validator_MixedSideCodeCantCallClientSideCode()
         {
             string treeText = @"
                 using MiCS;
@@ -471,7 +471,7 @@ namespace MiCSTests
         }
 
         [TestMethod]
-        public void ClientSideCanCreateMixedSideObjects()
+        public void Validator_ClientSideCanCreateMixedSideObjects()
         {
             string treeText = @"
                 using MiCS;
@@ -513,7 +513,7 @@ namespace MiCSTests
 
 
         [TestMethod]
-        public void DuplicateFunctionsInDifferentClassesTest()
+        public void Validator_DuplicateFunctionsInDifferentClassesTest()
         {
             var source = @"
             namespace TestNamespace1 { 
@@ -532,10 +532,11 @@ namespace MiCSTests
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
 
         [TestMethod]
-        public void DuplicateClassesInDifferentNamespacesTest()
+        public void Validator_DuplicateClassesInDifferentNamespacesTest()
         {
             var source = @"
             namespace TestNamespace1 { 
@@ -555,6 +556,7 @@ namespace MiCSTests
             var @namespace = (NamespaceDeclarationSyntax)Parse.Namespaces(source).First();
             var ssNamespace = NamespaceBuilder.Build(@namespace);
 
+            Assert.IsTrue(MiCSManager.UserTreeIsValid);
         }
     }
 }
