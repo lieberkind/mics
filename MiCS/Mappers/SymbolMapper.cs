@@ -96,241 +96,103 @@ namespace MiCS.Mappers
         {
             return new SS.IndexerSymbol(ssParentType, ssPropertyType);
         }
-        // Todo: Maybe try and clean the type symbol mapper extension method...
+
         /// <summary>
         /// Returns mapped ScriptSharp TypeSymbol object.
         /// </summary>
         /// <param name="typeSymbol">Roslyn type AST node. Attention! if null is provided as this parameter it is always mapped to System.Object.</param>
         static internal SS.TypeSymbol Map(this TypeSymbol typeSymbol)
         {
-            #region Region: Possibly relevant ScriptSharpCode
-                ///// <summary>
-                ///// This maps C# intrinsic types (managed types that have an equivalent
-                ///// C# keyword)
-                ///// </summary>
-                //public TypeSymbol ResolveIntrinsicType(IntrinsicType type) {
-                //    string mappedTypeName = null;
-                //    string mappedNamespace = null;
-
-                //    switch (type) {
-                //        case IntrinsicType.Object:
-                //            mappedTypeName = "Object";
-                //            break;
-                //        case IntrinsicType.Boolean:
-                //            mappedTypeName = "Boolean";
-                //            break;
-                //        case IntrinsicType.String:
-                //            mappedTypeName = "String";
-                //            break;
-                //        case IntrinsicType.Integer:
-                //            mappedTypeName = "Int32";
-                //            break;
-                //        case IntrinsicType.UnsignedInteger:
-                //            mappedTypeName = "UInt32";
-                //            break;
-                //        case IntrinsicType.Long:
-                //            mappedTypeName = "Int64";
-                //            break;
-                //        case IntrinsicType.UnsignedLong:
-                //            mappedTypeName = "UInt64";
-                //            break;
-                //        case IntrinsicType.Short:
-                //            mappedTypeName = "Int16";
-                //            break;
-                //        case IntrinsicType.UnsignedShort:
-                //            mappedTypeName = "UInt16";
-                //            break;
-                //        case IntrinsicType.Byte:
-                //            mappedTypeName = "Byte";
-                //            break;
-                //        case IntrinsicType.SignedByte:
-                //            mappedTypeName = "SByte";
-                //            break;
-                //        case IntrinsicType.Single:
-                //            mappedTypeName = "Single";
-                //            break;
-                //        case IntrinsicType.Date:
-                //            mappedTypeName = "Date";
-                //            break;
-                //        case IntrinsicType.Decimal:
-                //            mappedTypeName = "Decimal";
-                //            break;
-                //        case IntrinsicType.Double:
-                //            mappedTypeName = "Double";
-                //            break;
-                //        case IntrinsicType.Delegate:
-                //            mappedTypeName = "Delegate";
-                //            break;
-                //        case IntrinsicType.Function:
-                //            mappedTypeName = "Function";
-                //            break;
-                //        case IntrinsicType.Void:
-                //            mappedTypeName = "Void";
-                //            break;
-                //        case IntrinsicType.Array:
-                //            mappedTypeName = "Array";
-                //            break;
-                //        case IntrinsicType.Dictionary:
-                //            mappedTypeName = "Dictionary";
-                //            mappedNamespace = "System.Collections";
-                //            break;
-                //        case IntrinsicType.GenericList:
-                //            mappedTypeName = "List`1";
-                //            mappedNamespace = "System.Collections.Generic";
-                //            break;
-                //        case IntrinsicType.GenericDictionary:
-                //            mappedTypeName = "Dictionary`2";
-                //            mappedNamespace = "System.Collections.Generic";
-                //            break;
-                //        case IntrinsicType.Type:
-                //            mappedTypeName = "Type";
-                //            break;
-                //        case IntrinsicType.IEnumerator:
-                //            mappedTypeName = "IEnumerator";
-                //            mappedNamespace = "System.Collections";
-                //            break;
-                //        case IntrinsicType.Enum:
-                //            mappedTypeName = "Enum";
-                //            break;
-                //        case IntrinsicType.Exception:
-                //            mappedTypeName = "Exception";
-                //            break;
-                //        case IntrinsicType.Script:
-                //            mappedTypeName = "Script";
-                //            break;
-                //        case IntrinsicType.Number:
-                //            mappedTypeName = "Number";
-                //            break;
-                //        case IntrinsicType.Arguments:
-                //            mappedTypeName = "Arguments";
-                //            break;
-                //        case IntrinsicType.Nullable:
-                //            mappedTypeName = "Nullable`1";
-                //            break;
-                //        default:
-                //            Debug.Fail("Unmapped intrinsic type " + type);
-                //            break;
-                //    }
-                //}
-
-
-
-            //        private Expression ProcessLiteralNode(LiteralNode node) {
-            //LiteralToken token = (LiteralToken)node.Token;
-
-            //string systemTypeName = null;
-
-            //switch (token.LiteralType) {
-            //    case LiteralTokenType.Null:
-            //        systemTypeName = "Object";
-            //        break;
-            //    case LiteralTokenType.Boolean:
-            //        systemTypeName = "Boolean";
-            //        break;
-            //    case LiteralTokenType.Char:
-            //        systemTypeName = "Char";
-            //        break;
-            //    case LiteralTokenType.String:
-            //        systemTypeName = "String";
-            //        break;
-            //    case LiteralTokenType.Int:
-            //        systemTypeName = "Int32";
-            //        break;
-            //    case LiteralTokenType.UInt:
-            //        systemTypeName = "UInt32";
-            //        break;
-            //    case LiteralTokenType.Long:
-            //        systemTypeName = "Int64";
-            //        break;
-            //    case LiteralTokenType.ULong:
-            //        systemTypeName = "UInt64";
-            //        break;
-            //    case LiteralTokenType.Float:
-            //        systemTypeName = "Single";
-            //        break;
-            //    case LiteralTokenType.Double:
-            //        systemTypeName = "Double";
-            //        break;
-            //    case LiteralTokenType.Decimal:
-            //        systemTypeName = "Decimal";
-            //        break;
-            //    default:
-            //        Debug.Fail("Unknown Literal Token Type: " + token.LiteralType);
-            //        break;
-            //}
-            //        }
-            #endregion
-
             if (typeSymbol is ErrorTypeSymbol)
                 throw new Exception("Not possible to map error type!");
 
-            /*
-             * Mapping null as ScriptSharp (and EcmaScript specification)
-             * null -> Object. The only time when typeSymbol has the value
-             * null is when the type of a NullLiteral is requested. This
-             * however is only guaranteed if the TypeSymbolWalker.GetTypeSymbol(...)
-             * method is used to retreive the typeSymbol. The TypeSymbolWalker
-             * only returns null on null literals and otherwise throw an 
-             * Exception if a type is not found.
-             */
-            if (typeSymbol == null)
-                return new SS.ClassSymbol("Object", new SS.NamespaceSymbol("System", null));
-
-            string mappedTypeName = null;
-            string namespaceName = null;
-            string mappedNamespaceName;
-
             SS.ClassSymbol ssType = null;
 
-            var isArray = false;
-            if (typeSymbol is ArrayTypeSymbol)
+            ssType = TryMapToNullType(typeSymbol);
+            if (ssType != null)
+                return ssType;
+
+            ssType = TryMapToArrayType(typeSymbol);
+            if (ssType != null)
+                return ssType;
+
+            ssType = TryMapToSupportedCoreType(typeSymbol);
+            if (ssType != null)
+                return ssType;
+
+
+            var mappedTypeName = typeSymbol.GetTypeScriptName();
+            var namespaceName = typeSymbol.ContainingNamespace.GetFullName();
+
+            var isClientSideType = TypeManager.IsClientSideType(namespaceName, typeSymbol.Name);
+            var isMixedSideType = TypeManager.IsMixedSideType(namespaceName, typeSymbol.Name);
+
+            if (isClientSideType || isMixedSideType)
             {
-                mappedTypeName = "Array";
-                namespaceName = typeSymbol.BaseType.ContainingNamespace.GetFullName();
-                isArray = true;
+                ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
+
+                if (!typeSymbol.IsUserType())
+                    ssType.SetIgnoreNamespace();
+
+                return ssType;
             }
             else
-            {
-                namespaceName = typeSymbol.ContainingNamespace.GetFullName();
-            }
-
-            var isSupportedClientSideType = TypeManager.IsClientSideType(namespaceName, typeSymbol.Name);
-            var isSupportedMixedSideType = TypeManager.IsMixedSideType(namespaceName, typeSymbol.Name);
-
-            var isSupportedCoreType = typeSymbol.IsSupportedCoreType();
-
-            var isSupportedType = 
-                isSupportedClientSideType || 
-                isSupportedMixedSideType || 
-                isSupportedCoreType;
-
-            if(!isSupportedType)
                 throw new NotSupportedException("TypeSymbol type is currently not supported.");
 
-            mappedTypeName = typeSymbol.GetTypeScriptName();
-            mappedNamespaceName = namespaceName;
-            if (isSupportedCoreType)
-                mappedNamespaceName = TypeManager.GetCoreScriptTypeNamespace(typeSymbol).GetFullName(); // Todo: Not sure if this is required but seems more correct to apply the actual namespace.
-
-            // Todo: Parent namespace should preferably not be a new namspace object.
-            ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
-
-            if (isArray)
-            {
-                SS.SymbolSet symbolSet = new SS.SymbolSet();
-                return symbolSet.CreateArrayTypeSymbol(((ArrayTypeSymbol)typeSymbol).ElementType.Map());
-            }
-
-            if (!typeSymbol.IsUserType())
-                ssType.SetIgnoreNamespace();
-
-            if (ssType == null)
-            {
-                // Todo: Parent namespace should preferably not be a new namspace object.
-                ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(namespaceName, null));
-            }
-            return ssType;
         }
 
+        /// <summary>
+        /// Mapping null as ScriptSharp (and EcmaScript specification)
+        /// null -> Object. The only time when typeSymbol has the value
+        /// null is when the type of a NullLiteral is requested. This
+        /// however is only guaranteed if the TypeSymbolWalker.GetTypeSymbol(...)
+        /// method is used to retreive the typeSymbol. The TypeSymbolWalker
+        /// only returns null on null literals and otherwise throw an
+        /// Exception if a type is not found.
+        /// </summary>
+        private static SS.ClassSymbol TryMapToNullType(TypeSymbol typeSymbol)
+        {
+            if (typeSymbol == null)
+                return new SS.ClassSymbol("Object", new SS.NamespaceSymbol("System", null));
+            else
+                return null;
+
+        }
+
+        /// <summary>
+        /// Map to Array if specified typeSymbol is of ArrayTypeSymbol.
+        /// The ScriptSharp array type is created using the SymbolSet
+        /// factory method.
+        /// </summary>
+        private static SS.ClassSymbol TryMapToArrayType(TypeSymbol typeSymbol)
+        {
+            if (typeSymbol is ArrayTypeSymbol)
+            {
+                SS.SymbolSet symbolSet = new SS.SymbolSet();
+                return (SS.ClassSymbol)symbolSet.CreateArrayTypeSymbol(((ArrayTypeSymbol)typeSymbol).ElementType.Map());
+            }
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Map to supported ScriptSharp core type if the
+        /// specified type symbol is a supported C# core type.
+        /// </summary>
+        private static SS.ClassSymbol TryMapToSupportedCoreType(TypeSymbol typeSymbol)
+        {
+            if (typeSymbol.IsSupportedCoreType())
+            {
+                var mappedTypeName = typeSymbol.GetTypeScriptName();
+                var mappedNamespaceName = TypeManager.GetCoreScriptTypeNamespace(typeSymbol).GetFullName();
+
+                // Todo: Parent namespace should preferably not be a new namspace object.
+                var ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(mappedNamespaceName, null));
+                ssType.SetIgnoreNamespace();
+                return ssType;
+            }
+            else
+                return null;
+        }
     }
 }
