@@ -49,10 +49,10 @@ namespace MiCS.Mappers
             arrayTypeSymbol.SetIgnoreNamespace();
             arrayTypeSymbol.SetArray();
 
+            #region Region: Add initializer if any is used.
+
             var count = arrayCreationExpression.Initializer == null ? 0 : arrayCreationExpression.Initializer.Expressions.Count;
-
             SS.Expression[] exprs = new SS.Expression[count];
-
             if (count > 0)
             {
                 int i = 0;
@@ -66,8 +66,10 @@ namespace MiCS.Mappers
             if (exprs.Length > 0)
                 return new SS.LiteralExpression(arrayTypeSymbol, exprs);
 
+            #endregion
+
+
             SS.NewExpression newExpr = new SS.NewExpression(arrayTypeSymbol);
-            
             return newExpr;
         }
 
