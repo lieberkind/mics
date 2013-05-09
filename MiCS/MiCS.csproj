@@ -74,6 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MiCSExceptions.cs" />
+    <Compile Include="MiCSPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="TypeManagers\ScriptSharpTypeManager.cs" />
     <Compile Include="CoreTypeMapping\MiCSCoreMapping.cs" />
     <Compile Include="CoreTypeMapping\MiCSCoreMemberMapping.cs" />

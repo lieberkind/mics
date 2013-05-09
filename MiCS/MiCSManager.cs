@@ -98,7 +98,7 @@ namespace MiCS
         }
 
         /// <summary>
-        /// Map the mixed side Roslyn AST to ScriptSharp symbols.
+        /// Returns a list of ScriptSharp namespaces representing the JavaScript (user types) AST.
         /// </summary>
         private List<SS.NamespaceSymbol> MapCompilationUnit(CompilationUnitSyntax root)
         {

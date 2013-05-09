@@ -164,7 +164,9 @@ namespace MiCS.Builders
             foreach (var arg in invocationExpression.ArgumentList.Arguments)
                 ssParameters.Add(ExpressionBuilder.BuildExpression(arg.Expression, associatedType, associatedParent));
 
-            ssExpressions.Add(invocationExpression.Map((SS.ClassSymbol)associatedType, (SS.MethodSymbol)associatedParent, ssParameters));
+            var ssInvocation = invocationExpression.Map((SS.ClassSymbol)associatedType, (SS.MethodSymbol)associatedParent, ssParameters);
+
+            ssExpressions.Add(ssInvocation);
         }
 
         /// <summary>

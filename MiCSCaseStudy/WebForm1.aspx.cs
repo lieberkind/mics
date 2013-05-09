@@ -12,7 +12,7 @@ using System.Drawing;
 
 namespace MiCSCaseStudy
 {
-    public partial class WebForm1 : System.Web.UI.Page
+    public partial class WebForm1 : MiCSPage
     {
 
         TextBox NameBox = new TextBox() { ID = "name", Text = "Name" };
@@ -28,15 +28,6 @@ namespace MiCSCaseStudy
         protected void Page_Init(object sender, EventArgs e)
         {
            
-            var scriptManager = new ScriptManager();
-            form1.Controls.Add(scriptManager);
-
-            var filePath = @"C:\Users\Tomas Lieberkind\Documents\Visual Studio 2012\Projects\MiCS\MiCSCaseStudy\WebForm1.aspx.cs";
-            var source = File.ReadAllText(filePath);
-
-            MiCSManager.Initiate(source);
-            MiCSManager.BuildScript(scriptManager, this);
-
             form1.Add(NameBox);
             CheckBoxGroup.Controls.Add(SnailMailCheck);
             CheckBoxGroup.Controls.Add(EmailCheck);
@@ -193,13 +184,3 @@ namespace MiCSCaseStudy
         }
     }
 }
-
-//using System.Text.RegularExpressions;
-//namespace TestNamespace {
-//class TestClass {
-//[MixedSide]
-//public void ImARegEx() {
-//RegExp regEx = new RegExp("imapattern"); 
-//}
-//}
-//}
