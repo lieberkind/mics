@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiCSTests", "MiCSTests\MiCS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{47F7B525-234B-48A9-A07C-834FE1249653}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiCSManual", "MiCSManual\MiCSManual.csproj", "{7D6E4FC4-9EAD-418A-8D98-F02467027D5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{47F7B525-234B-48A9-A07C-834FE1249653}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47F7B525-234B-48A9-A07C-834FE1249653}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47F7B525-234B-48A9-A07C-834FE1249653}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D6E4FC4-9EAD-418A-8D98-F02467027D5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D6E4FC4-9EAD-418A-8D98-F02467027D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D6E4FC4-9EAD-418A-8D98-F02467027D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D6E4FC4-9EAD-418A-8D98-F02467027D5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
