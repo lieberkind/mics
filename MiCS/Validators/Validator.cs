@@ -64,9 +64,9 @@ namespace MiCS.Validators
         /// <summary>
         /// Visits the ClassDeclaration and determines wether its members should be validated
         /// </summary>
-        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        public override void VisitClassDeclaration(ClassDeclarationSyntax @class)
         {
-            var methods = node.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
+            var methods = @class.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
             var visit = false;
 
             foreach (var method in methods)
@@ -74,11 +74,8 @@ namespace MiCS.Validators
                 visit = ((MethodDeclarationSyntax)method).HasAttribute(attributeName);
 
                 if (visit)
-                    break;
+                    VisitMethodDeclaration((MethodDeclarationSyntax)method);
             }
-
-            if (visit)
-                base.VisitClassDeclaration(node);
         }
 
         /// <summary>

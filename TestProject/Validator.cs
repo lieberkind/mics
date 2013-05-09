@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace TestProject
 {
-    class Validator
-    {
-        public bool ValidatePhone(string phoneNumber)
-        {
-            var regEx = new Regex("//");
-            return true;
-        }
-    }
+    //class Validator
+    //{
+    //    public bool ValidatePhone(string phoneNumber)
+    //    {
+    //        var regEx = new Regex("//");
+    //        return true;
+    //    }
+    //}
 }
