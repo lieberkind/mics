@@ -33,7 +33,6 @@ namespace MiCS.Mappers
                 throw new NotSupportedException("Prefix unary operator is currently not supported.");
         }
 
-        // Todo: Prettify this shit!
         /// <summary>
         /// Return ScriptSharp LiteralExpression (when initializer syntax is used) or NewExpression representing new Array creation.
         /// </summary>
@@ -262,6 +261,7 @@ namespace MiCS.Mappers
                 }
                 else if (memberAccess.Expression is ThisExpressionSyntax)
                 {
+                    // Todo: Is a bit redundant... maybe clean.
                     var ssMethodName = memberAccess.Name.GetScriptName();
                     var ssReturnType = TypeManager.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);

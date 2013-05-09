@@ -46,13 +46,18 @@ namespace MiCS.Builders
         /// <param name="ifStatement">If statement.</param>
         public override void VisitIfStatement(IfStatementSyntax ifStatement)
         {
-            var ssCondition = ExpressionBuilder.BuildExpression(ifStatement.Condition, ssTypeReference, ssParentMember);
-            var ssIfStatement = StatementBuilder.BuildStatement(ifStatement.Statement, ssTypeReference, ssParentMember);
-            var ssElseStatement = ifStatement.Else == null ? null : StatementBuilder.BuildStatement(ifStatement.Else.Statement, ssTypeReference, ssParentMember);
+            SS.Expression ssCondition = ExpressionBuilder.BuildExpression(ifStatement.Condition, ssTypeReference, ssParentMember);
+            SS.Statement ssIfStatement = StatementBuilder.BuildStatement(ifStatement.Statement, ssTypeReference, ssParentMember);
+            SS.Statement ssElseStatement = null;
 
-            ssStatements.Add(ifStatement.Map(ssCondition, ssIfStatement, ssElseStatement));            
+            if (ifStatement.Else != null)
+                ssElseStatement = StatementBuilder.BuildStatement(ifStatement.Else.Statement, ssTypeReference, ssParentMember);
+
+            SS.Statement ssIfElseStatement = ifStatement.Map(ssCondition, ssIfStatement, ssElseStatement);
+
+            ssStatements.Add(ssIfElseStatement);            
         }
-
+        
         /// <summary>
         /// Builds a for statement along with its initializers, codition, increments and body
         /// </summary>

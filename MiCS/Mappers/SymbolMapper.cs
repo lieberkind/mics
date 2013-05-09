@@ -41,7 +41,7 @@ namespace MiCS.Mappers
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
             var returnType = TypeManager.GetTypeSymbol(methodDeclaration.ReturnType);
-
+            // Todo: Move return type mapping to builder class.
             var ssReturnType = returnType.Map();
             var ssMethodName = methodDeclaration.Identifier.ValueText;
 

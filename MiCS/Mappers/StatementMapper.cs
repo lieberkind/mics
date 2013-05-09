@@ -38,7 +38,9 @@ namespace MiCS.Mappers
         /// <summary>
         /// Returns mapped ScriptSharp ReturnStatement with specified expression.
         /// </summary>
-        static internal SS.ReturnStatement Map(this ReturnStatementSyntax returnStatement, SS.Expression ssExpression)
+        static internal SS.ReturnStatement Map(this ReturnStatementSyntax returnStatement, 
+            SS.Expression ssExpression
+        )
         {
             return new SS.ReturnStatement(ssExpression);
         }

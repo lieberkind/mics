@@ -9,6 +9,7 @@ using SS = ScriptSharp.ScriptModel;
 
 namespace MiCS.Builders
 {
+
     /// <summary>
     /// Builds ScriptSharp classes from Roslyn classes
     /// </summary>
