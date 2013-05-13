@@ -13,7 +13,7 @@ namespace MiCSManual
 {
     public partial class Default : MiCSPage
     {
-
+        
         Button button;
         CheckBox checkBox;
         TextBox emailBox;
@@ -65,6 +65,7 @@ namespace MiCSManual
         bool isEmailValid(string email)
         {
             var emailRegex = new Regex("^[A-z0-9._%+-]+@[A-z0-9.-]+.[A-z]{2,4}$");
+            // Todo: Investigate the type of exception that is thrown when using emailBox.Text instead of email here...
             return emailRegex.IsMatch(email);
         }
     }

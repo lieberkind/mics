@@ -48,7 +48,7 @@ namespace MiCSCaseStudy
             Validator v = new Validator();
 
             var isPhoneValid = v.isPhoneValid(PhoneBox.Text);
-            var isNameValid = v.isNameValid(NameBox.Text);
+            var isNameValid = v.IsNameValid(NameBox.Text);
             var isDeliveryMethodsValid = v.isDeliveryMethodsValid(new bool[] { SnailMailCheck.Checked, EmailCheck.Checked }, AddressBox.Text, ZipcodeBox.Text, EmailBox.Text);
 
             Color color;
@@ -92,7 +92,7 @@ namespace MiCSCaseStudy
             InputElement phoneField = (InputElement)Document.GetElementById("phone");
             string phone = phoneField.Value;
 
-            return v.isNameValid(name) && v.isPhoneValid(phone) && v.isDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
+            return v.IsNameValid(name) && v.isPhoneValid(phone) && v.isDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
         }
 
 
@@ -110,7 +110,7 @@ namespace MiCSCaseStudy
         }
 
         [MixedSide]
-        public bool isNameValid(string name)
+        public bool IsNameValid(string name)
         {
             Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
             return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;

@@ -1,4 +1,8 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="MiCSManual.Default" %>
+﻿<%@ Page Language="C#" 
+    AutoEventWireup="true" 
+    CodeBehind="Default.aspx.cs" 
+    Inherits="MiCSManual.Default" 
+ %>
 
 <!DOCTYPE html>
 
