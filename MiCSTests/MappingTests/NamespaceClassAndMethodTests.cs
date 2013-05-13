@@ -166,12 +166,5 @@ namespace MiCSTests.MappingTests
 
         }
 
-        // Todo: Test nested namespaces
-            //        namespace TestNameSpace.Nested.NestedAgain.Andagain {
-            //    class Lol {
-            //        [MixedSide]
-            //        void lol() { }
-            //    }
-            //}
     }
 }

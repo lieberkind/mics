@@ -15,12 +15,6 @@ namespace MiCS
     {
         #region Region: Constructor & Fields
 
-        public static bool UserTreeIsValid
-        {
-            get { return Instance.userTreeIsValid; }
-        }
-        private bool userTreeIsValid;
-
         private static MiCSManager Instance
         {
             get
@@ -56,7 +50,7 @@ namespace MiCS
 
             TypeManager.Initiate(userTree);
 
-            userTreeIsValid = this.validate(); // Todo: Remove userTreeIsValid field. No longer needed.
+            this.validate();
         }
 
 
@@ -65,7 +59,7 @@ namespace MiCS
         /// <summary>
         /// Returns true if the Mixed Side Principle is not violated.
         /// </summary>
-        private bool validate()
+        private void validate()
         {
             var mixedSideMembers = TypeManager.MixedSideMembers;
             var clientSideMembers = TypeManager.ClientSideMembers;
@@ -77,8 +71,6 @@ namespace MiCS
 
             mixedSideValidator.Validate();
             clientSideValidator.Validate();
-
-            return mixedSideValidator.IsValid && clientSideValidator.IsValid;
         }
 
         /// <summary>

@@ -61,12 +61,6 @@ namespace MiCS.Mappers
             return new SS.VariableDeclarationStatement();
         }
 
-        // Todo: What is goin on here :-) are we not missing a LocalDeclarationStatement mapping? seems not...
-        //static internal SS.VariableDeclarationStatement Map(this LocalDeclarationStatementSyntax localDeclarationStatement)
-        //{
-        //    return new SS.VariableDeclarationStatement();
-        //}
-
         /// <summary>
         /// Returns mapped ScriptSharp ForStatement.
         /// </summary>

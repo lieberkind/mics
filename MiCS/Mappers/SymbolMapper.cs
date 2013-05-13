@@ -41,7 +41,6 @@ namespace MiCS.Mappers
         static internal SS.MethodSymbol Map(this MethodDeclarationSyntax methodDeclaration, SS.ClassSymbol ssParentClass, SS.NamespaceSymbol ssParentNamespace)
         {
             var returnType = TypeManager.GetTypeSymbol(methodDeclaration.ReturnType);
-            // Todo: Move return type mapping to builder class.
             var ssReturnType = returnType.Map();
             var ssMethodName = methodDeclaration.Identifier.ValueText;
 
@@ -186,7 +185,7 @@ namespace MiCS.Mappers
                 var mappedTypeName = typeSymbol.GetTypeScriptName();
                 var mappedNamespaceName = TypeManager.GetCoreScriptTypeNamespace(typeSymbol).GetFullName();
 
-                // Todo: Parent namespace should preferably not be a new namspace object.
+                // Todo: Improvement - Parent namespace should not be a new namespace object.
                 var ssType = new SS.ClassSymbol(mappedTypeName, new SS.NamespaceSymbol(mappedNamespaceName, null));
                 ssType.SetIgnoreNamespace();
                 return ssType;

@@ -38,7 +38,7 @@ namespace MiCS
         {
             base.OnPreRenderComplete(e);
 
-            // Todo: Create solution to this hack.
+            // Todo: Improvement - Parent namespace should not be a new namespace object.
             var source = @"
                 using MiCS;
                 using System.Html;
@@ -49,7 +49,6 @@ namespace MiCS
             {
                 source += File.ReadAllText(file);
             }
-            //source = File.ReadAllText(rootPath + @"WebForm1.aspx.cs");
 
             MiCSManager.Initiate(source);
             MiCSManager.BuildScript(ScriptManager.GetCurrent(this), this);

@@ -68,8 +68,6 @@ namespace MiCS.Builders
         {
             var ssForStatement = forStatement.Map();
 
-            // Todo: Should forStatement.Declaration be checked and possibly mapped? Has todo with VariableDeclarationSyntax
-            // Todo: Implement mapping of VariablDeclarationSyntax
             if (forStatement.Initializers == null)
                 throw new NotSupportedException("Initializers cannot be null. Hint: declare intcrementors outside for statement.");
 
