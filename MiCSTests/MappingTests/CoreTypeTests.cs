@@ -189,20 +189,19 @@ namespace MiCSTests
             Assert.AreEqual(ssMethod.AssociatedType.FullName, "System.Void");
         }
 
-        // Todo: Fix maybe...
-        //[TestMethod]
-        //public void CoreType_NullObjectLiteralTest()
-        //{
-        //    var source = @"return null;";
-        //    var statement = Parse.Statement(source);
-        //    var ssStatement = Parse.StatementToSS(source);
+        [TestMethod]
+        public void CoreType_NullObjectLiteralTest()
+        {
+            var source = @"return null;";
+            var statement = Parse.Statement(source);
+            var ssStatement = Parse.StatementToSS(source);
 
-        //    Assert.IsTrue(ssStatement is SS.ReturnStatement);
+            Assert.IsTrue(ssStatement is SS.ReturnStatement);
 
-        //    var returnStmt = (SS.ReturnStatement)ssStatement;
+            var returnStmt = (SS.ReturnStatement)ssStatement;
 
-        //    Assert.IsTrue(returnStmt.Value is SS.LiteralExpression);
-        //}
+            Assert.IsTrue(returnStmt.Value is SS.LiteralExpression);
+        }
 
         [TestMethod]
         [ExpectedException(typeof(MemberNotMappedException))]

@@ -1,4 +1,4 @@
-﻿using Roslyn.Compilers.CSharp;
+﻿ using Roslyn.Compilers.CSharp;
 using SS = ScriptSharp.ScriptModel;
 using System;
 using System.Collections.Generic;
@@ -40,7 +40,7 @@ namespace MiCS.Mappers
         /// <param name="associatedType"></param>
         /// <param name="associatedParent"></param>
         /// <returns></returns>
-        static internal SS.Expression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent)
+        static internal SS.Expression Map(this ArrayCreationExpressionSyntax arrayCreationExpression, SS.TypeSymbol associatedType, SS.MemberSymbol associatedParent, SS.Expression[] exprs)
         {
             SS.TypeSymbol arrayTypeSymbol = new SS.ClassSymbol("Array", new SS.NamespaceSymbol("System", null));
             arrayTypeSymbol.SetIgnoreNamespace();
@@ -48,24 +48,8 @@ namespace MiCS.Mappers
 
             // If the array has any initializers, a LiteralExpression and not a NewExpression is returned.
             // This is ScriptSharps quirky way of building array syntax and is expected behavior.
-            #region Region: Add initializer if any is used.
-
-            var count = arrayCreationExpression.Initializer == null ? 0 : arrayCreationExpression.Initializer.Expressions.Count;
-            SS.Expression[] exprs = new SS.Expression[count];
-            if (count > 0)
-            {
-                int i = 0;
-                foreach (var expr in arrayCreationExpression.Initializer.Expressions)
-                {
-                    exprs[i] = ExpressionBuilder.BuildExpression(expr, associatedType, associatedParent);
-                    i++;
-                }
-            }
-
             if (exprs.Length > 0)
                 return new SS.LiteralExpression(arrayTypeSymbol, exprs);
-
-            #endregion
 
             SS.NewExpression newExpr = new SS.NewExpression(arrayTypeSymbol);
             return newExpr;

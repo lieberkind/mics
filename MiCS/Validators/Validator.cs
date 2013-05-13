@@ -64,9 +64,9 @@ namespace MiCS.Validators
         /// <summary>
         /// Visits the ClassDeclaration and determines wether its members should be validated
         /// </summary>
-        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        public override void VisitClassDeclaration(ClassDeclarationSyntax @class)
         {
-            var methods = node.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
+            var methods = @class.DescendantNodes().Where(a => a.Kind == SyntaxKind.MethodDeclaration);
             var visit = false;
 
             foreach (var method in methods)
@@ -74,11 +74,8 @@ namespace MiCS.Validators
                 visit = ((MethodDeclarationSyntax)method).HasAttribute(attributeName);
 
                 if (visit)
-                    break;
+                    VisitMethodDeclaration((MethodDeclarationSyntax)method);
             }
-
-            if (visit)
-                base.VisitClassDeclaration(node);
         }
 
         /// <summary>
@@ -108,11 +105,18 @@ namespace MiCS.Validators
         /// <param name="invocation">The invocation.</param>
         public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
         {
-            if (invocation.Expression is MemberAccessExpressionSyntax)
+            try
             {
-                var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
-                if (memberAccess.Expression is IdentifierNameSyntax)
-                    TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+                if (invocation.Expression is MemberAccessExpressionSyntax)
+                {
+                    var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+                    if (memberAccess.Expression is IdentifierNameSyntax)
+                        TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+                }
+            }
+            catch (UnresolvedTypeException e)
+            {
+                throw new IllegalInvocationException("Illegal invocation: " + invocation.Expression.ToFullString() + ". Check that argument is valid for this invocation", e);
             }
 
             base.VisitInvocationExpression(invocation);

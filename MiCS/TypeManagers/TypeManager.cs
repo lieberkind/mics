@@ -36,7 +36,7 @@ namespace MiCS
             get { return instance.cSharpTypeManager.CompilationUnit; }
         }
 
-        private TypeManager(SyntaxTree userTree)
+        private  TypeManager(SyntaxTree userTree)
         {
             this.cSharpTypeManager = new CSharpTypeManager(userTree);
             this.scriptSharpTypeManager = new ScriptSharpTypeManager();

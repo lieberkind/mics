@@ -56,7 +56,7 @@ namespace MiCS
 
             TypeManager.Initiate(userTree);
 
-            userTreeIsValid = this.validate();
+            userTreeIsValid = this.validate(); // Todo: Remove userTreeIsValid field. No longer needed.
         }
 
 
