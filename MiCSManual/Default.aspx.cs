@@ -66,7 +66,7 @@ namespace MiCSManual
         {
             var emailRegex = new Regex("^[A-z0-9._%+-]+@[A-z0-9.-]+.[A-z]{2,4}$");
             // Todo: Investigate the type of exception that is thrown when using emailBox.Text instead of email here...
-            return emailRegex.IsMatch(email);
+            return emailRegex.IsMatch(emailBox.Text);
         }
     }
 }

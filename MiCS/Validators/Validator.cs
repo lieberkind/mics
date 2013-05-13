@@ -105,11 +105,18 @@ namespace MiCS.Validators
         /// <param name="invocation">The invocation.</param>
         public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
         {
-            if (invocation.Expression is MemberAccessExpressionSyntax)
+            try
             {
-                var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
-                if (memberAccess.Expression is IdentifierNameSyntax)
-                    TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+                if (invocation.Expression is MemberAccessExpressionSyntax)
+                {
+                    var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+                    if (memberAccess.Expression is IdentifierNameSyntax)
+                        TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new IllegalInvocationException("Illegal invocation: " + invocation.Expression.ToFullString() + ". Check that argument is valid for this invocation", e);
             }
 
             base.VisitInvocationExpression(invocation);

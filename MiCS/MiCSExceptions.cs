@@ -65,4 +65,16 @@ namespace MiCS
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
+
+    [Serializable]
+    internal class IllegalInvocationException : Exception
+    {
+        public IllegalInvocationException() { }
+        public IllegalInvocationException(string message) : base(message) { }
+        public IllegalInvocationException(string message, Exception inner) : base(message, inner) { }
+        protected IllegalInvocationException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
 }
