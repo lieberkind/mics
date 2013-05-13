@@ -108,7 +108,6 @@ namespace System.Html {
             }
         }
 
-        // TODO: Is this on Element or just some types of elements?
         [ScriptField]
         public bool Disabled {
             get {
@@ -364,8 +363,6 @@ namespace System.Html {
         public void AttachEvent(string eventName, ElementEventHandler handler) {
         }
 
-        // Todo: Remove MixedSide attribute.
-        [MixedSide]
         public void Blur() {
         }
 

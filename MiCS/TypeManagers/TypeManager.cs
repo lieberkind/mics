@@ -169,7 +169,9 @@ namespace MiCS
 
         #region Region: ScriptSharpTypeManager functionality
 
-        // Todo: This really needs untangling
+        /// <summary>
+        /// Verify that supported core types are used correctly.
+        /// </summary>
         public static void VerifyCorrectUseOfSupportedCoreType(InvocationExpressionSyntax invocation)
         {
             if (invocation.Expression is MemberAccessExpressionSyntax)

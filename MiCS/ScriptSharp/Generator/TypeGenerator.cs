@@ -69,7 +69,11 @@ namespace ScriptSharp.Generator {
                 }
             }
 
-            // Hack by Tomas & Asger!
+            /*
+             * Script# is using JavaScript Library built for better
+             * async request support that we are not utilizing. 
+             * Therefore the code needs to modified a bit here.
+             */
             //writer.Write("var ");
             writer.Write(name);
             //writer.WriteLine("$ = {");

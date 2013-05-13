@@ -6,7 +6,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using S = System;
+//using S = System;
 
 namespace System {
 
@@ -242,9 +242,7 @@ namespace System.Runtime.CompilerServices {
     /// Marks a type with a script dependency that is required at runtime.
     /// The specified name is used as the name of the dependency, and the runtime identifier.
     /// </summary>
-    // Todo: ASSC: Changed to make it compile!
-    //[AttributeUsage(AttributeTargets.Type, Inherited = false, AllowMultiple = false)]
-    [S.AttributeUsage(S.AttributeTargets.Class | S.AttributeTargets.Struct | S.AttributeTargets.Enum | S.AttributeTargets.Interface | S.AttributeTargets.Delegate, Inherited = false, AllowMultiple = false)]
+    [System.AttributeUsage(System.AttributeTargets.Class | System.AttributeTargets.Struct | System.AttributeTargets.Enum | System.AttributeTargets.Interface | System.AttributeTargets.Delegate, Inherited = false, AllowMultiple = false)]
     [ScriptIgnore]
     [ScriptImport]
     public sealed class ScriptDependencyAttribute : Attribute {

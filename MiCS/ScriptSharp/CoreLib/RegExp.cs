@@ -75,8 +75,6 @@ namespace System {
             return null;
         }
 
-        // Todo: Remove attribute and usign
-        [MixedSide]
         public bool Test(string s) {
             return false;
         }
