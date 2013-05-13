@@ -72,7 +72,21 @@ namespace MiCS.Builders
         {
             var arrayType = TypeManager.GetTypeSymbol(arrayCreationExpression);
             var ssArrayType = arrayType.Map();
-            ssExpressions.Add(arrayCreationExpression.Map(ssArrayType, associatedParent));
+
+            var count = arrayCreationExpression.Initializer == null ? 0 : arrayCreationExpression.Initializer.Expressions.Count;
+
+            SS.Expression[] exprs = new SS.Expression[count];
+            if (count > 0)
+            {
+                int i = 0;
+                foreach (var expr in arrayCreationExpression.Initializer.Expressions)
+                {
+                    exprs[i] = ExpressionBuilder.BuildExpression(expr, associatedType, associatedParent);
+                    i++;
+                }
+            }
+
+            ssExpressions.Add(arrayCreationExpression.Map(ssArrayType, associatedParent, exprs));
         }
 
         /// <summary>
