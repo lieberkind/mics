@@ -506,7 +506,7 @@ namespace MiCSTests
             Assert.AreEqual(ssLiteral.Value, false);
             Assert.AreEqual(ssLiteral.EvaluatedType.FullName, "System.Boolean");
         }
-        // Todo: Fix maybe...
+
         [TestMethod]
         public void LiteralExpression_NullTest()
         {

@@ -176,7 +176,7 @@ namespace MiCS.Mappers
                     throw new NotSupportedException("Literal type is not supported!");
             }
         }
-        // Todo: Maybe try and clean up more...
+
         /// <summary>
         /// Return mapped ScriptSharp MethodExpression representing method invocation.
         /// </summary>
@@ -189,15 +189,11 @@ namespace MiCS.Mappers
             if (!(invocation.Expression is IdentifierNameSyntax) && !(invocation.Expression is MemberAccessExpressionSyntax))
                 throw new NotSupportedException();
 
-            // Todo: Unneeded check
-            if (!(ssParent is SS.ClassSymbol)) 
-                throw new NotSupportedException("The parent class symbol (of the method that is the invocation target) is required.");
-
             var ssParentClass = (SS.ClassSymbol)ssParent;
             if (!(ssParentClass.Parent is SS.NamespaceSymbol)) 
                 throw new Exception("The parent class namespace is currently required.");
 
-            var ssParentNamespace = (SS.NamespaceSymbol)ssParentClass.Parent; // Todo: Make parentNamespace method.
+            var ssParentNamespace = (SS.NamespaceSymbol)ssParentClass.Parent;
 
             if (invocation.Expression is IdentifierNameSyntax)
             {
@@ -219,16 +215,6 @@ namespace MiCS.Mappers
                 {
                     var objectReference = (IdentifierNameSyntax)memberAccess.Expression;
 
-                    /*
-                     * Verify correct use of supported core type (if
-                     * this member access is on a supported core type).
-                     */
-                    //TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
-                    // Todo: Consider writing for report issues with only verify correct use of core
-                    // types on 'foreign' member access. If you can inherit from a core type this
-                    // could maybe be problematic, but as inheritance is not within the scope of our
-                    // project it might not be a problem anyways?
-
                     var ssObjectReferenceName = objectReference.GetScriptName();
                     var ssMethodName = memberAccess.Name.GetScriptName();
 
@@ -245,7 +231,6 @@ namespace MiCS.Mappers
                 }
                 else if (memberAccess.Expression is ThisExpressionSyntax)
                 {
-                    // Todo: Is a bit redundant... maybe clean.
                     var ssMethodName = memberAccess.Name.GetScriptName();
                     var ssReturnType = TypeManager.GetReturnType(memberAccess.Name).Map();
                     var ssMethodSymbol = new SS.MethodSymbol(ssMethodName, ssParentClass, ssReturnType);
@@ -271,7 +256,6 @@ namespace MiCS.Mappers
         /// </summary>
         static internal SS.FieldExpression Map(this MemberAccessExpressionSyntax memberAccess, SS.Expression ssObjectReference, SS.FieldSymbol ssField)
         {
-            // Todo: Do we have any code that come in here? no tests it seems...
             return new SS.FieldExpression(ssObjectReference, ssField);
         }
 

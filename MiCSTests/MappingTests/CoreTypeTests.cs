@@ -294,8 +294,6 @@ namespace MiCSTests
 
         #region Region: Types
 
-        // Todo: Add Array tests
-
         [TestMethod]
         public void TypeSymbol_StringTest()
         {

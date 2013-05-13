@@ -27,16 +27,18 @@ namespace MiCSCaseStudy
 
         protected void Page_Init(object sender, EventArgs e)
         {
-           
-            form1.Add(NameBox);
+            form1.Controls.Add(new Label() { Text = "Registration", CssClass = "h2" });
+            form1.Controls.Add(NameBox);
+            form1.Controls.Add(new Label() { Text = "Choose delivery method", CssClass = "h4" });
             CheckBoxGroup.Controls.Add(SnailMailCheck);
             CheckBoxGroup.Controls.Add(EmailCheck);
             form1.Controls.Add(CheckBoxGroup);
-            form1.Add(AddressBox);
-            form1.Add(ZipcodeBox);
-            form1.Add(EmailBox);
-            form1.Add(PhoneBox);
-            form1.Add(SubmitButton);
+            form1.Controls.Add(AddressBox);
+            form1.Controls.Add(ZipcodeBox);
+            form1.Controls.Add(EmailBox);
+            form1.Controls.Add(new Label() { Text = "And/or", CssClass = "h4" });
+            form1.Controls.Add(PhoneBox);
+            form1.Controls.Add(SubmitButton);
 
             SubmitButton.OnClientClick(OnClickAction);
 
@@ -92,7 +94,12 @@ namespace MiCSCaseStudy
             InputElement phoneField = (InputElement)Document.GetElementById("phone");
             string phone = phoneField.Value;
 
-            return v.IsNameValid(name) && v.IsPhoneValid(phone) && v.IsDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
+            var isValid = v.IsNameValid(name) && v.IsPhoneValid(phone) && v.IsDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
+
+            if (!isValid)
+                Window.Alert("The form is not valid!");
+
+            return isValid;
         }
 
     }

@@ -106,7 +106,6 @@ namespace MiCS.Validators
 
             base.VisitClassDeclaration(node);
 
-            // Todo: Prettify this
             if (currentMethods.Count > 0 && !currentNamespaceMembers.ContainsKey(node.Identifier.ValueText))
                 currentNamespaceMembers.Add(node.Identifier.ValueText, currentMethods.ToList());
             else if (attributeNames.Count == 0 && node.IsDOMType())

@@ -199,7 +199,6 @@ namespace MiCS.Builders
         /// <param name="objectCreationExpression">The object creation expression.</param>
         public override void VisitObjectCreationExpression(ObjectCreationExpressionSyntax objectCreationExpression)
         {
-            // Todo: This type might have been mapped already...
             var type = TypeManager.GetTypeSymbol(objectCreationExpression);
 
             var ssTargetType = type.Map();
