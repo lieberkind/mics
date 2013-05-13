@@ -36,7 +36,6 @@ namespace MiCS
 
         protected override void OnPreRenderComplete(EventArgs e)
         {
-
             base.OnPreRenderComplete(e);
 
             // Todo: Create solution to this hack.

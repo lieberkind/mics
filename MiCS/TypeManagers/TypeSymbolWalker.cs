@@ -74,7 +74,7 @@ namespace MiCS
         /// <param name="expression">The expression.</param>
         public TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {
-            var type = semanticModel.GetTypeInfo(expression).Type;
+                    var type = semanticModel.GetTypeInfo(expression).Type;
             if (type == null)
             {
                 // Happens on static and none static references to DOM types.
