@@ -77,4 +77,16 @@ namespace MiCS
           System.Runtime.Serialization.StreamingContext context)
             : base(info, context) { }
     }
+
+    [Serializable]
+    internal class UnresolvedTypeException : Exception
+    {
+        public UnresolvedTypeException() { }
+        public UnresolvedTypeException(string message) : base(message) { }
+        public UnresolvedTypeException(string message, Exception inner) : base(message, inner) { }
+        protected UnresolvedTypeException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context)
+            : base(info, context) { }
+    }
 }

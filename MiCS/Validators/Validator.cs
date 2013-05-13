@@ -114,7 +114,7 @@ namespace MiCS.Validators
                         TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
                 }
             }
-            catch (Exception e)
+            catch (UnresolvedTypeException e)
             {
                 throw new IllegalInvocationException("Illegal invocation: " + invocation.Expression.ToFullString() + ". Check that argument is valid for this invocation", e);
             }
