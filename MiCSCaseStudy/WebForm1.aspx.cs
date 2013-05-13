@@ -47,9 +47,9 @@ namespace MiCSCaseStudy
         {
             Validator v = new Validator();
 
-            var isPhoneValid = v.isPhoneValid(PhoneBox.Text);
+            var isPhoneValid = v.IsPhoneValid(PhoneBox.Text);
             var isNameValid = v.IsNameValid(NameBox.Text);
-            var isDeliveryMethodsValid = v.isDeliveryMethodsValid(new bool[] { SnailMailCheck.Checked, EmailCheck.Checked }, AddressBox.Text, ZipcodeBox.Text, EmailBox.Text);
+            var isDeliveryMethodsValid = v.IsDeliveryMethodsValid(new bool[] { SnailMailCheck.Checked, EmailCheck.Checked }, AddressBox.Text, ZipcodeBox.Text, EmailBox.Text);
 
             Color color;
             if (isPhoneValid && isNameValid && isDeliveryMethodsValid)
@@ -92,95 +92,10 @@ namespace MiCSCaseStudy
             InputElement phoneField = (InputElement)Document.GetElementById("phone");
             string phone = phoneField.Value;
 
-            return v.IsNameValid(name) && v.isPhoneValid(phone) && v.isDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
-        }
-
-
-        protected void Page_Load(object sender, EventArgs e)
-        {
-
-        }
-    }
-
-    class Validator
-    {
-        public bool isFormValid()
-        {
-            throw new NotImplementedException();
-        }
-
-        [MixedSide]
-        public bool IsNameValid(string name)
-        {
-            Regex rx = new Regex(@"^([A-z]+ [A-z]+)( [A-z]+)*$");
-            return rx.IsMatch(name) && name.Length > 5 && name.Length < 128;
-        }
-
-        [MixedSide]
-        public bool isAddressValid(string address, string zipcode)
-        {
-            var addressRegEx = new Regex("^[A-z]+ [0-9]+(, [0-9]+ (SAL|TH|TV))?$");
-            var isAddressFormatValid = addressRegEx.IsMatch(address);
-
-            var zipCodeRegEx = new Regex("^[1-9][0-9][0-9][0-9]$");
-            var isZipCodeFormatValid = zipCodeRegEx.IsMatch(zipcode);
-
-            return isAddressFormatValid && isZipCodeFormatValid;
-        }
-
-        [MixedSide]
-        public bool isEmailValid(string email)
-        {
-            var emailRegEx = new Regex("^[A-z0-9._%+-]+@[A-z0-9.-]+.[A-z]{2,4}$");
-            var isEmailFormatValid = emailRegEx.IsMatch(email);
-            return isEmailFormatValid;
-        }
-
-        [MixedSide]
-        public bool isDeliveryMethodsValid(bool[] deliveryMethods, string address, string zipcode, string email)
-        {
-            var snailMailChecked = deliveryMethods[0];
-            var emailChecked = deliveryMethods[1];
-
-            if (!snailMailChecked && !emailChecked)
-            {
-                return false;
-            }
-
-            if (snailMailChecked && emailChecked)
-            {
-                return isEmailValid(email) && isAddressValid(address, zipcode);
-            }
-
-            else if (snailMailChecked)
-            {
-                return isAddressValid(address, zipcode);
-            }
-
-            else
-            {
-                return isEmailValid(email);
-            }
-        }
-
-        [MixedSide]
-        public bool isPhoneValid(string phoneNumber)
-        {
-            var phoneNumberRegEx = new Regex("^([1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])$");
-            var isPhoneFormatValid = phoneNumberRegEx.IsMatch(phoneNumber);
-
-            return isPhoneFormatValid;
+            return v.IsNameValid(name) && v.IsPhoneValid(phone) && v.IsDeliveryMethodsValid(deliveryMethods, address, zipcode, email);
         }
 
     }
 
-    class User
-    {
 
-        [MixedSide]
-        int CalculateBMI()
-        {
-            return 0;
-        }
-    }
 }
