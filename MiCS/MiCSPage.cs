@@ -38,7 +38,7 @@ namespace MiCS
         {
             base.OnPreRenderComplete(e);
 
-            // Todo: Improvement - Parent namespace should not be a new namespace object.
+            // Todo: Improvement - Every file in solution should be in its own SyntaxTree.
             var source = @"
                 using MiCS;
                 using System.Html;
