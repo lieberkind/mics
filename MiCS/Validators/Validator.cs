@@ -113,6 +113,23 @@ namespace MiCS.Validators
                     if (memberAccess.Expression is IdentifierNameSyntax)
                         TypeManager.VerifyCorrectUseOfSupportedCoreType(invocation);
                 }
+                else if (invocation.Expression is IdentifierNameSyntax)
+                {
+                    var identifierName = (IdentifierNameSyntax) invocation.Expression;
+                    var containingType = TypeManager.GetContainingType(identifierName);
+                    var namespaceName = containingType.ContainingNamespace.ToString();
+                    var typeName = containingType.Name;
+                    var methodName = identifierName.Identifier.ValueText;
+
+                    var isScriptMember =
+                        members.ContainsKey(namespaceName) &&
+                        members[namespaceName].ContainsKey(typeName) &&
+                        members[namespaceName][typeName].Contains(methodName);
+
+                    if (!isScriptMember)
+                        throw new MixedSidePrincipleViolatedException("Use of method '" + methodName + "' violates the Mixed Side Principle.");
+                }
+
             }
             catch (UnresolvedTypeException e)
             {

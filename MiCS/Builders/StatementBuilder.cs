@@ -40,6 +40,11 @@ namespace MiCS.Builders
             this.ssParentMember = ssParentMember;
         }
 
+        public override void DefaultVisit(SyntaxNode node)
+        {
+            throw new NotSupportedException("Use of statement '" + node.Kind.ToString() + "' is not supported.");
+        }
+
         /// <summary>
         /// Builds an if statement along with its condition and branches
         /// </summary>

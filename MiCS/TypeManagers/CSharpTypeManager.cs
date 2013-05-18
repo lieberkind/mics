@@ -202,6 +202,12 @@ namespace MiCS
             return typeSymbolWalker.TypeSymbol;
         }
 
+        public TypeSymbol GetContainingType(IdentifierNameSyntax node)
+        {
+            var symbol = SemanticModel.GetSymbolInfo(node).Symbol;
+            return symbol.ContainingType;
+        }
+
         public TypeSymbol GetTypeSymbol(ExpressionSyntax expression)
         {
             return typeSymbolWalker.GetTypeSymbol(expression);

@@ -50,7 +50,7 @@ namespace MiCS.Builders
         /// </exception>
         public override void DefaultVisit(SyntaxNode node)
         {
-            throw new NotSupportedException("The Expression of kind " + node.Kind.ToString() + " cannot be mapped");
+            throw new NotSupportedException("Use of expression '" + node.Kind.ToString() + "' is not supported.");
         }
 
         /// <summary>

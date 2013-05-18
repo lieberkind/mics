@@ -238,6 +238,11 @@ namespace MiCS
             return instance.scriptSharpTypeManager.IsSupportedCoreType(typeSymbol);
         }
 
+        public static TypeSymbol GetContainingType(IdentifierNameSyntax node)
+        {
+            return instance.cSharpTypeManager.GetContainingType(node);
+        }
+
         /// <summary>
         /// Returns true if the specified type is a core script type..
         /// </summary>
